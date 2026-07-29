@@ -1,0 +1,76 @@
+/* Tiny base for preview cards. Each card is ~700px wide, lives on a white
+   surface, and assumes colors_and_type.css is loaded first. */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-fg-1);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.card {
+  width: 700px;
+  padding: 24px;
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+
+.row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: 12px; }
+.between { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+.label-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-3);
+  font-weight: 600;
+}
+
+/* Swatches */
+.swatch {
+  flex: 1 1 0;
+  height: 84px;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  color: var(--color-fg-inverse);
+  box-sizing: border-box;
+}
+.swatch.dark   { color: var(--color-white); }
+.swatch.light  { color: var(--color-darkblue-700); }
+.swatch .num { font-size: 11px; font-weight: 600; opacity: 0.85; }
+.swatch .hex { font-family: var(--font-mono); font-size: 11px; font-weight: 500; }
+
+.scale {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.title-row h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-fg-1);
+}
+.title-row .meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-fg-3);
+}

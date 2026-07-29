@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Topology: API Gateway feeding a request service and a balance service, the request service publishing to an event bus consumed by the balance service, which writes to PostgreSQL">
+  <style>
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace }
+    .flow { stroke-dasharray: 11 9; animation: dash 1.7s linear infinite }
+    @keyframes dash { to { stroke-dashoffset: -40 } }
+    @media (prefers-reduced-motion: reduce) { .flow { animation: none } }
+  </style>
+  <defs>
+    <pattern id="lh-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#6AFF00" stroke-opacity=".07"/>
+    </pattern>
+    <radialGradient id="lh-glow" cx=".5" cy=".5" r=".7">
+      <stop offset="0" stop-color="#6AFF00" stop-opacity=".15"/><stop offset="1" stop-color="#6AFF00" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="lh-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#6AFF00" fill-opacity=".8"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="540" fill="#06140a"/>
+  <rect width="960" height="540" fill="url(#lh-grid)"/>
+  <rect width="960" height="540" fill="url(#lh-glow)"/>
+
+  <text class="mono" x="56" y="62" font-size="20" fill="#eefff0">service seams</text>
+  <text class="mono" x="56" y="86" font-size="13" fill="#7fcc66">requests own the lifecycle &#183; balances own the truth</text>
+
+  <!-- edges -->
+  <g fill="none" stroke="#6AFF00" stroke-opacity=".5" stroke-width="1.8" marker-end="url(#lh-arrow)">
+    <path d="M190 270 C230 270 230 188 270 188"/>
+    <path d="M190 306 C230 306 230 418 270 418"/>
+    <path class="flow" d="M470 188 H552"/>
+    <path class="flow" d="M665 226 C665 310 370 300 370 380"/>
+    <path d="M470 418 H764"/>
+  </g>
+  <text class="mono" x="511" y="176" font-size="10.5" fill="#6AFF00" text-anchor="middle">leave.requested</text>
+  <text class="mono" x="520" y="296" font-size="10.5" fill="#7fcc66" text-anchor="middle">balance.applied</text>
+  <text class="mono" x="617" y="406" font-size="10.5" fill="#7fcc66" text-anchor="middle">writes</text>
+
+  <!-- api gateway -->
+  <rect x="40" y="250" width="150" height="76" rx="13" fill="#0b1f0a" stroke="#6AFF00" stroke-opacity=".55"/>
+  <text class="mono" x="115" y="284" font-size="14" fill="#eefff0" text-anchor="middle">API Gateway</text>
+  <text class="mono" x="115" y="304" font-size="11" fill="#7fcc66" text-anchor="middle">stage=prod</text>
+
+  <!-- request service -->
+  <rect x="270" y="150" width="200" height="76" rx="13" fill="#0b1f0a" stroke="#173311"/>
+  <circle cx="294" cy="176" r="4.5" fill="#6AFF00"/>
+  <text class="mono" x="312" y="181" font-size="14" fill="#eefff0">request svc</text>
+  <text class="mono" x="294" y="205" font-size="11" fill="#7fcc66">idempotency-key</text>
+
+  <!-- event bus -->
+  <rect x="580" y="150" width="170" height="76" rx="38" fill="#0b1f0a" stroke="#6AFF00" stroke-opacity=".55"/>
+  <text class="mono" x="665" y="182" font-size="14" fill="#6AFF00" text-anchor="middle">event bus</text>
+  <text class="mono" x="665" y="202" font-size="11" fill="#7fcc66" text-anchor="middle">sns</text>
+
+  <!-- balance service -->
+  <rect x="270" y="380" width="200" height="76" rx="13" fill="#0b1f0a" stroke="#173311"/>
+  <circle cx="294" cy="406" r="4.5" fill="#6AFF00"/>
+  <text class="mono" x="312" y="411" font-size="14" fill="#eefff0">balance svc</text>
+  <text class="mono" x="294" y="435" font-size="11" fill="#7fcc66">source of truth</text>
+
+  <!-- postgres -->
+  <g>
+    <ellipse cx="830" cy="392" rx="62" ry="18" fill="#0b1f0a" stroke="#173311"/>
+    <path d="M768 392v56c0 10 27.8 18 62 18s62-8 62-18v-56" fill="#0b1f0a" stroke="#173311"/>
+    <ellipse cx="830" cy="392" rx="62" ry="18" fill="none" stroke="#6AFF00" stroke-opacity=".45"/>
+    <text class="mono" x="830" y="432" font-size="13" fill="#eefff0" text-anchor="middle">Postgres</text>
+  </g>
+
+  <text class="mono" x="56" y="512" font-size="11.5" fill="#4d8c3c">boring on purpose &#183; boring systems stay online</text>
+</svg>

@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio CMS — Daniel Ajayi Lotsu</title>
+<meta name="description" content="Content dashboard for this portfolio. Sign-in required; edits publish to the live site.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#020a02">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#020a02; --surface:#06140a; --surface-elev:#0b1f0a; --surface-hi:#0f2a0d;
+    --text:#eefff0; --text-2:#7fcc66; --text-3:#4d8c3c; --border:#173311; --border-hi:#22521a;
+    --primary:#6AFF00; --glow:rgba(106,255,0,0.35); --fill:rgba(106,255,0,0.08);
+    --warn:#ffc14d; --danger:#ff5f56;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased}
+  a{color:var(--primary);text-decoration:none}
+  a:hover{color:#8dff45}
+  input,textarea,select,button{font-family:inherit}
+  input,textarea,select{outline:none}
+  ::placeholder{color:var(--text-3)}
+  textarea{resize:vertical}
+  .fld:focus{border-color:var(--primary)!important;background:var(--surface-hi)!important;box-shadow:0 0 0 3px rgba(106,255,0,.12)}
+  .rail-item:hover{background:var(--fill);color:var(--text)}
+  .rail-item[data-active="1"]{background:var(--fill);color:var(--primary);border-left-color:var(--primary)}
+  .row-item:hover{background:var(--surface-elev);border-color:var(--border-hi)}
+  .row-item[data-active="1"]{border-color:var(--primary);background:var(--fill)}
+  .ghost:hover{border-color:var(--primary);color:var(--primary)}
+  .tab:hover{color:var(--text)}
+  .tab[data-active="1"]{color:var(--primary);border-bottom-color:var(--primary)}
+  .drag:hover .grip{color:var(--primary)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .live-dot{animation:pulse 2.2s ease-in-out infinite}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+  .shell{min-width:0}
+  main{min-width:0}
+  .two-col,.blog-split{min-width:0}
+  .two-col>*,.blog-split>*{min-width:0}
+  .two-col{grid-template-columns:minmax(0,1fr) 300px}
+  .blog-split{grid-template-columns:300px minmax(0,1fr)}
+  input,textarea,select{min-width:0;max-width:100%}
+  @media (max-width:1180px){
+    .two-col,.blog-split{grid-template-columns:minmax(0,1fr)!important}
+    .two-col>[style*="sticky"],.blog-split>[style*="sticky"]{position:static!important}
+  }
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr!important}
+    .rail{display:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="dc-setRoot" data-on-click="onClick" data-on-input="onInput" class="shell" style="display:grid;grid-template-columns:236px 1fr;min-height:100vh;background:var(--bg)">
+
+  <!-- ===== LEFT RAIL ===== -->
+  <aside class="rail" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto">
+    <div style="padding:20px 18px 16px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div style="width:26px;height:26px;border-radius:7px;background:var(--primary);display:grid;place-items:center;color:#04120a;font-weight:700;font-size:13px;box-shadow:0 0 18px -4px var(--glow)">D</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;letter-spacing:-.01em">daniel.lotsu</div>
+          <div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);letter-spacing:.06em">CONTENT STUDIO</div>
+        </div>
+      </div>
+    </div>
+
+    <nav style="flex:1;padding:14px 0;display:flex;flex-direction:column;gap:2px">
+      <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--text-3);padding:8px 18px 6px">OVERVIEW</div>
+      <button class="rail-item" data-nav="dashboard" data-active="1" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</button>
+
+      <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--text-3);padding:14px 18px 6px">LANDING PAGE</div>
+      <button class="rail-item" data-nav="hero" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>Hero</button>
+      <button class="rail-item" data-nav="about" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>About</button>
+      <button class="rail-item" data-nav="certs" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="5"/><path d="M9 14l-1 8 4-2 4 2-1-8"/></svg>Certifications<span data-count="certs" style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">3</span></button>
+      <button class="rail-item" data-nav="stack" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg>Tech Stack<span data-count="stack" style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">9</span></button>
+      <button class="rail-item" data-nav="projects" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Projects<span data-count="projects" style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">4</span></button>
+      <button class="rail-item" data-nav="experience" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/></svg>Experience<span data-count="experience" style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">2</span></button>
+      <button class="rail-item" data-nav="contact" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Contact</button>
+
+      <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--text-3);padding:14px 18px 6px">PAGES</div>
+      <button class="rail-item" data-nav="resume" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>Resume</button>
+      <button class="rail-item" data-nav="blog" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h11a2 2 0 012 2v14H6a2 2 0 01-2-2z"/><path d="M8 9h7M8 13h7M8 17h4"/></svg>Blog<span data-count="posts" style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">4</span></button>
+
+      <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--text-3);padding:14px 18px 6px">SYSTEM</div>
+      <button class="rail-item" data-nav="media" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5-6 6"/></svg>Media</button>
+      <button class="rail-item" data-nav="settings" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:9px 18px;cursor:pointer;transition:all .14s ease"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 006 19.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 6L4.5 6a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 0010 3.5V3a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Settings</button>
+    </nav>
+
+    <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--surface-elev);border:1px solid var(--border-hi);display:grid;place-items:center;font-size:11px;color:var(--primary)">DL</div>
+      <div style="min-width:0;flex:1">
+        <div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Daniel Lotsu</div>
+        <div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">owner</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div style="min-width:0;display:flex;flex-direction:column">
+
+    <!-- topbar -->
+    <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:0 clamp(16px,3vw,32px);height:60px;background:rgba(2,10,2,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-3)">
+        <span>portfolio</span><span style="opacity:.5">/</span><span data-crumb style="color:var(--text)">dashboard</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span data-savestate style="display:flex;align-items:center;gap:7px;font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-3)"><span class="live-dot" style="width:6px;height:6px;border-radius:50%;background:var(--text-3)"></span>All changes saved</span>
+        <button class="ghost" data-preview style="display:inline-flex;align-items:center;gap:7px;background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button>
+        <button data-publish style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 16px;border-radius:8px;cursor:pointer;box-shadow:0 8px 26px -12px var(--glow)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Publish</button>
+      </div>
+    </header>
+
+    <main style="flex:1;padding:clamp(20px,3vw,36px) clamp(16px,3vw,32px) 90px;max-width:1180px;width:100%">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="panel" data-panel="dashboard">
+        <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Good afternoon, Daniel</h1>
+        <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0 0 26px">// site is live · last published 4 days ago</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:28px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3);margin-bottom:10px">DEPLOY STATUS</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--primary)"><span class="live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary)"></span>Live</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:6px">CloudFront · edge cached</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3);margin-bottom:10px">PUBLISHED POSTS</div>
+            <div style="font-size:24px;font-weight:700">4<span style="font-size:13px;color:var(--text-3);font-weight:400"> / 6</span></div>
+            <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--warn);margin-top:6px">2 drafts pending</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3);margin-bottom:10px">RESUME VERSION</div>
+            <div style="font-size:24px;font-weight:700">v4</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:6px">updated 12 Jun 2026</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3);margin-bottom:10px">CONTACT MESSAGES</div>
+            <div style="font-size:24px;font-weight:700">7</div>
+            <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--primary);margin-top:6px">3 unread</div>
+          </div>
+        </div>
+
+        <div class="two-col" style="display:grid;grid-template-columns:1.35fr 1fr;gap:18px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="padding:15px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700">Jump back in</div>
+            <div style="display:flex;flex-direction:column">
+              <button class="row-item" data-nav="blog" style="display:flex;align-items:center;gap:12px;text-align:left;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);padding:14px 18px;cursor:pointer;transition:background .14s ease">
+                <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--warn);border:1px solid var(--warn);padding:2px 6px;border-radius:4px">DRAFT</span>
+                <span style="flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Terraform modules I actually reuse</span>
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">2d ago</span>
+              </button>
+              <button class="row-item" data-nav="resume" style="display:flex;align-items:center;gap:12px;text-align:left;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);padding:14px 18px;cursor:pointer;transition:background .14s ease">
+                <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-2);border:1px solid var(--border-hi);padding:2px 6px;border-radius:4px">RESUME</span>
+                <span style="flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Add "Data Protection &amp; DR" to certifications</span>
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">5d ago</span>
+              </button>
+              <button class="row-item" data-nav="projects" style="display:flex;align-items:center;gap:12px;text-align:left;background:none;border:none;color:var(--text);padding:14px 18px;cursor:pointer;transition:background .14s ease">
+                <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-2);border:1px solid var(--border-hi);padding:2px 6px;border-radius:4px">PROJECT</span>
+                <span style="flex:1;min-width:0;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Leave Management API — needs repo link</span>
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">1w ago</span>
+              </button>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="padding:15px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700">Publish log</div>
+            <div style="padding:14px 18px;display:flex;flex-direction:column;gap:13px;font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">
+              <div style="display:flex;gap:10px"><span style="color:var(--primary)">✓</span><span style="flex:1">Published <span style="color:var(--text)">blog/connection-pooling</span></span><span style="color:var(--text-3)">25 Jul</span></div>
+              <div style="display:flex;gap:10px"><span style="color:var(--primary)">✓</span><span style="flex:1">Updated <span style="color:var(--text)">hero.tagline</span></span><span style="color:var(--text-3)">25 Jul</span></div>
+              <div style="display:flex;gap:10px"><span style="color:var(--primary)">✓</span><span style="flex:1">Resume <span style="color:var(--text)">v4</span> generated</span><span style="color:var(--text-3)">12 Jun</span></div>
+              <div style="display:flex;gap:10px"><span style="color:var(--text-3)">✓</span><span style="flex:1;color:var(--text-3)">Added cert <span style="color:var(--text-2)">AWS Developer</span></span><span style="color:var(--text-3)">02 Jun</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HERO ============ -->
+      <section class="panel" data-panel="hero" style="display:none">
+        <div style="margin-bottom:24px">
+          <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Hero</h1>
+          <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// the first thing visitors see — name, role, constellation canvas</p>
+        </div>
+
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:18px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">IDENTITY</div>
+              <label style="display:flex;flex-direction:column;gap:7px">
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Display name</span>
+                <input data-field="hero.name" class="fld" data-dirty type="text" value="Daniel Ajayi Lotsu" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:7px">
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Role / title</span>
+                <input data-field="hero.role" class="fld" data-dirty type="text" value="Backend &amp; Cloud Engineer" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:7px">
+                <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Tagline<span data-counter="180" style="color:var(--text-3)">— / 180</span></span>
+                <textarea data-field="hero.tagline" class="fld" data-dirty rows="3" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;line-height:1.65;padding:11px 13px;transition:all .15s ease">I build scalable, cloud-native systems on AWS — the quiet engineering that keeps products online.</textarea>
+              </label>
+              <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <label style="display:flex;flex-direction:column;gap:7px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Location</span>
+                  <input data-field="hero.location" class="fld" data-dirty type="text" value="Kumasi, Ghana" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+                </label>
+                <label style="display:flex;flex-direction:column;gap:7px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Availability badge</span>
+                  <input data-field="hero.availability" class="fld" data-dirty type="text" value="Open to opportunities" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+                </label>
+              </div>
+            </div>
+
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">TELEMETRY CHIPS</div>
+              <p style="margin:0;font-size:12px;color:var(--text-3);line-height:1.6">The floating glass chips over the hero canvas. Keep to 4 or fewer.</p>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div class="drag" style="display:flex;align-items:center;gap:10px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:9px 11px">
+                  <span class="grip" style="color:var(--text-3);cursor:grab;font-size:13px">⠿</span>
+                  <input data-field="hero.chips.0" class="fld" data-dirty type="text" value="uptime 99.98%" style="flex:1;background:none;border:none;color:var(--text);font-size:12.5px;padding:2px">
+                  <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;transition:all .15s ease">Remove</button>
+                </div>
+                <div class="drag" style="display:flex;align-items:center;gap:10px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:9px 11px">
+                  <span class="grip" style="color:var(--text-3);cursor:grab;font-size:13px">⠿</span>
+                  <input data-field="hero.chips.1" class="fld" data-dirty type="text" value="p99 · 42ms" style="flex:1;background:none;border:none;color:var(--text);font-size:12.5px;padding:2px">
+                  <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;transition:all .15s ease">Remove</button>
+                </div>
+                <div class="drag" style="display:flex;align-items:center;gap:10px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:9px 11px">
+                  <span class="grip" style="color:var(--text-3);cursor:grab;font-size:13px">⠿</span>
+                  <input data-field="hero.chips.2" class="fld" data-dirty type="text" value="region · eu-west-1" style="flex:1;background:none;border:none;color:var(--text);font-size:12.5px;padding:2px">
+                  <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-size:11px;padding:4px 9px;border-radius:6px;cursor:pointer;transition:all .15s ease">Remove</button>
+                </div>
+              </div>
+              <button class="ghost" style="align-self:flex-start;background:none;border:1px dashed var(--border-hi);color:var(--text-2);font-size:12px;padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease">+ Add chip</button>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:18px;position:sticky;top:78px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">CANVAS</div>
+              <label style="display:flex;flex-direction:column;gap:8px">
+                <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Star density<span data-out="density" style="color:var(--primary)">64</span></span>
+                <input data-range="density" data-dirty type="range" min="20" max="140" value="64" style="width:100%;accent-color:var(--primary)">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:8px">
+                <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Cursor pull<span data-out="pull" style="color:var(--primary)">42</span></span>
+                <input data-range="pull" data-dirty type="range" min="0" max="100" value="42" style="width:100%;accent-color:var(--primary)">
+              </label>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px">
+                <span style="font-size:12.5px">Background code lines</span>
+                <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <span style="font-size:12.5px">Reduce motion fallback</span>
+                <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+              </div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">ACCENT COLOR</div>
+              <div style="display:flex;gap:9px">
+                <button data-swatch="1" style="width:34px;height:34px;border-radius:8px;background:#6AFF00;border:2px solid var(--text);cursor:pointer"></button>
+                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#00E5FF;border:2px solid transparent;cursor:pointer"></button>
+                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#B388FF;border:2px solid transparent;cursor:pointer"></button>
+                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#FF8A3D;border:2px solid transparent;cursor:pointer"></button>
+              </div>
+              <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">#6AFF00 · applied site-wide</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ABOUT ============ -->
+      <section class="panel" data-panel="about" style="display:none">
+        <div style="margin-bottom:24px">
+          <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">About</h1>
+          <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// the region card and narrative bio</p>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:18px;max-width:820px">
+          <label style="display:flex;flex-direction:column;gap:7px">
+            <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Section heading</span>
+            <input data-field="about.heading" class="fld" data-dirty type="text" value="Deployed from Kumasi" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:7px">
+            <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Bio<span data-counter="900" style="color:var(--text-3)">— / 900</span></span>
+            <textarea data-field="about.body" class="fld" data-dirty rows="8" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;line-height:1.75;padding:13px;transition:all .15s ease">I'm a backend and cloud engineer at AmaliTech, where I design REST APIs, model data, and ship serverless and containerised services on AWS. I care about the unglamorous parts — migrations that don't lose data, observability that tells you the truth, and systems boring enough to stay online while everyone sleeps.</textarea>
+          </label>
+          <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+            <label style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Region label</span>
+              <input data-field="about.region" class="fld" data-dirty type="text" value="af-south-1" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Timezone</span>
+              <input data-field="about.timezone" class="fld" data-dirty type="text" value="GMT+0" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+            </label>
+            <label style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Years shipping</span>
+              <input data-field="about.years" class="fld" data-dirty type="text" value="2+" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CERTIFICATIONS ============ -->
+      <section class="panel" data-panel="certs" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:24px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Certifications</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// holographic cards — order here is order on site</p>
+          </div>
+          <button data-add style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">+ Add certification</button>
+        </div>
+        <div data-list="certs" style="display:flex;flex-direction:column;gap:12px;max-width:900px">
+          <div class="drag" style="display:grid;grid-template-columns:22px 1fr 130px 92px 84px;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <span class="grip" style="color:var(--text-3);cursor:grab">⠿</span>
+            <div style="min-width:0"><div style="font-size:13px;font-weight:700;margin-bottom:3px">AWS Certified Developer — Associate</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">credly.com/badges/dva-c02…</div></div>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">Amazon Web Services</span>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">2025</span>
+            <div style="display:flex;gap:6px;justify-content:flex-end"><button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button></div>
+          </div>
+          <div class="drag" style="display:grid;grid-template-columns:22px 1fr 130px 92px 84px;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <span class="grip" style="color:var(--text-3);cursor:grab">⠿</span>
+            <div style="min-width:0"><div style="font-size:13px;font-weight:700;margin-bottom:3px">AWS Certified Cloud Practitioner</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">credly.com/badges/clf-c02…</div></div>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">Amazon Web Services</span>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">2024</span>
+            <div style="display:flex;gap:6px;justify-content:flex-end"><button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button></div>
+          </div>
+          <div class="drag" style="display:grid;grid-template-columns:22px 1fr 130px 92px 84px;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <span class="grip" style="color:var(--text-3);cursor:grab">⠿</span>
+            <div style="min-width:0"><div style="font-size:13px;font-weight:700;margin-bottom:3px">AWS Data Protection &amp; Disaster Recovery</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">no badge link</div></div>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">Amazon Web Services</span>
+            <span style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2)">2025</span>
+            <div style="display:flex;gap:6px;justify-content:flex-end"><button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ TECH STACK ============ -->
+      <section class="panel" data-panel="stack" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:24px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Tech stack</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// service tiles grouped by layer</p>
+          </div>
+          <button data-add style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">+ Add service</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:900px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--primary)">CLOUD &amp; DEVOPS</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">6 services</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px">
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">AWS Lambda<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">EC2<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">S3<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">API Gateway<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">CloudWatch<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">Docker<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <button class="ghost" style="background:none;border:1px dashed var(--border-hi);color:var(--text-2);font-size:12px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s ease">+ add</button>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--primary)">BACKEND</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">3 services</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px">
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">Node.js<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">JavaScript<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">REST API design<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <button class="ghost" style="background:none;border:1px dashed var(--border-hi);color:var(--text-2);font-size:12px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s ease">+ add</button>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--primary)">DATABASES</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">2 services</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px">
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">PostgreSQL<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12.5px">MySQL<button style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:13px;padding:0;line-height:1">×</button></span>
+              <button class="ghost" style="background:none;border:1px dashed var(--border-hi);color:var(--text-2);font-size:12px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:all .15s ease">+ add</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROJECTS ============ -->
+      <section class="panel" data-panel="projects" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:24px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Projects</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// bento mosaic — size controls how much space a card takes</p>
+          </div>
+          <button data-add style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">+ New project</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:940px">
+          <div class="drag" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <span class="grip" style="color:var(--text-3);cursor:grab;padding-top:2px">⠿</span>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:7px">
+                  <span style="font-size:13.5px;font-weight:700">Leave Management API</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--primary);padding:2px 6px;border-radius:4px">FEATURED</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--warn);border:1px solid var(--warn);padding:2px 6px;border-radius:4px">MISSING REPO</span>
+                </div>
+                <p style="margin:0 0 10px;font-size:12.5px;color:var(--text-2);line-height:1.6">Multi-tenant leave &amp; approvals service — Node.js, PostgreSQL, event-driven notifications.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">Node.js</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">PostgreSQL</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">Lambda</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
+                <select class="fld" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:7px;color:var(--text-2);font-size:11.5px;padding:6px 8px;transition:all .15s ease"><option>Size: wide</option><option>Size: tall</option><option>Size: standard</option></select>
+                <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="drag" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <span class="grip" style="color:var(--text-3);cursor:grab;padding-top:2px">⠿</span>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:7px"><span style="font-size:13.5px;font-weight:700">Serverless Image Pipeline</span></div>
+                <p style="margin:0 0 10px;font-size:12.5px;color:var(--text-2);line-height:1.6">S3 → Lambda → CloudFront resizing pipeline with signed-URL delivery.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">S3</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">Lambda</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">CloudFront</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
+                <select class="fld" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:7px;color:var(--text-2);font-size:11.5px;padding:6px 8px;transition:all .15s ease"><option>Size: standard</option><option>Size: wide</option><option>Size: tall</option></select>
+                <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="drag" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <span class="grip" style="color:var(--text-3);cursor:grab;padding-top:2px">⠿</span>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:7px"><span style="font-size:13.5px;font-weight:700">Infra-as-Code Starter</span></div>
+                <p style="margin:0 0 10px;font-size:12.5px;color:var(--text-2);line-height:1.6">Reusable Terraform modules for VPC, RDS and ECS baselines.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">Terraform</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);background:var(--surface-elev);border:1px solid var(--border);padding:3px 8px;border-radius:5px">AWS</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
+                <select class="fld" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:7px;color:var(--text-2);font-size:11.5px;padding:6px 8px;transition:all .15s ease"><option>Size: standard</option><option>Size: wide</option><option>Size: tall</option></select>
+                <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="drag" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;opacity:.6">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <span class="grip" style="color:var(--text-3);cursor:grab;padding-top:2px">⠿</span>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-bottom:7px"><span style="font-size:13.5px;font-weight:700">Observability Dashboard</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);border:1px solid var(--border-hi);padding:2px 6px;border-radius:4px">HIDDEN</span></div>
+                <p style="margin:0 0 10px;font-size:12.5px;color:var(--text-2);line-height:1.6">Custom CloudWatch metric views for service health at a glance.</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
+                <select class="fld" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:7px;color:var(--text-2);font-size:11.5px;padding:6px 8px;transition:all .15s ease"><option>Size: standard</option><option>Size: wide</option></select>
+                <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s ease">Edit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ EXPERIENCE ============ -->
+      <section class="panel" data-panel="experience" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:24px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Experience</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// CloudTrail log rows — shared with the resume page</p>
+          </div>
+          <button data-add style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">+ Add role</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:900px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:15px">
+            <div class="two-col" style="display:grid;grid-template-columns:1.4fr 1fr;gap:14px">
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Title</span><input data-field="experience.role" class="fld" data-dirty type="text" value="Software Engineer" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Company</span><input data-field="experience.company" class="fld" data-dirty type="text" value="AmaliTech" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+            </div>
+            <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Start</span><input data-field="experience.start" class="fld" data-dirty type="text" value="Oct 2025" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">End</span><input data-field="experience.end" class="fld" data-dirty type="text" value="Present" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Location</span><input data-field="experience.location" class="fld" data-dirty type="text" value="Kumasi, Ghana" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Highlights — one per line</span><textarea data-field="experience.description" class="fld" data-dirty rows="5" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;line-height:1.75;padding:11px 12px;transition:all .15s ease">Design and ship REST APIs on AWS backing internal products.
+Model data in PostgreSQL and MySQL — migrations, indexing, query performance.
+Build serverless and containerised workloads with CloudWatch observability.
+Partner with product teams across the full delivery lifecycle.</textarea></label>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px">
+            <span class="grip" style="color:var(--text-3);cursor:grab">⠿</span>
+            <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">Back End Developer · National Service</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:3px">AmaliTech · Oct 2024 — Sep 2025 · 3 highlights</div></div>
+            <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11px;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .15s ease">Expand</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CONTACT ============ -->
+      <section class="panel" data-panel="contact" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:20px">
+          <div style="flex:1">
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Contact</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// form settings and incoming messages</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:22px">
+          <button class="tab" data-tab="inbox" data-tabgroup="contact" data-active="1" style="background:none;border:none;border-bottom:2px solid transparent;color:var(--text-2);font-size:12.5px;padding:10px 14px;cursor:pointer;transition:all .15s ease">Inbox <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary)">3</span></button>
+          <button class="tab" data-tab="form" data-tabgroup="contact" style="background:none;border:none;border-bottom:2px solid transparent;color:var(--text-3);font-size:12.5px;padding:10px 14px;cursor:pointer;transition:all .15s ease">Form settings</button>
+        </div>
+
+        <div data-tabpanel="inbox" data-tabgroup="contact" style="display:flex;flex-direction:column;gap:10px;max-width:900px">
+          <div class="row-item" style="background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--primary);border-radius:10px;padding:15px 17px;cursor:pointer;transition:all .14s ease">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:700">Ama Boateng</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">ama@northwind.co</span>
+              <span style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">2h ago</span>
+            </div>
+            <p style="margin:0;font-size:12.5px;color:var(--text-2);line-height:1.6">We're hiring a backend engineer for a fintech platform on AWS — would you be open to a chat next week?</p>
+          </div>
+          <div class="row-item" style="background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--primary);border-radius:10px;padding:15px 17px;cursor:pointer;transition:all .14s ease">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:700">Kwesi Mensah</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">kwesi@devfest.gh</span>
+              <span style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">1d ago</span>
+            </div>
+            <p style="margin:0;font-size:12.5px;color:var(--text-2);line-height:1.6">Invitation to speak about serverless at DevFest Kumasi. 30-minute slot, November.</p>
+          </div>
+          <div class="row-item" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 17px;cursor:pointer;opacity:.72;transition:all .14s ease">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="font-size:13px;font-weight:700">Sarah Owusu</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">sarah@ledgerly.io</span>
+              <span style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">4d ago</span>
+            </div>
+            <p style="margin:0;font-size:12.5px;color:var(--text-2);line-height:1.6">Freelance scope: migrate a monolith to containers. Budget attached.</p>
+          </div>
+        </div>
+
+        <div data-tabpanel="form" data-tabgroup="contact" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;max-width:820px;display:flex;flex-direction:column;gap:18px">
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Public email</span><input data-field="contact.email" class="fld" data-dirty type="email" value="daniel.lotsu.jnr@gmail.com" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">LinkedIn</span><input data-field="contact.linkedin" class="fld" data-dirty type="text" value="linkedin.com/in/daniel-lotsu-jnr" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">GitHub</span><input data-field="contact.github" class="fld" data-dirty type="text" value="github.com/daniel-lotsu" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Success message</span><input data-field="contact.successMessage" class="fld" data-dirty type="text" value="Message received — I'll reply within a day." style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease"></label>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px;border-top:1px solid var(--border)">
+            <div><div style="font-size:12.5px">Confetti on submit</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:3px">neon-green burst</div></div>
+            <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div><div style="font-size:12.5px">Email me on new message</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:3px">via SES</div></div>
+            <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RESUME ============ -->
+      <section class="panel" data-panel="resume" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Resume</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// experience and certifications sync from their own sections</p>
+          </div>
+          <div style="display:flex;gap:9px">
+            <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:12px;padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease">Version history</button>
+            <button data-add style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">Regenerate PDF</button>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;background:var(--fill);border:1px solid var(--border-hi);border-radius:10px;padding:13px 16px;margin-bottom:22px;max-width:900px">
+          <span style="color:var(--primary);font-size:14px">⌁</span>
+          <span style="font-size:12.5px;color:var(--text-2);line-height:1.6">Experience, education and certifications are pulled live from their sections. Edit them there — this page controls the summary, skill grouping and PDF output.</span>
+        </div>
+
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start;max-width:1000px">
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">HEADER</div>
+              <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Name on resume</span><input data-field="resume.name" class="fld" data-dirty type="text" value="Daniel Ajayi Lotsu" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Headline</span><input data-field="resume.title" class="fld" data-dirty type="text" value="Backend &amp; Cloud Engineer" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Professional summary<span data-counter="520" style="color:var(--text-3)">— / 520</span></span><textarea data-field="resume.summary" class="fld" data-dirty rows="6" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;line-height:1.7;padding:12px;transition:all .15s ease">Backend &amp; cloud engineer building scalable, cloud-native systems on AWS. I design REST APIs, model data, and ship serverless and containerised services that stay online. AWS-certified, currently at AmaliTech in Kumasi, Ghana.</textarea></label>
+            </div>
+
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">SECTION ORDER &amp; VISIBILITY</div>
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">drag to reorder</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Summary</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Experience</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Education</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Certifications</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Technical skills</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px;opacity:.55"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">References</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)">hidden</span><button data-toggle="0" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--border-hi);background:var(--surface);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-3);transition:left .16s ease"></span></button></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:18px;position:sticky;top:78px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+              <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">PDF PREVIEW</div>
+              <div style="padding:16px;display:grid;place-items:center;background:var(--bg)">
+                <div style="width:100%;aspect-ratio:1/1.294;background:#fff;border-radius:4px;padding:14px 13px;box-shadow:0 12px 30px -14px rgba(0,0,0,.8);overflow:hidden">
+                  <div style="height:3px;background:#1f7a00;margin:-14px -13px 11px"></div>
+                  <div style="color:#111;font-size:8px;font-weight:700;letter-spacing:-.01em">Daniel Ajayi Lotsu</div>
+                  <div style="color:#1f7a00;font-size:5.5px;margin-top:2px">Backend &amp; Cloud Engineer</div>
+                  <div style="height:1px;background:#e4e4e4;margin:7px 0"></div>
+                  <div style="color:#1f7a00;font-size:4.5px;letter-spacing:.1em;margin-bottom:3px">SUMMARY</div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><div style="height:2px;background:#ddd"></div><div style="height:2px;background:#ddd"></div><div style="height:2px;background:#ddd;width:72%"></div></div>
+                  <div style="color:#1f7a00;font-size:4.5px;letter-spacing:.1em;margin:8px 0 3px">EXPERIENCE</div>
+                  <div style="color:#111;font-size:5.5px;font-weight:700">Software Engineer</div>
+                  <div style="display:flex;flex-direction:column;gap:2px;margin-top:3px"><div style="height:2px;background:#ddd"></div><div style="height:2px;background:#ddd"></div><div style="height:2px;background:#ddd;width:84%"></div></div>
+                  <div style="color:#111;font-size:5.5px;font-weight:700;margin-top:6px">Back End Developer</div>
+                  <div style="display:flex;flex-direction:column;gap:2px;margin-top:3px"><div style="height:2px;background:#ddd"></div><div style="height:2px;background:#ddd;width:66%"></div></div>
+                  <div style="color:#1f7a00;font-size:4.5px;letter-spacing:.1em;margin:8px 0 3px">SKILLS</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:2px"><div style="height:4px;width:20%;background:#eee;border-radius:1px"></div><div style="height:4px;width:14%;background:#eee;border-radius:1px"></div><div style="height:4px;width:22%;background:#eee;border-radius:1px"></div><div style="height:4px;width:17%;background:#eee;border-radius:1px"></div><div style="height:4px;width:12%;background:#eee;border-radius:1px"></div></div>
+                </div>
+              </div>
+              <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)"><span>1 page · A4</span><span style="color:var(--primary)">v4</span></div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">DOWNLOAD FILENAME</div>
+              <input data-field="resume.filename" class="fld" data-dirty type="text" value="daniel-lotsu-resume.pdf" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;padding:10px 12px;transition:all .15s ease">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-size:12.5px">Show download button</span><button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ BLOG ============ -->
+      <section class="panel" data-panel="blog" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Blog</h1>
+            <p data-blog-sub style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// 6 posts · 4 published · 2 drafts</p>
+          </div>
+          <button data-new-post style="display:inline-flex;align-items:center;gap:7px;background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">+ New post</button>
+        </div>
+
+        <div class="blog-split" style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:78px">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+              <input data-search type="text" placeholder="Search posts" style="flex:1;background:none;border:none;color:var(--text);font-size:12px;padding:2px">
+            </div>
+            <div data-postlist style="display:flex;flex-direction:column;max-height:60vh;overflow-y:auto">
+              <button class="row-item" data-post="1" data-active="1" style="text-align:left;background:var(--fill);border:none;border-bottom:1px solid var(--border);border-left:2px solid var(--primary);color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-cold-starts">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--primary);border:1px solid var(--primary);padding:1px 5px;border-radius:3px">LIVE</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">Nov 2025</span></div>
+                <div style="font-size:12px;line-height:1.4">Cold starts aren't the enemy — trimming Lambda latency by 60%</div>
+              </button>
+              <button class="row-item" data-post="2" style="text-align:left;background:none;border:none;border-bottom:1px solid var(--border);border-left:2px solid transparent;color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-leave-api">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--primary);border:1px solid var(--primary);padding:1px 5px;border-radius:3px">LIVE</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">Oct 2025</span></div>
+                <div style="font-size:12px;line-height:1.4">Designing a leave-management API that scales quietly</div>
+              </button>
+              <button class="row-item" data-post="3" style="text-align:left;background:none;border:none;border-bottom:1px solid var(--border);border-left:2px solid transparent;color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-pooling">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--primary);border:1px solid var(--primary);padding:1px 5px;border-radius:3px">LIVE</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">Sep 2025</span></div>
+                <div style="font-size:12px;line-height:1.4">Connection pooling in serverless: what finally worked</div>
+              </button>
+              <button class="row-item" data-post="4" style="text-align:left;background:none;border:none;border-bottom:1px solid var(--border);border-left:2px solid transparent;color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-firstyear">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--primary);border:1px solid var(--primary);padding:1px 5px;border-radius:3px">LIVE</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">Aug 2025</span></div>
+                <div style="font-size:12px;line-height:1.4">From National Service to AWS-certified: my first year</div>
+              </button>
+              <button class="row-item" data-post="5" style="text-align:left;background:none;border:none;border-bottom:1px solid var(--border);border-left:2px solid transparent;color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-terraform-modules">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--warn);border:1px solid var(--warn);padding:1px 5px;border-radius:3px">DRAFT</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">2d ago</span></div>
+                <div style="font-size:12px;line-height:1.4">Terraform modules I actually reuse</div>
+              </button>
+              <button class="row-item" data-post="6" style="text-align:left;background:none;border:none;border-left:2px solid transparent;color:var(--text);padding:13px 14px;cursor:pointer;transition:all .14s ease" data-post-id="post-cloudwatch-logs">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px"><span style="font-family:'Syne Mono',monospace;font-size:9.5px;color:var(--warn);border:1px solid var(--warn);padding:1px 5px;border-radius:3px">DRAFT</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3)">1w ago</span></div>
+                <div style="font-size:12px;line-height:1.4">Reading CloudWatch logs like a detective</div>
+              </button>
+            </div>
+          </div>
+
+          <div style="min-width:0;display:flex;flex-direction:column;gap:18px">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+                <span data-status-pill style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--primary);padding:3px 8px;border-radius:4px">PUBLISHED</span>
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">/blog/lambda-cold-starts</span>
+                <div style="margin-left:auto;display:flex;gap:8px">
+                  <button data-unpublish class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11.5px;padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .15s ease">Unpublish</button>
+                  <button class="ghost" style="background:none;border:1px solid var(--danger);color:var(--danger);font-size:11.5px;padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .15s ease">Delete</button>
+                </div>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Title</span><input data-field="post.title" class="fld" data-dirty type="text" value="Cold starts aren't the enemy — trimming Lambda latency by 60%" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;padding:11px 13px;transition:all .15s ease"></label>
+              <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Category</span><select class="fld" data-dirty style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;padding:10px 12px;transition:all .15s ease"><option>AWS Lambda</option><option>Architecture</option><option>PostgreSQL</option><option>Career</option></select></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Read time</span><input data-field="post.readTime" class="fld" data-dirty type="text" value="6 min read" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;padding:10px 12px;transition:all .15s ease"></label>
+                <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Publish date</span><input data-field="post.date" class="fld" data-dirty type="text" value="12 Nov 2025" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;padding:10px 12px;transition:all .15s ease"></label>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Cover image</span>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+                  <div style="width:172px;aspect-ratio:16/9;border-radius:8px;border:1px dashed var(--border-hi);background:var(--surface-elev);display:grid;place-items:center;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3);text-align:center;line-height:1.5">lambda-cold-starts<br>1600×900</div>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;gap:8px">
+                      <button data-add class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:11.5px;padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .15s ease">Replace</button>
+                      <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-3);font-size:11.5px;padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .15s ease">Remove</button>
+                    </div>
+                    <input data-field="post.alt" class="fld" data-dirty type="text" value="Lambda console showing init duration" placeholder="Alt text" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:12px;padding:8px 11px;width:260px;transition:all .15s ease">
+                  </div>
+                </div>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Excerpt — shown on the blog card<span data-counter="200" style="color:var(--text-3)">— / 200</span></span><textarea data-field="post.excerpt" class="fld" data-dirty rows="3" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;line-height:1.65;padding:11px 12px;transition:all .15s ease">Everyone panics about cold starts. Here's what actually moved the needle on our serverless APIs — and what turned out to be noise.</textarea></label>
+            </div>
+
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:4px;padding:9px 12px;border-bottom:1px solid var(--border);background:var(--surface-elev);flex-wrap:wrap">
+                <button class="ghost" style="background:none;border:1px solid transparent;color:var(--text-2);font-size:12px;font-weight:700;width:30px;height:28px;border-radius:6px;cursor:pointer;transition:all .15s ease">B</button>
+                <button class="ghost" style="background:none;border:1px solid transparent;color:var(--text-2);font-size:12px;font-style:italic;width:30px;height:28px;border-radius:6px;cursor:pointer;transition:all .15s ease">I</button>
+                <button class="ghost" style="background:none;border:1px solid transparent;color:var(--text-2);font-family:'Syne Mono',monospace;font-size:11px;width:30px;height:28px;border-radius:6px;cursor:pointer;transition:all .15s ease">H2</button>
+                <button class="ghost" style="background:none;border:1px solid transparent;color:var(--text-2);font-family:'Syne Mono',monospace;font-size:11px;width:30px;height:28px;border-radius:6px;cursor:pointer;transition:all .15s ease">&lt;/&gt;</button>
+                <button class="ghost" style="background:none;border:1px solid transparent;color:var(--text-2);font-size:12px;width:30px;height:28px;border-radius:6px;cursor:pointer;transition:all .15s ease">🔗</button>
+                <span style="width:1px;height:18px;background:var(--border);margin:0 5px"></span>
+                <span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)">markdown</span>
+                <span data-wordcount style="margin-left:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)">— words</span>
+              </div>
+              <textarea data-field="post.body" class="fld" data-body data-dirty rows="18" style="width:100%;display:block;background:var(--surface);border:none;color:var(--text);font-size:13px;line-height:1.85;padding:20px;transition:all .15s ease">When a service feels slow, "cold starts" is the first thing everyone blames. It's a real cost — the container spins up, the runtime boots, your dependencies load — but on the leave-management API it turned out to be a small slice of the latency budget.
+
+The biggest win was unglamorous: shrinking the deploy bundle. Every megabyte the runtime has to pull and parse is time on the critical path. Tree-shaking unused SDK clients cut init time roughly in half.
+
+```js
+// import just the client you call
+import { S3Client } from "@aws-sdk/client-s3";
+```
+
+Second: reuse everything you can across invocations. Database clients, secrets, config — initialise them *outside* the handler so a warm container keeps them alive.
+
+The lesson I keep coming back to: measure before you optimise.</textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MEDIA ============ -->
+      <section class="panel" data-panel="media" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:22px">
+          <div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Media</h1>
+            <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// images, badges and the resume PDF — stored in S3</p>
+          </div>
+          <button data-add style="background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:9px 15px;border-radius:8px;cursor:pointer">Upload</button>
+        </div>
+        <div style="border:1px dashed var(--border-hi);border-radius:12px;padding:36px;text-align:center;margin-bottom:22px;max-width:960px">
+          <div style="font-size:13px;margin-bottom:6px">Drop files here</div>
+          <div style="font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-3)">PNG, JPG, SVG, PDF · max 8 MB</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:960px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="aspect-ratio:4/3;background:var(--surface-elev);display:grid;place-items:center;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:11px">PDF</div><div style="padding:10px 11px"><div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">daniel-lotsu-resume.pdf</div><div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);margin-top:3px">184 KB</div></div></div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="aspect-ratio:4/3;background:var(--surface-elev);display:grid;place-items:center;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:11px">PNG</div><div style="padding:10px 11px"><div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">aws-dva-badge.png</div><div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);margin-top:3px">42 KB</div></div></div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="aspect-ratio:4/3;background:var(--surface-elev);display:grid;place-items:center;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:11px">PNG</div><div style="padding:10px 11px"><div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">aws-clf-badge.png</div><div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);margin-top:3px">39 KB</div></div></div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="aspect-ratio:4/3;background:var(--surface-elev);display:grid;place-items:center;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:11px">JPG</div><div style="padding:10px 11px"><div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">headshot-kumasi.jpg</div><div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);margin-top:3px">312 KB</div></div></div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="aspect-ratio:4/3;background:var(--surface-elev);display:grid;place-items:center;color:var(--text-3);font-family:'Syne Mono',monospace;font-size:11px">SVG</div><div style="padding:10px 11px"><div style="font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">og-card.svg</div><div style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-3);margin-top:3px">8 KB</div></div></div>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="panel" data-panel="settings" style="display:none">
+        <div style="margin-bottom:22px">
+          <h1 style="font-size:clamp(20px,2.4vw,26px);font-weight:700;letter-spacing:-.02em;margin:0 0 6px">Settings</h1>
+          <p style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--text-3);margin:0">// site metadata, navigation and deployment</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:18px;max-width:860px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">SEO &amp; METADATA</div>
+            <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Page title</span><input data-field="settings.pageTitle" class="fld" data-dirty type="text" value="Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+            <label style="display:flex;flex-direction:column;gap:7px"><span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Meta description<span data-counter="160" style="color:var(--text-3)">— / 160</span></span><textarea data-field="settings.metaDescription" class="fld" data-dirty rows="3" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;line-height:1.6;padding:11px 12px;transition:all .15s ease">Backend and cloud engineer in Kumasi, Ghana. AWS-certified — REST APIs, serverless systems and infrastructure that stays online.</textarea></label>
+            <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Custom domain</span><input data-field="settings.domain" class="fld" data-dirty type="text" value="daniellotsu.dev" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:10px 12px;transition:all .15s ease"></label>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">NAVIGATION</div>
+            <p style="margin:0;font-size:12px;color:var(--text-3);line-height:1.6">Drag to reorder the site nav. Currently: Home, Contact, Resume, Blog.</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:10px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Home</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">#top</span></div>
+              <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:10px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Contact</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">#contact</span></div>
+              <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:10px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Resume</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">/resume</span></div>
+              <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:10px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Blog</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">/blog</span></div>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:14px">
+            <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">DEPLOYMENT</div>
+            <div style="display:flex;flex-wrap:wrap;gap:20px;font-family:'Syne Mono',monospace;font-size:12px">
+              <div><div style="color:var(--text-3);font-size:10.5px;margin-bottom:4px">HOST</div><div style="color:var(--text-2)">S3 + CloudFront</div></div>
+              <div><div style="color:var(--text-3);font-size:10.5px;margin-bottom:4px">LAST BUILD</div><div style="color:var(--text-2)">25 Jul 2026 · 41s</div></div>
+              <div><div style="color:var(--text-3);font-size:10.5px;margin-bottom:4px">CACHE</div><div style="color:var(--text-2)">invalidated</div></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px;padding-top:6px">
+              <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:12px;padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease">Invalidate cache</button>
+              <button class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:12px;padding:9px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease">Export content as JSON</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== SAVE BAR ===== -->
+  <div data-savebar style="position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);z-index:60;display:flex;align-items:center;gap:16px;background:var(--surface-elev);border:1px solid var(--primary);border-radius:12px;padding:12px 14px 12px 18px;box-shadow:0 20px 50px -20px var(--glow);transition:transform .28s cubic-bezier(.16,1,.3,1)">
+    <span style="display:flex;align-items:center;gap:9px;font-size:12.5px"><span class="live-dot" style="width:7px;height:7px;border-radius:50%;background:var(--warn)"></span>Unsaved changes</span>
+    <div style="display:flex;gap:8px">
+      <button data-discard class="ghost" style="background:none;border:1px solid var(--border-hi);color:var(--text-2);font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all .15s ease">Discard</button>
+      <button data-save style="background:var(--primary);border:none;color:#04120a;font-size:12px;font-weight:700;padding:8px 18px;border-radius:8px;cursor:pointer">Save</button>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div data-toast style="position:fixed;right:26px;bottom:26px;z-index:70;display:flex;align-items:center;gap:10px;background:var(--surface-elev);border:1px solid var(--primary);border-radius:10px;padding:12px 16px;font-size:12.5px;box-shadow:0 18px 44px -22px var(--glow);opacity:0;transform:translateY(14px);pointer-events:none;transition:all .26s ease">
+    <span style="color:var(--primary)">✓</span><span data-toast-msg>Saved</span>
+  </div>
+</div>
+
+<script>
+/* Vanilla port of the Portfolio CMS design. A front-end mockup: state lives in
+   the DOM only, nothing is persisted and there is no backend behind it. */
+(function () {
+  'use strict';
+
+  function styleShim() {
+    document.querySelectorAll('[style-hover]').forEach(function (el) {
+      var base = el.getAttribute('style') || '';
+      var hover = el.getAttribute('style-hover') || '';
+      el.addEventListener('mouseenter', function () { el.setAttribute('style', base + ';' + hover); });
+      el.addEventListener('mouseleave', function () { el.setAttribute('style', base); });
+    });
+    document.querySelectorAll('[style-focus]').forEach(function (el) {
+      var base = el.getAttribute('style') || '';
+      var focus = el.getAttribute('style-focus') || '';
+      el.addEventListener('focus', function () { el.setAttribute('style', base + ';' + focus); });
+      el.addEventListener('blur', function () { el.setAttribute('style', base); });
+    });
+  }
+
+  function bindHandlers(handlers, types) {
+    types.forEach(function (type) {
+      document.querySelectorAll('[data-on-' + type + ']').forEach(function (el) {
+        var fn = handlers[el.getAttribute('data-on-' + type)];
+        if (fn) el.addEventListener(type, fn);
+      });
+    });
+  }
+
+  var root = document.getElementById('dc-setRoot');
+  if (!root) return;
+  var dirtyState = false;
+  var toastTimer;
+
+  var q = function (sel) { return root.querySelector(sel); };
+  var qa = function (sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); };
+
+  function sync() {
+    qa('[data-counter]').forEach(function (el) {
+      var lab = el.closest('label');
+      if (!lab) return;
+      var f = lab.querySelector('textarea,input');
+      if (!f) return;
+      el.textContent = f.value.length + ' / ' + el.dataset.counter;
+      el.style.color = f.value.length > +el.dataset.counter ? 'var(--danger)' : 'var(--text-3)';
+    });
+    var body = q('[data-body]'), wc = q('[data-wordcount]');
+    if (body && wc) wc.textContent = body.value.trim().split(/\s+/).filter(Boolean).length + ' words';
+  }
+
+  function setDirty(on) {
+    dirtyState = on;
+    var bar = q('[data-savebar]');
+    if (bar) bar.style.transform = on ? 'translate(-50%,0)' : 'translate(-50%,140%)';
+    var st = q('[data-savestate]');
+    if (st) {
+      if (st.childNodes[1]) st.childNodes[1].textContent = on ? 'Unsaved changes' : 'All changes saved';
+      st.style.color = on ? 'var(--warn)' : 'var(--text-3)';
+      var dot = st.firstElementChild;
+      if (dot) dot.style.background = on ? 'var(--warn)' : 'var(--text-3)';
+    }
+  }
+
+  function toast(msg) {
+    var t = q('[data-toast]');
+    if (!t) return;
+    var m = q('[data-toast-msg]');
+    if (m) m.textContent = msg;
+    t.style.opacity = '1';
+    t.style.transform = 'translateY(0)';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      t.style.opacity = '0';
+      t.style.transform = 'translateY(14px)';
+    }, 2200);
+  }
+
+  function go(panel) {
+    qa('.panel').forEach(function (p) { p.style.display = p.dataset.panel === panel ? '' : 'none'; });
+    qa('.rail-item').forEach(function (b) { b.dataset.active = b.dataset.nav === panel ? '1' : ''; });
+    var c = q('[data-crumb]');
+    if (c) c.textContent = panel;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    sync();
+  }
+
+  var handlers = {
+    onInput: function (e) {
+      var t = e.target;
+      if (t.dataset.range) {
+        var out = q('[data-out="' + t.dataset.range + '"]');
+        if (out) out.textContent = t.value;
+      }
+      if (t.dataset.search) {
+        var term = t.value.toLowerCase();
+        qa('[data-post]').forEach(function (b) {
+          b.style.display = b.textContent.toLowerCase().indexOf(term) !== -1 ? '' : 'none';
+        });
+        return;
+      }
+      sync();
+      if (t.hasAttribute('data-dirty') && !dirtyState) setDirty(true);
+    },
+
+    onClick: function (e) {
+      var nav = e.target.closest('[data-nav]');
+      if (nav) { go(nav.dataset.nav); return; }
+
+      var tab = e.target.closest('[data-tab]');
+      if (tab) {
+        var g = tab.dataset.tabgroup;
+        qa('[data-tabgroup="' + g + '"][data-tab]').forEach(function (b) {
+          var on = b === tab;
+          b.dataset.active = on ? '1' : '';
+          b.style.color = on ? 'var(--primary)' : 'var(--text-3)';
+        });
+        qa('[data-tabgroup="' + g + '"][data-tabpanel]').forEach(function (p) {
+          p.style.display = p.dataset.tabpanel === tab.dataset.tab ? 'flex' : 'none';
+        });
+        return;
+      }
+
+      var post = e.target.closest('[data-post]');
+      if (post) {
+        qa('[data-post]').forEach(function (b) {
+          var on = b === post;
+          b.dataset.active = on ? '1' : '';
+          b.style.background = on ? 'var(--fill)' : 'none';
+          b.style.borderLeftColor = on ? 'var(--primary)' : 'transparent';
+        });
+        return;
+      }
+
+      var tg = e.target.closest('[data-toggle]');
+      if (tg) {
+        var on2 = tg.dataset.toggle !== '1';
+        tg.dataset.toggle = on2 ? '1' : '0';
+        var knob = tg.firstElementChild;
+        var w = tg.offsetWidth, kw = knob ? knob.offsetWidth : 16;
+        if (knob) {
+          knob.style.left = on2 ? (w - kw - 3) + 'px' : '2px';
+          knob.style.background = on2 ? 'var(--primary)' : 'var(--text-3)';
+        }
+        tg.style.borderColor = on2 ? 'var(--primary)' : 'var(--border-hi)';
+        tg.style.background = on2 ? 'var(--fill)' : 'var(--surface)';
+        var row = tg.parentElement;
+        var lbl = row && row.querySelector('span[style*="10.5px"]');
+        if (lbl && (lbl.textContent === 'visible' || lbl.textContent === 'hidden')) {
+          lbl.textContent = on2 ? 'visible' : 'hidden';
+          lbl.style.color = on2 ? 'var(--primary)' : 'var(--text-3)';
+          row.style.opacity = on2 ? '1' : '.55';
+        }
+        setDirty(true);
+        return;
+      }
+
+      var sw = e.target.closest('[data-swatch]');
+      if (sw) {
+        qa('[data-swatch]').forEach(function (b) { b.dataset.swatch = '0'; b.style.borderColor = 'transparent'; });
+        sw.dataset.swatch = '1';
+        sw.style.borderColor = 'var(--text)';
+        setDirty(true);
+        return;
+      }
+
+      if (e.target.closest('[data-save]')) { setDirty(false); toast('Draft saved'); return; }
+      if (e.target.closest('[data-discard]')) { setDirty(false); toast('Changes discarded'); return; }
+      if (e.target.closest('[data-publish]')) { setDirty(false); toast('Published to daniellotsu.dev'); return; }
+      if (e.target.closest('[data-preview]')) { toast('Opening preview\u2026'); return; }
+      if (e.target.closest('[data-new-post]')) { toast('New draft created'); return; }
+      if (e.target.closest('[data-add]')) { toast('Added \u2014 fill in the details'); return; }
+
+      var un = e.target.closest('[data-unpublish]');
+      if (un) {
+        var pill = q('[data-status-pill]');
+        var live = un.textContent.trim() === 'Unpublish';
+        un.textContent = live ? 'Publish' : 'Unpublish';
+        if (pill) {
+          pill.textContent = live ? 'DRAFT' : 'PUBLISHED';
+          pill.style.color = live ? 'var(--warn)' : 'var(--primary)';
+          pill.style.borderColor = live ? 'var(--warn)' : 'var(--primary)';
+        }
+        toast(live ? 'Moved to drafts' : 'Post published');
+        return;
+      }
+    }
+  };
+
+  styleShim();
+  bindHandlers(handlers, ['click', 'input']);
+  sync();
+
+  // Exposed for the data layer, which reuses this UI's dirty bar and toast rather
+  // than inventing a second set of feedback affordances.
+  window.cmsToast = toast;
+  window.cmsDirty = setDirty;
+  window.cmsIsDirty = function () { return dirtyState; };
+  window.cmsSync = sync;
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var root = document.getElementById('dc-setRoot');
+  if (!root) return;
+
+  var TOKEN_KEY = 'cms.token';
+  var token = '';
+  try { token = sessionStorage.getItem(TOKEN_KEY) || ''; } catch (e) {}
+
+  var content = null;
+  var selectedPost = null;
+
+  var qa = function (sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); };
+
+  function api(path, options) {
+    var opts = options || {};
+    var headers = opts.headers || {};
+    headers.Accept = 'application/json';
+    if (token) headers.Authorization = 'Bearer ' + token;
+    if (opts.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+    return fetch(path, {
+      method: opts.method || 'GET',
+      headers: headers,
+      body: opts.body,
+      cache: 'no-store'
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        if (!r.ok || data.ok === false) {
+          throw new Error((data && data.error) || (r.status + ' ' + r.statusText));
+        }
+        return data;
+      });
+    });
+  }
+
+  /* ---------------- content document access ---------------- */
+
+  function get(path) {
+    return path.split('.').reduce(function (o, k) {
+      return o == null ? undefined : o[k];
+    }, content);
+  }
+
+  function set(path, value) {
+    var keys = path.split('.');
+    var last = keys.pop();
+    var target = keys.reduce(function (o, k) {
+      if (o[k] == null || typeof o[k] !== 'object') o[k] = /^\d+$/.test(k) ? [] : {};
+      return o[k];
+    }, content);
+    target[last] = value;
+  }
+
+  function currentPost() {
+    var posts = (content && content.blog && content.blog.posts) || [];
+    if (!posts.length) return null;
+    var found = posts.filter(function (p) { return p.id === selectedPost; })[0];
+    return found || posts[0];
+  }
+
+  /* ---------------- form <-> document ---------------- */
+
+  function fieldValue(el) {
+    return el.type === 'checkbox' ? el.checked : el.value;
+  }
+
+  function populate() {
+    if (!content) return;
+    var post = currentPost();
+    if (post) selectedPost = post.id;
+
+    qa('[data-field]').forEach(function (el) {
+      var path = el.getAttribute('data-field');
+      var value;
+
+      if (path.indexOf('post.') === 0) {
+        value = post ? post[path.slice(5)] : '';
+      } else {
+        value = get(path);
+      }
+      if (value === undefined || value === null) value = '';
+      if (typeof value !== 'string') value = String(value);
+      if (el.value !== value) el.value = value;
+    });
+
+    // reflect the selected post in the list
+    qa('[data-post]').forEach(function (b) {
+      var on = b.getAttribute('data-post-id') === selectedPost;
+      if (b.hasAttribute('data-post-id')) b.dataset.active = on ? '1' : '';
+    });
+
+    renderMedia();
+  }
+
+  function collect() {
+    qa('[data-field]').forEach(function (el) {
+      var path = el.getAttribute('data-field');
+      var value = fieldValue(el);
+      if (path.indexOf('post.') === 0) {
+        var post = currentPost();
+        if (post) post[path.slice(5)] = value;
+      } else {
+        set(path, value);
+      }
+    });
+  }
+
+  /* ---------------- media pane ---------------- */
+
+  // The media pane in the design is a static gallery. Give each known image slot a
+  // labelled file input so a new image can actually be attached to it.
+  function buildMediaPane() {
+    var pane = root.querySelector('[data-panel="media"]');
+    if (!pane || pane.querySelector('[data-media-editor]')) return;
+
+    var slots = (content && content.media) ? Object.keys(content.media) : [];
+    if (!slots.length) return;
+
+    var wrap = document.createElement('div');
+    wrap.setAttribute('data-media-editor', '');
+    wrap.style.cssText =
+      'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:20px';
+
+    slots.forEach(function (slot) {
+      var card = document.createElement('label');
+      card.style.cssText =
+        'display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid var(--border-hi,#173311);' +
+        'border-radius:12px;background:var(--surface,#06140a);cursor:pointer';
+
+      var title = document.createElement('span');
+      title.textContent = slot;
+      title.style.cssText =
+        "font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3,#4d8c3c);word-break:break-all";
+
+      var preview = document.createElement('img');
+      preview.setAttribute('data-media-preview', slot);
+      preview.alt = '';
+      preview.style.cssText =
+        'width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--fill,rgba(106,255,0,.06))';
+
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png,image/jpeg,image/webp,image/avif,image/gif,image/svg+xml';
+      input.style.cssText = 'font-size:11px;color:var(--text-3,#4d8c3c)';
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (file) uploadTo(slot, file, preview);
+      });
+
+      card.appendChild(title);
+      card.appendChild(preview);
+      card.appendChild(input);
+      wrap.appendChild(card);
+    });
+
+    pane.appendChild(wrap);
+  }
+
+  function renderMedia() {
+    buildMediaPane();
+    if (!content || !content.media) return;
+    qa('[data-media-preview]').forEach(function (img) {
+      var slot = img.getAttribute('data-media-preview');
+      var url = content.media[slot];
+      img.src = url || defaultArt(slot);
+    });
+  }
+
+  // When a slot has no override, show the art the portfolio ships for it. This map
+  // is injected from the build's SLOT_ART, so it can't drift from what index.html
+  // actually references.
+  var SLOT_ART = {"blog-cover-cold-starts":"assets/blog/cold-starts-cover.svg","blog-cover-leave-api":"assets/blog/leave-api-thumb.svg","blog-cover-pooling":"assets/blog/pooling-thumb.svg","blog-cover-firstyear":"assets/blog/first-year-thumb.svg","blog-hero-cold-starts":"assets/blog/cold-starts-hero.svg","blog-hero-leave-api":"assets/blog/leave-api-hero.svg","blog-hero-pooling":"assets/blog/pooling-hero.svg","blog-hero-firstyear":"assets/blog/first-year-hero.svg"};
+
+  function defaultArt(slot) {
+    return SLOT_ART[slot] || '';
+  }
+
+  function uploadTo(slot, file, preview) {
+    if (!token) { window.cmsToast('Sign in first'); return; }
+    window.cmsToast('Uploading ' + file.name + '\u2026');
+    fetch('/api/upload?filename=' + encodeURIComponent(file.name), {
+      method: 'POST',
+      headers: { 'Content-Type': file.type, Authorization: 'Bearer ' + token },
+      body: file
+    })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok || !d.ok) throw new Error(d.error || 'Upload failed');
+        return d;
+      }); })
+      .then(function (d) {
+        content.media[slot] = d.url;
+        if (preview) preview.src = d.url;
+        window.cmsDirty(true);
+        window.cmsToast('Image attached — save to publish it');
+      })
+      .catch(function (err) { window.cmsToast(err.message); });
+  }
+
+  /* ---------------- inbox ---------------- */
+
+  function loadInbox() {
+    if (!token) return;
+    api('/api/messages')
+      .then(function (data) { renderInbox(data.messages || []); })
+      .catch(function () { /* inbox is a bonus pane; leave the mockup rows in place */ });
+  }
+
+  function renderInbox(messages) {
+    var panel = root.querySelector('[data-tabpanel="inbox"]');
+    if (!panel) return;
+
+    var list = panel.querySelector('[data-inbox-list]');
+    if (!list) {
+      list = document.createElement('div');
+      list.setAttribute('data-inbox-list', '');
+      list.style.cssText = 'display:flex;flex-direction:column;gap:10px;width:100%';
+      // replace the mockup's sample rows with real data
+      Array.prototype.slice.call(panel.children).forEach(function (c) { c.style.display = 'none'; });
+      panel.appendChild(list);
+    }
+    list.textContent = '';
+
+    if (!messages.length) {
+      var empty = document.createElement('p');
+      empty.textContent = 'No messages yet.';
+      empty.style.cssText = "font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-3,#4d8c3c)";
+      list.appendChild(empty);
+      return;
+    }
+
+    messages.forEach(function (msg) {
+      var row = document.createElement('article');
+      row.style.cssText =
+        'display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--border-hi,#173311);' +
+        'border-radius:12px;background:var(--surface,#06140a)' + (msg.read ? ';opacity:.6' : '');
+
+      var head = document.createElement('div');
+      head.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between';
+
+      var who = document.createElement('strong');
+      who.textContent = msg.name + ' · ' + msg.email;
+      who.style.cssText = "font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text,#eefff0);font-weight:600";
+
+      var when = document.createElement('span');
+      when.textContent = new Date(msg.receivedAt).toLocaleString();
+      when.style.cssText = "font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3,#4d8c3c)";
+
+      var body = document.createElement('p');
+      body.textContent = msg.message;
+      body.style.cssText =
+        "margin:0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;" +
+        'color:var(--text-2,#7fcc66);white-space:pre-wrap';
+
+      head.appendChild(who);
+      head.appendChild(when);
+      row.appendChild(head);
+      row.appendChild(body);
+      list.appendChild(row);
+    });
+  }
+
+  /* ---------------- sign in ---------------- */
+
+  function gate() {
+    var overlay = document.createElement('div');
+    overlay.setAttribute('data-cms-gate', '');
+    overlay.style.cssText =
+      'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;' +
+      'background:rgba(2,10,2,.94);backdrop-filter:blur(6px)';
+
+    var form = document.createElement('form');
+    form.style.cssText =
+      'display:flex;flex-direction:column;gap:14px;width:min(360px,90vw);padding:28px;' +
+      'border:1px solid #173311;border-radius:16px;background:#06140a';
+
+    var title = document.createElement('h1');
+    title.textContent = 'Portfolio CMS';
+    title.style.cssText = "margin:0;font-family:'Clash Display',sans-serif;font-size:22px;color:#eefff0";
+
+    var hint = document.createElement('p');
+    hint.textContent = 'Sign in to edit the live site.';
+    hint.style.cssText = "margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#7fcc66";
+
+    var input = document.createElement('input');
+    input.type = 'password';
+    input.autocomplete = 'current-password';
+    input.placeholder = 'Password';
+    input.required = true;
+    input.style.cssText =
+      "font-family:'JetBrains Mono',monospace;font-size:14px;color:#eefff0;background:#0b1f0a;" +
+      'border:1px solid #173311;border-radius:10px;padding:12px 14px;outline:none';
+
+    var button = document.createElement('button');
+    button.type = 'submit';
+    button.textContent = 'Sign in';
+    button.style.cssText =
+      "font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;color:#04120a;background:#6AFF00;" +
+      'border:none;border-radius:999px;padding:12px 22px;cursor:pointer';
+
+    var error = document.createElement('span');
+    error.setAttribute('role', 'alert');
+    error.style.cssText = "font-family:'JetBrains Mono',monospace;font-size:12px;color:#ff8aa0;min-height:16px";
+
+    form.appendChild(title);
+    form.appendChild(hint);
+    form.appendChild(input);
+    form.appendChild(button);
+    form.appendChild(error);
+    overlay.appendChild(form);
+    document.body.appendChild(overlay);
+    setTimeout(function () { input.focus(); }, 60);
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      error.textContent = '';
+      button.disabled = true;
+      fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: input.value })
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) {
+          if (!r.ok || !d.ok) throw new Error(d.error || 'Sign-in failed');
+          return d;
+        }); })
+        .then(function (d) {
+          token = d.token;
+          try { sessionStorage.setItem(TOKEN_KEY, token); } catch (e) {}
+          overlay.remove();
+          start();
+        })
+        .catch(function (err) {
+          button.disabled = false;
+          error.textContent = err.message;
+          input.select();
+        });
+    });
+  }
+
+  /* ---------------- save ---------------- */
+
+  function save() {
+    collect();
+    window.cmsToast('Publishing\u2026');
+    return api('/api/content', { method: 'PUT', body: JSON.stringify({ content: content }) })
+      .then(function (data) {
+        content = data.content || content;
+        window.cmsDirty(false);
+        window.cmsToast('Published — the site is updated');
+        populate();
+      })
+      .catch(function (err) {
+        window.cmsToast(err.message === 'Not signed in' ? 'Session expired — reload to sign in' : err.message);
+      });
+  }
+
+  function start() {
+    api('/api/content')
+      .then(function (data) {
+        content = data.content;
+        populate();
+        loadInbox();
+      })
+      .catch(function (err) { window.cmsToast('Could not load content: ' + err.message); });
+  }
+
+  /* ---------------- hook into the ported UI ---------------- */
+
+  // Capture phase, so these run before the ported mockup's cosmetic handlers.
+  // For the actions the mockup only fakes, propagation stops here — otherwise it
+  // would fire its own "Draft saved" toast over the real result.
+  root.addEventListener('click', function (e) {
+    if (e.target.closest('[data-save]') || e.target.closest('[data-publish]')) {
+      e.stopPropagation();
+      save();
+      return;
+    }
+    if (e.target.closest('[data-discard]')) {
+      e.stopPropagation();
+      window.cmsDirty(false);
+      window.cmsToast('Reloaded from the published version');
+      start();
+      return;
+    }
+    if (e.target.closest('[data-preview]')) {
+      e.stopPropagation();
+      window.open('/', '_blank', 'noopener');
+      return;
+    }
+
+    // post selection: let the mockup's highlight logic run too, so don't stop here
+    var postRow = e.target.closest('[data-post-id]');
+    if (postRow) {
+      collect();                          // keep edits made to the post being left
+      selectedPost = postRow.getAttribute('data-post-id');
+      populate();
+    }
+  }, true);
+
+  root.addEventListener('input', function (e) {
+    if (e.target.hasAttribute && e.target.hasAttribute('data-field')) window.cmsDirty(true);
+  });
+
+  // warn before losing unsaved edits
+  window.addEventListener('beforeunload', function (e) {
+    if (window.cmsIsDirty && window.cmsIsDirty()) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  if (token) {
+    // verify the stored token before trusting it
+    fetch('/api/login', { headers: { Authorization: 'Bearer ' + token } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.valid) start(); else { token = ''; gate(); } })
+      .catch(function () { gate(); });
+  } else {
+    gate();
+  }
+})();
+</script>
+
+</body>
+</html>

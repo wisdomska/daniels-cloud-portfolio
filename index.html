@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer</title>
+<meta name="description" content="Backend &amp; cloud engineer at AmaliTech in Kumasi, Ghana. AWS-certified, architecting scalable cloud-native systems, REST APIs and serverless workloads.">
+<meta name="author" content="Daniel Ajayi Lotsu">
+<meta name="theme-color" content="#020a02">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer">
+<meta property="og:description" content="AWS-certified backend &amp; cloud engineer building reliable, well-architected services from Kumasi, Ghana.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Syne+Mono&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#020a02}
+  ::selection{background:rgba(106,255,0,.3);color:#fff}
+  [data-theme] :is(h1,h2,h3){color:var(--text) !important}
+  [data-theme] :is(p,li,td,th){font-family:'JetBrains Mono',ui-monospace,monospace}
+  /* unify all typography to the body typeface */
+  [data-theme] *{font-family:'JetBrains Mono',ui-monospace,monospace !important}
+  /* scroll-reveal: default VISIBLE, entrance is an additive keyframe animation (never leaves content hidden) */
+  @keyframes revealIn{from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(24px)}to{opacity:1;clip-path:inset(0 0 0 0);transform:none}}
+  @keyframes staggerIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  [data-reveal]{opacity:1;animation:revealIn .85s cubic-bezier(.16,1,.3,1) both}
+  [data-reveal] [data-stagger]{animation:staggerIn .55s ease both}
+  [data-reveal] [data-stagger]:nth-child(1){animation-delay:.05s}
+  [data-reveal] [data-stagger]:nth-child(2){animation-delay:.12s}
+  [data-reveal] [data-stagger]:nth-child(3){animation-delay:.19s}
+  [data-reveal] [data-stagger]:nth-child(4){animation-delay:.26s}
+  [data-reveal] [data-stagger]:nth-child(5){animation-delay:.33s}
+  [data-reveal] [data-stagger]:nth-child(6){animation-delay:.40s}
+
+  [data-theme="dark"]{
+    --bg:#020a02; --surface:#06140a; --surface-elev:#0b1f0a;
+    --text:#eefff0; --text-2:#7fcc66; --text-3:#4d8c3c; --border:#173311;
+    --primary:#6AFF00; --glow:rgba(106,255,0,0.5);
+    --card-bg:rgba(106,255,0,0.05); --accent-fill:rgba(106,255,0,0.08);
+    --neb1:radial-gradient(46% 46% at 44% 48%, rgba(106,255,0,.16), rgba(34,120,0,.06) 42%, transparent 70%);
+    --neb2:radial-gradient(40% 40% at 72% 28%, rgba(70,190,0,.10), transparent 62%);
+    --neb3:radial-gradient(40% 40% at 26% 74%, rgba(34,120,0,.08), transparent 66%);
+    --grid-line:rgba(106,255,0,.06);
+    --hair:rgba(238,255,240,.08);
+  }
+
+  @keyframes deploy{
+    0%{opacity:0;transform:scale(.82) translateY(18px)}
+    62%{opacity:1;transform:scale(1.025) translateY(0)}
+    100%{opacity:1;transform:scale(1) translateY(0)}
+  }
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(40,200,120,.6)}70%{box-shadow:0 0 0 7px rgba(40,200,120,0)}100%{box-shadow:0 0 0 0 rgba(40,200,120,0)}}
+  @keyframes dashFlow{to{stroke-dashoffset:-28}}
+  @keyframes nodePulse{0%,100%{opacity:.55}50%{opacity:1}}
+  @keyframes scanSweep{0%{transform:translateY(-10%);opacity:0}10%{opacity:1}100%{transform:translateY(1100%);opacity:0}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes logScroll{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+  @keyframes codeRise{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
+  @keyframes hueDrift{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(28deg)}}
+  @keyframes nebDrift{
+    0%{transform:translate(-7vw,-4vh) scale(1.18)}
+    22%{transform:translate(11vw,5vh) scale(1.28)}
+    44%{transform:translate(3vw,12vh) scale(1.14)}
+    66%{transform:translate(-12vw,4vh) scale(1.24)}
+    84%{transform:translate(6vw,-10vh) scale(1.2)}
+    100%{transform:translate(-7vw,-4vh) scale(1.18)}
+  }
+  @keyframes spinRev{to{transform:rotate(-360deg)}}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 28px var(--glow),inset 0 0 18px rgba(255,255,255,.08)}50%{box-shadow:0 0 54px var(--glow),inset 0 0 22px rgba(255,255,255,.14)}}
+  @keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  @keyframes cueBob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(7px);opacity:1}}
+  @keyframes traceRun{to{stroke-dashoffset:-160}}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:4px}
+  .cur-custom,.cur-custom *{cursor:none!important}
+  .cur-custom input,.cur-custom textarea,.cur-custom [contenteditable]{cursor:text!important}
+  .cursor-ring{position:fixed;left:0;top:0;width:30px;height:30px;border:1.5px solid var(--primary);border-radius:50%;pointer-events:none;z-index:99999;opacity:0;box-shadow:0 0 12px var(--glow);transition:width .18s ease,height .18s ease,background-color .18s ease,opacity .22s ease,transform .085s ease-out}
+  .cursor-ring[data-cursor-hover="1"]{width:48px;height:48px;background:rgba(106,255,0,.16)}
+  .cursor-ring[data-cursor-down="1"]{width:22px;height:22px;background:rgba(106,255,0,.28)}
+  .cursor-dot{position:fixed;left:0;top:0;width:6px;height:6px;border-radius:50%;background:var(--primary);pointer-events:none;z-index:99999;opacity:0;box-shadow:0 0 8px var(--glow);transition:opacity .22s ease}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr!important}
+    .hero-grid>div{grid-column:1/-1!important}
+    .hero-float{display:none!important}
+    .proj-grid{grid-template-columns:1fr!important}
+    .proj-grid>article{grid-column:1/-1!important}
+    .cert-grid{grid-template-columns:1fr!important;perspective:none!important}
+    .cert-grid .cert-card{transform:none!important}
+    .about-grid{grid-template-columns:1fr!important;justify-items:start}
+    .proj-feat-body{max-width:100%!important}
+  }
+  @media (max-width:760px){
+    .ct-card{overflow-x:auto!important}
+    .ct-card>div{min-width:600px}
+    .cf-grid{grid-template-columns:1fr!important}
+    .cf-row{grid-template-columns:1fr!important}
+    /* keep the resume/blog views reachable on phones (design hid these outright) */
+    nav[aria-label="Primary"]{flex-wrap:wrap!important;gap:10px!important}
+    .nav-links{gap:3px!important;flex-wrap:wrap!important}
+    .nav-links .nav-chip{font-size:11px!important;padding:6px 8px!important}
+  }
+  @media (max-width:560px){
+    main>section{padding-top:34px!important;padding-bottom:40px!important}
+    [style*="160px 1fr"]{grid-template-columns:104px 1fr!important;gap:8px!important}
+    h1{letter-spacing:-3px!important;word-spacing:-8px!important;line-height:1.02!important}
+    .hero-sec{min-height:auto!important;padding:24px 0 40px!important}
+    .hero-par{padding:56px 0!important}
+  }
+  @media (min-width:1600px){
+    .page-main{max-width:1680px!important}
+    .hero-par{max-width:1680px!important}
+  }
+  @media (min-width:2100px){
+    .page-main{max-width:1960px!important}
+    .hero-par{max-width:1960px!important}
+    html{font-size:18px}
+  }
+
+  /* interaction-only rules (descendant effects that cannot be inline) */
+  .cert-shine{transition:transform .85s cubic-bezier(.16,1,.3,1)}
+  .cert-card:hover .cert-shine{transform:translateX(240%) rotate(9deg)}
+  .svc-tile:hover .svc-tip{opacity:1;transform:translate(-50%,-8px)}
+  .proj-card .proj-trace{opacity:0;transition:opacity .25s ease}
+  .proj-card:hover .proj-trace{opacity:1}
+  .nav-chip:hover{color:var(--primary);background:var(--accent-fill)}
+  .blog-row:hover .blog-title{color:var(--primary)}
+  .blog-row:hover .blog-node{background:var(--primary);box-shadow:0 0 0 4px var(--accent-fill),0 0 14px var(--primary)}
+  .blog-row:hover .blog-arrow{opacity:1;transform:translateX(0)}
+  .blog-row:hover .blog-thumb{border-color:var(--primary)}
+  .blog-feat:hover .blog-title{color:var(--primary)}
+  .blog-feat:hover .blog-arrow{opacity:1;transform:translateX(0)}
+  .blog-mini:hover .blog-title{color:var(--primary)}
+  .blog-mini:hover .blog-thumb{border-color:var(--primary)}
+  @media (max-width:1180px){
+    .blog-mini-row{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  }
+  @media (max-width:980px){
+    .blog-mini-row{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  }
+  @media (max-width:760px){
+    .blog-row{grid-template-columns:1fr!important;gap:12px!important}
+    .blog-spine{display:none!important}
+    .blog-thumb{order:-1;width:100%!important;height:170px!important}
+    .blog-meta{flex-direction:row!important;gap:10px!important;align-items:center!important}
+  }
+  [data-motion="off"] *{animation:none!important}
+  .wm-white{display:block}
+  .wm-default{display:none}
+  @media print{
+    @page{margin:14mm}
+    html,body{background:#fff !important}
+    .cursor-ring,.cursor-dot,nav[aria-label="Primary"],footer{display:none !important}
+    [aria-hidden="true"][style*="position:fixed"]{display:none !important}
+    .view[data-view="home"],.view[data-view="blog"]{display:none !important}
+    [data-print-hide]{display:none !important}
+    .r-sheet{background:#fff !important;border:none !important;box-shadow:none !important;max-width:none !important;margin:0 !important}
+    .r-sheet *{color:#111 !important;font-family:'JetBrains Mono',monospace !important}
+    .r-accent{color:#1f7a00 !important}
+    .r-surface,.r-chip{background:#f4f4f4 !important;border-color:#e2e2e2 !important}
+    .r-chip{color:#1f7a00 !important}
+    .r-topbar{background:#1f7a00 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<div id="dc-setRoot" data-theme="dark" style="position:relative;min-height:100vh;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',system-ui,sans-serif;overflow-x:clip;transition:background .4s ease,color .4s ease">
+
+  <!-- custom cursor -->
+  <div id="dc-setCursorRing" class="cursor-ring" aria-hidden="true"></div>
+  <div id="dc-setCursorDot" class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- cosmic nebula atmosphere -->
+  <div aria-hidden="true" style="position:fixed;inset:-22%;pointer-events:none;z-index:0;opacity:.6;background:var(--neb1),var(--neb2),var(--neb3);animation:nebDrift 34s ease-in-out infinite,hueDrift 22s ease-in-out infinite;will-change:transform,filter"></div>
+  <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(circle at 50% 35%,#000,transparent 78%)"></div>
+
+  <!-- faint running code in the background -->
+  <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;font-family:'Syne Mono',monospace;font-size:13px;line-height:1.9;color:var(--primary);mask-image:linear-gradient(to bottom,transparent,#000 14%,#000 86%,transparent)">
+    <pre style="position:absolute;top:0;left:3%;margin:0;opacity:.16;white-space:pre;animation:codeRise 11s linear infinite">$ aws lambda invoke --function leave-mgmt-api
+[12:01:04] cold start 214ms · region af-west-1
+[12:01:04] GET /v1/leaves?status=pending → 200
+[12:01:05] pool: acquire pg (3/10 active)
+[12:01:05] SELECT * FROM leave_requests WHERE …
+[12:01:06] cache MISS → hydrate from rds
+[12:01:07] emit event leave.requested → sns
+[12:01:07] 202 accepted · trace 9f3a-c1
+[12:01:08] cloudwatch: p99 118ms · 0 errors
+[12:01:09] gc pause 4ms · heap 61MB
+[12:01:10] healthcheck ok · uptime 41d
+[12:01:11] docker build · layer cached 7/9
+$ aws lambda invoke --function leave-mgmt-api
+[12:01:04] cold start 214ms · region af-west-1
+[12:01:04] GET /v1/leaves?status=pending → 200
+[12:01:05] pool: acquire pg (3/10 active)
+[12:01:05] SELECT * FROM leave_requests WHERE …
+[12:01:06] cache MISS → hydrate from rds
+[12:01:07] emit event leave.requested → sns
+[12:01:07] 202 accepted · trace 9f3a-c1
+[12:01:08] cloudwatch: p99 118ms · 0 errors
+[12:01:09] gc pause 4ms · heap 61MB
+[12:01:10] healthcheck ok · uptime 41d
+[12:01:11] docker build · layer cached 7/9
+</pre>
+    <pre style="position:absolute;top:0;right:4%;margin:0;opacity:.14;white-space:pre;text-align:right;animation:codeRise 15s linear infinite">export const handler = async (event) =&gt; {
+  const { userId } = parse(event.body);
+  const db = await pool.connect();
+  try {
+    const rows = await db.query(SQL, [userId]);
+    await bus.publish("incident.created", rows[0]);
+    return ok(rows[0]);
+  } catch (err) {
+    logger.error(err); return fail(500);
+  } finally { db.release(); }
+};
+export const handler = async (event) =&gt; {
+  const { userId } = parse(event.body);
+  const db = await pool.connect();
+  try {
+    const rows = await db.query(SQL, [userId]);
+    await bus.publish("incident.created", rows[0]);
+    return ok(rows[0]);
+  } catch (err) {
+    logger.error(err); return fail(500);
+  } finally { db.release(); }
+};
+</pre>
+    <pre style="position:absolute;top:0;left:46%;margin:0;opacity:.12;white-space:pre;animation:codeRise 13s linear infinite">terraform apply · plan: 6 to add
++ aws_lambda_function.api
++ aws_api_gateway_stage.prod
++ aws_rds_instance.pg16
++ aws_s3_bucket.media
++ aws_cloudwatch_alarm.p99
+~ scaling desired=2 max=8
+apply complete · 6 added · 0 changed
+terraform apply · plan: 6 to add
++ aws_lambda_function.api
++ aws_api_gateway_stage.prod
++ aws_rds_instance.pg16
++ aws_s3_bucket.media
++ aws_cloudwatch_alarm.p99
+~ scaling desired=2 max=8
+apply complete · 6 added · 0 changed
+</pre>
+  </div>
+
+  <!-- nav -->
+  <nav aria-label="Primary" data-on-click="onNav" style="position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:20px;padding:14px clamp(18px,5vw,48px);background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)">
+    <div data-goto="home" style="display:flex;align-items:center;gap:11px;font-family:'Clash Display',sans-serif;font-weight:600;letter-spacing:-.02em;cursor:pointer">
+      <span style="position:relative;width:14px;height:14px;border-radius:50%;background:var(--primary);box-shadow:0 0 14px 2px var(--glow);display:inline-block"></span>
+      <span style="font-size:17px">daniel<span style="color:var(--primary)">.lotsu</span></span>
+    </div>
+    <div class="nav-links" style="display:flex;justify-content:flex-end;gap:4px;flex-wrap:wrap;margin-left:auto">
+      <a class="nav-chip" data-goto="home" href="#top" style="font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.04em;text-decoration:none;color:var(--text);padding:6px 11px;border-radius:6px;transition:all .15s ease">home</a>
+      <a class="nav-chip" data-goto="home" href="#contact" style="font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.04em;text-decoration:none;color:var(--text);padding:6px 11px;border-radius:6px;transition:all .15s ease">contact</a>
+      <a class="nav-chip" data-goto="resume" href="#resume" style="font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.04em;text-decoration:none;color:var(--text);padding:6px 11px;border-radius:6px;transition:all .15s ease">resume</a>
+      <a class="nav-chip" data-goto="blog" href="#blog" style="font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.04em;text-decoration:none;color:var(--text);padding:6px 11px;border-radius:6px;transition:all .15s ease">blog</a>
+    </div>
+  </nav>
+
+  <main class="page-main" style="position:relative;z-index:10;max-width:1400px;margin:0 auto;padding:0 clamp(18px,5vw,48px)">
+
+    <div class="view" data-view="home">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero-sec" style="position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:96vh;display:flex;align-items:center;overflow:hidden">
+      <canvas id="dc-setHeroCanvas" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block"></canvas>
+      <div aria-hidden="true" style="position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(70% 65% at 50% 46%,transparent 30%,var(--bg) 94%)"></div>
+
+      <!-- floating telemetry (parallax, corners) -->
+      <div class="hero-float" style="position:absolute;top:15%;right:6%;z-index:2;transition:transform .3s ease-out">
+        <div data-content="hero.availability" style="animation:floaty 7s ease-in-out infinite;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="width:8px;height:8px;border-radius:50%;background:#34d17e;animation:pulseDot 2s infinite"></span>Open to work</div>
+      </div>
+      <div class="hero-float" style="position:absolute;bottom:17%;left:5%;z-index:2;transition:transform .3s ease-out">
+        <div data-content="hero.location" style="animation:floaty 8.5s ease-in-out infinite .6s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)">📍 Kumasi, Ghana 🇬🇭</div>
+      </div>
+      <div class="hero-float" style="position:absolute;top:24%;left:7%;z-index:2;transition:transform .3s ease-out">
+        <div style="animation:floaty 9s ease-in-out infinite 1.1s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em">Engineer @</span><img class="wm-white" src="assets/amalitech-wordmark-white.svg" alt="AmaliTech" style="height:15px;width:auto"><img class="wm-default" src="assets/amalitech-wordmark-default.svg" alt="AmaliTech" style="height:15px;width:auto"></div>
+      </div>
+
+      <!-- center composition (parallax) -->
+      <div id="dc-setHeroParallax" class="hero-par" style="position:relative;z-index:3;width:100%;max-width:1400px;margin:0 auto;padding:90px clamp(18px,5vw,48px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:24px;transition:transform .3s ease-out">
+        <div data-content="hero.region" style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:7px 14px;border-radius:999px;text-transform:uppercase">Region: kumasi-gh-west-1</div>
+        <div data-content="hero.role" style="font-family:'Syne Mono',monospace;color:var(--text-2);font-size:clamp(13px,1.5vw,16px);letter-spacing:.04em">// Backend &amp; Cloud Engineer</div>
+        <h1 data-content="hero.name" style="font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:-9px;word-spacing:-26px;line-height:.98;margin:4px 0 0;font-size:clamp(38px,8.4vw,116px);background:linear-gradient(100deg,#6AFF00 0%,#9dff5c 26%,#b6ff7a 50%,#9dff5c 74%,#6AFF00 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shimmer 9s linear infinite;filter:drop-shadow(0 0 42px var(--glow))">Daniel Ajayi Lotsu</h1>
+        <p data-content="hero.tagline" style="max-width:60ch;color:var(--text-2);font-size:clamp(15px,1.6vw,19px);line-height:1.65;margin:6px 0 8px">Architecting scalable, cloud-native systems from Kumasi — interconnected services, precisely composed like constellations. AWS-certified, building reliable backends that just stay online.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center">
+          <a href="#projects" style="display:inline-flex;align-items:center;gap:9px;font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;text-decoration:none;color:#04120a;background:var(--primary);padding:15px 28px;border-radius:999px;box-shadow:0 16px 44px -12px var(--glow);transition:transform .15s ease,box-shadow .15s ease" style-hover="transform:translateY(-2px);box-shadow:0 22px 52px -12px var(--glow)">Deploy Projects <span style="font-size:17px">↓</span></a>
+          <a href="#contact" style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;text-decoration:none;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:15px 26px;border-radius:999px;border:1px solid var(--primary);transition:background .15s ease" style-hover="background:var(--accent-fill)">aws.contact()</a>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px">
+          <div style="animation:floaty 6s ease-in-out infinite;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="font-family:'Clash Display';font-weight:600;font-size:17px;color:var(--primary)"><span data-count="2">0</span></span>AWS Certifications</div>
+          <div style="animation:floaty 6.6s ease-in-out infinite .3s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="font-family:'Clash Display';font-weight:600;font-size:17px;color:var(--primary)"><span data-count="1" data-suffix="yr+">0</span></span>at AmaliTech</div>
+          <div style="animation:floaty 7.2s ease-in-out infinite .6s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="font-family:'Clash Display';font-weight:600;font-size:17px;color:var(--primary)"><span data-count="2024">0</span></span>BSc Computer Science</div>
+        </div>
+      </div>
+
+      <!-- scroll cue -->
+      <a href="#about" aria-label="Scroll to about" style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:var(--text-2);font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase">scroll<span style="font-size:16px;animation:cueBob 1.8s ease-in-out infinite">↓</span></a>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section id="about" data-reveal style="padding:48px 0">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px;text-transform:none">ResourceType: "About"</div>
+      <h2 data-content="about.heading" style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 26px">The engineer behind the cloud</h2>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 24px 70px -42px var(--glow)">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:var(--surface-elev)">
+          <span style="font-family:'Syne Mono',monospace;font-size:13px;color:var(--text)">us-daniel-kumasi-1</span>
+          <span style="display:inline-flex;align-items:center;gap:7px;font-family:'Syne Mono',monospace;font-size:11px;color:#34d17e"><span style="width:8px;height:8px;border-radius:50%;background:#34d17e;animation:pulseDot 2s infinite"></span>ACTIVE</span>
+        </div>
+        <div class="about-grid" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(22px,4vw,44px);padding:clamp(22px,3.5vw,40px);align-items:start">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+            <div style="width:128px;height:128px;border-radius:50%;background:radial-gradient(circle at 30% 25%,var(--primary),#1f7a00);padding:3px;box-shadow:0 0 0 4px var(--accent-fill),0 0 34px var(--glow)">
+              <div style="width:100%;height:100%;border-radius:50%;background:var(--surface-elev);display:flex;align-items:center;justify-content:center;font-family:'Clash Display';font-weight:600;font-size:40px;color:var(--primary)">DL</div>
+            </div>
+            <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">avatar.png</span>
+          </div>
+          <div>
+            <p data-content="about.body" style="margin:0 0 24px;color:var(--text);font-size:clamp(15px,1.5vw,18px);line-height:1.7;max-width:62ch">Daniel is a backend &amp; cloud engineer at AmaliTech who turns complex infrastructure into reliable, well-architected services. He designs APIs, models data, and ships serverless and containerised systems on AWS — focused on the kind of quiet engineering that keeps products online and teams shipping. Building the future of African tech, one well-provisioned region at a time.</p>
+            <div style="display:grid;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:'Syne Mono',monospace;font-size:13px">
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;background:var(--card-bg)"><span style="color:var(--text-2)">Name</span><span style="color:var(--text)">Daniel Ajayi Lotsu</span></div>
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border)"><span style="color:var(--text-2)">Role</span><span style="color:var(--text)">Backend &amp; Cloud Engineer</span></div>
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:var(--card-bg)"><span style="color:var(--text-2)">Region</span><span style="color:var(--text)">Kumasi, Ghana 🇬🇭</span></div>
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border)"><span style="color:var(--text-2)">Organization</span><span style="color:var(--text)">AmaliTech</span></div>
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:var(--card-bg)"><span style="color:var(--text-2)">Status</span><span style="color:#34d17e">Available for Hire</span></div>
+              <div data-stagger style="display:grid;grid-template-columns:160px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--border)"><span style="color:var(--text-2)">Education</span><span style="color:var(--text)">BSc CS · Accra Institute of Technology · 2024</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CERTIFICATIONS ============ -->
+    <section id="certs" data-reveal style="padding:56px 0;position:relative">
+      <svg aria-hidden="true" viewBox="0 0 100 40" style="position:absolute;right:0;top:40px;width:340px;max-width:40%;opacity:.05;pointer-events:none"><path d="M5 32 Q50 50 95 12" stroke="var(--primary)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M88 12 l9 0 -4 8 z" fill="var(--primary)"/></svg>
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Certifications"</div>
+      <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 36px">Credentials, verified</h2>
+
+      <div class="cert-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;perspective:1500px;align-items:center">
+        <div class="cert-card" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;transform:rotateY(15deg) scale(.95);transform-origin:right center;box-shadow:0 30px 60px -34px var(--glow);transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease" style-hover="transform:rotateY(0deg) scale(1.01);box-shadow:0 36px 70px -28px var(--glow)">
+          <div class="cert-shine" style="position:absolute;top:-50%;left:0;width:55%;height:200%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.22) 44%,rgba(106,255,0,.5) 50%,rgba(0,229,255,.22) 56%,transparent 72%);transform:translateX(-130%) rotate(9deg);pointer-events:none"></div>
+          <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#1f7a00);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 24px var(--glow)">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:8px">Associate</div>
+          <h3 style="font-family:'Clash Display';font-weight:600;font-size:19px;margin:0 0 6px;line-height:1.2">AWS Certified Developer</h3>
+          <p style="margin:0;color:var(--text-2);font-size:13px">Amazon Web Services · Earned <span data-count="2025">0</span></p>
+        </div>
+
+        <div class="cert-card" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--primary);border-radius:14px;padding:32px;transform:scale(1.06);box-shadow:0 40px 80px -30px var(--glow);transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease;z-index:2" style-hover="transform:scale(1.09)">
+          <div class="cert-shine" style="position:absolute;top:-50%;left:0;width:55%;height:200%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.22) 44%,rgba(106,255,0,.5) 50%,rgba(0,229,255,.22) 56%,transparent 72%);transform:translateX(-130%) rotate(9deg);pointer-events:none"></div>
+          <div style="width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#1f7a00);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 30px var(--glow)">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--primary);text-transform:uppercase;margin-bottom:8px">Foundational</div>
+          <h3 style="font-family:'Clash Display';font-weight:600;font-size:21px;margin:0 0 6px;line-height:1.2">AWS Cloud Practitioner</h3>
+          <p style="margin:0;color:var(--text-2);font-size:13px">Amazon Web Services · Earned <span data-count="2024">0</span></p>
+        </div>
+
+        <div class="cert-card" style="position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;transform:rotateY(-15deg) scale(.95);transform-origin:left center;box-shadow:0 30px 60px -34px var(--glow);transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease" style-hover="transform:rotateY(0deg) scale(1.01);box-shadow:0 36px 70px -28px var(--glow)">
+          <div class="cert-shine" style="position:absolute;top:-50%;left:0;width:55%;height:200%;background:linear-gradient(115deg,transparent 28%,rgba(255,255,255,.22) 44%,rgba(106,255,0,.5) 50%,rgba(0,229,255,.22) 56%,transparent 72%);transform:translateX(-130%) rotate(9deg);pointer-events:none"></div>
+          <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--primary),#1f7a00);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 24px var(--glow)">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:8px">Badge</div>
+          <h3 style="font-family:'Clash Display';font-weight:600;font-size:19px;margin:0 0 6px;line-height:1.2">Data Protection &amp; DR</h3>
+          <p style="margin:0;color:var(--text-2);font-size:13px">Amazon Web Services · <span data-count="2025">0</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TECH STACK ============ -->
+    <section id="stack" data-reveal style="padding:56px 0">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "TechStack"</div>
+      <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 30px">Services in production</h2>
+
+      <div id="dc-setStack" style="position:relative;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:clamp(20px,3vw,34px);overflow:hidden">
+        <div id="dc-setScan" style="position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(to bottom,transparent,rgba(106,255,0,.16),transparent);pointer-events:none;opacity:0"></div>
+
+        <div style="display:flex;flex-direction:column;gap:26px">
+          <!-- group -->
+          <div>
+            <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Cloud · AWS</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px">
+              <div class="svc-tile" data-tip="Core compute for AmaliTech services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🖥️</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">EC2</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core compute for AmaliTech services</span></div>
+              <div class="svc-tile" data-tip="Serverless APIs &amp; background jobs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">λ</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Lambda</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Serverless APIs &amp; background jobs</span></div>
+              <div class="svc-tile" data-tip="Static assets &amp; media storage" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🪣</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">S3</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Static assets &amp; media storage</span></div>
+              <div class="svc-tile" data-tip="Managed relational databases" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🗄️</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">RDS</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Managed relational databases</span></div>
+              <div class="svc-tile" data-tip="Request routing &amp; throttling" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🚪</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">API GW</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Request routing &amp; throttling</span></div>
+              <div class="svc-tile" data-tip="Observability, logs &amp; alarms" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">📊</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">CloudWatch</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Observability, logs &amp; alarms</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:26px">
+            <div>
+              <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Backend &amp; Languages</div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px">
+                <div class="svc-tile" data-tip="Primary runtime for APIs &amp; services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🟩</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Node.js</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary runtime for APIs &amp; services</span></div>
+                <div class="svc-tile" data-tip="Core language across the stack" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🟨</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">JavaScript</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core language across the stack</span></div>
+                <div class="svc-tile" data-tip="Designing clean, versioned REST APIs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🔌</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">REST API</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Designing clean, versioned REST APIs</span></div>
+              </div>
+            </div>
+            <div>
+              <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Database &amp; DevOps</div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px">
+                <div class="svc-tile" data-tip="Primary relational store" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐘</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text);text-align:center">PostgreSQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary relational store</span></div>
+                <div class="svc-tile" data-tip="Relational workloads &amp; reporting" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐬</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">MySQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Relational workloads &amp; reporting</span></div>
+                <div class="svc-tile" data-tip="Containerising services for deploy" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐳</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Docker</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Containerising services for deploy</span></div>
+                <div class="svc-tile" data-tip="Version control, daily" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🌿</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Git</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Version control, daily</span></div>
+                <div class="svc-tile" data-tip="Collaboration, PRs &amp; CI" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐙</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">GitHub</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Collaboration, PRs &amp; CI</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section id="projects" data-reveal style="padding:56px 0">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Projects"</div>
+      <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 30px">Systems, shipped</h2>
+
+      <div class="proj-grid" style="display:grid;grid-template-columns:repeat(12,1fr);gap:18px">
+        <!-- featured -->
+        <article class="proj-card" data-on-mousemove="onCardMove" style="grid-column:span 8;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:30px;min-height:260px;background-image:radial-gradient(420px circle at var(--mx,80%) var(--my,15%),var(--accent-fill),transparent 60%);transition:box-shadow .2s ease" style-hover="box-shadow:0 24px 60px -28px var(--glow)">
+          <svg class="proj-trace" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><rect x="1" y="1" width="99%" height="99%" rx="13" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-dasharray="14 12" style="animation:traceRun 3s linear infinite"/></svg>
+          <pre style="position:absolute;right:18px;bottom:0;margin:0;font-family:'Syne Mono',monospace;font-size:11px;line-height:1.7;color:var(--primary);opacity:.12;text-align:right;pointer-events:none;overflow:hidden;height:150px"><div style="animation:logScroll 9s linear infinite">[12:01:04] aws lambda deploy → leave-mgmt-api ✓
+[12:01:06] provisioning RDS (postgres)…
+[12:01:09] api-gateway stage=prod live
+[12:01:11] cloudwatch alarms attached
+[12:01:12] deployment successful — 0 errors
+[12:01:04] aws lambda deploy → leave-mgmt-api ✓
+[12:01:06] provisioning RDS (postgres)…
+[12:01:09] api-gateway stage=prod live
+[12:01:11] cloudwatch alarms attached
+[12:01:12] deployment successful — 0 errors</div></pre>
+          <div class="proj-feat-body" style="position:relative;z-index:1;max-width:60%">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.06em;color:#34d17e;background:rgba(40,200,120,.1);border:1px solid rgba(40,200,120,.35);padding:4px 9px;border-radius:5px">Deployed: Production</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text-2)">FEATURED</span>
+            </div>
+            <h3 style="font-family:'Clash Display';font-weight:600;font-size:clamp(22px,3vw,30px);margin:0 0 12px">Leave Management API</h3>
+            <p style="color:var(--text-2);font-size:15px;line-height:1.6;margin:0 0 18px">Serverless leave-request platform — approvals, balances and notifications running on Lambda + API Gateway with a PostgreSQL store. Designed for AmaliTech's internal tooling.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:4px 9px;border-radius:5px">NODE.JS</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:4px 9px;border-radius:5px">AWS LAMBDA</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:4px 9px;border-radius:5px">POSTGRESQL</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:4px 9px;border-radius:5px">API GATEWAY</span>
+            </div>
+            <a href="#" style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);text-decoration:none" style-hover="color:var(--primary)"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>View on GitHub</a>
+          </div>
+        </article>
+
+        <!-- right column stack -->
+        <article class="proj-card" data-on-mousemove="onCardMove" style="grid-column:span 4;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;background-image:radial-gradient(360px circle at var(--mx,50%) var(--my,0%),var(--accent-fill),transparent 60%);transition:box-shadow .2s ease" style-hover="box-shadow:0 24px 60px -28px var(--glow)">
+          <svg class="proj-trace" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><rect x="1" y="1" width="99%" height="99%" rx="13" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-dasharray="14 12" style="animation:traceRun 3s linear infinite"/></svg>
+          <div style="position:relative;z-index:1">
+            <span style="font-family:'Syne Mono',monospace;font-size:10px;color:#34d17e;background:rgba(40,200,120,.1);border:1px solid rgba(40,200,120,.35);padding:4px 9px;border-radius:5px">Deployed: Production</span>
+            <h3 style="font-family:'Clash Display';font-weight:600;font-size:21px;margin:16px 0 10px">Incident Service</h3>
+            <p style="color:var(--text-2);font-size:14px;line-height:1.55;margin:0 0 16px">REST microservice for tracking and routing incidents — containerised and observable.</p>
+          </div>
+          <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">NODE.JS</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">MYSQL</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">DOCKER</span>
+            </div>
+            <a href="#" aria-label="GitHub" style="color:var(--text)" style-hover="color:var(--primary)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          </div>
+        </article>
+
+        <article class="proj-card" data-on-mousemove="onCardMove" style="grid-column:span 4;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;background-image:radial-gradient(360px circle at var(--mx,50%) var(--my,0%),var(--accent-fill),transparent 60%);transition:box-shadow .2s ease" style-hover="box-shadow:0 24px 60px -28px var(--glow)">
+          <svg class="proj-trace" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><rect x="1" y="1" width="99%" height="99%" rx="13" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-dasharray="14 12" style="animation:traceRun 3s linear infinite"/></svg>
+          <div style="position:relative;z-index:1">
+            <span style="font-family:'Syne Mono',monospace;font-size:10px;color:#f0a020;background:rgba(240,160,32,.1);border:1px solid rgba(240,160,32,.35);padding:4px 9px;border-radius:5px">Status: In Development</span>
+            <h3 style="font-family:'Clash Display';font-weight:600;font-size:21px;margin:16px 0 10px">S3 Media Pipeline</h3>
+            <p style="color:var(--text-2);font-size:14px;line-height:1.55;margin:0 0 16px">Event-driven upload &amp; transform pipeline — S3 triggers Lambda, metrics flow to CloudWatch.</p>
+          </div>
+          <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">AWS S3</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">LAMBDA</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">NODE.JS</span>
+            </div>
+            <a href="#" aria-label="GitHub" style="color:var(--text)" style-hover="color:var(--primary)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          </div>
+        </article>
+
+        <article class="proj-card" data-on-mousemove="onCardMove" style="grid-column:span 4;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;background-image:radial-gradient(360px circle at var(--mx,50%) var(--my,0%),var(--accent-fill),transparent 60%);transition:box-shadow .2s ease" style-hover="box-shadow:0 24px 60px -28px var(--glow)">
+          <svg class="proj-trace" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><rect x="1" y="1" width="99%" height="99%" rx="13" fill="none" stroke="var(--primary)" stroke-width="1.6" stroke-dasharray="14 12" style="animation:traceRun 3s linear infinite"/></svg>
+          <div style="position:relative;z-index:1">
+            <span style="font-family:'Syne Mono',monospace;font-size:10px;color:#34d17e;background:rgba(40,200,120,.1);border:1px solid rgba(40,200,120,.35);padding:4px 9px;border-radius:5px">Deployed: Production</span>
+            <h3 style="font-family:'Clash Display';font-weight:600;font-size:21px;margin:16px 0 10px">Auth &amp; Identity Gateway</h3>
+            <p style="color:var(--text-2);font-size:14px;line-height:1.55;margin:0 0 16px">JWT-based authentication service with role-based access, powering downstream APIs.</p>
+          </div>
+          <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">NODE.JS</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">POSTGRESQL</span>
+              <span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:3px 8px;border-radius:5px">REST</span>
+            </div>
+            <a href="#" aria-label="GitHub" style="color:var(--text)" style-hover="color:var(--primary)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ EXPERIENCE / CLOUDTRAIL ============ -->
+    <section id="experience" data-reveal style="padding:56px 0">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Experience"</div>
+      <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 12px">CloudTrail · event log</h2>
+      <p style="color:var(--text-2);font-family:'Syne Mono',monospace;font-size:13px;margin:0 0 26px">// click a row to expand event details</p>
+
+      <div class="ct-card" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 24px 70px -42px var(--glow)">
+        <div style="display:grid;grid-template-columns:1.4fr 1.2fr 1.6fr .9fr 34px;gap:14px;padding:14px 22px;background:var(--surface-elev);border-bottom:1px solid var(--border);font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">
+          <span>Event Time</span><span>Resource</span><span>Action</span><span>Status</span><span></span>
+        </div>
+
+        <div data-ct-row data-on-click="toggleRow" style="border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s ease" style-hover="background:var(--card-bg)">
+          <div style="display:grid;grid-template-columns:1.4fr 1.2fr 1.6fr .9fr 34px;gap:14px;padding:17px 22px;align-items:center;font-family:'Syne Mono',monospace;font-size:13px">
+            <span style="color:var(--text)">Oct 2025 → Now</span>
+            <span style="color:var(--text)">AmaliTech</span>
+            <span style="color:var(--text)">Software Engineer</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;color:#34d17e"><span style="width:8px;height:8px;border-radius:50%;background:#34d17e;animation:pulseDot 2s infinite"></span>ACTIVE</span>
+            <span data-chev style="color:var(--text-2);transition:transform .25s ease;text-align:center">▾</span>
+          </div>
+          <div data-ct-detail style="max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)">
+            <p data-content="experience.description" style="margin:0;padding:0 22px 20px;color:var(--text-2);font-size:14px;line-height:1.6;max-width:80ch">Building and maintaining backend services on AWS — designing REST APIs, modelling data in PostgreSQL/MySQL, and shipping serverless and containerised workloads. Working across the full delivery lifecycle with AmaliTech's product teams.</p>
+          </div>
+        </div>
+
+        <div data-ct-row data-on-click="toggleRow" style="border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s ease" style-hover="background:var(--card-bg)">
+          <div style="display:grid;grid-template-columns:1.4fr 1.2fr 1.6fr .9fr 34px;gap:14px;padding:17px 22px;align-items:center;font-family:'Syne Mono',monospace;font-size:13px">
+            <span style="color:var(--text)">Oct 2024 → Sep 2025</span>
+            <span style="color:var(--text)">AmaliTech</span>
+            <span style="color:var(--text)">Back End Developer · NSP</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;color:var(--text-2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg>COMPLETED</span>
+            <span data-chev style="color:var(--text-2);transition:transform .25s ease;text-align:center">▾</span>
+          </div>
+          <div data-ct-detail style="max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)">
+            <p style="margin:0;padding:0 22px 20px;color:var(--text-2);font-size:14px;line-height:1.6;max-width:80ch">National Service placement as a backend developer — contributed to internal APIs and services, gained hands-on AWS experience, and earned AWS certifications while shipping production features.</p>
+          </div>
+        </div>
+
+        <div data-ct-row data-on-click="toggleRow" style="cursor:pointer;transition:background .15s ease" style-hover="background:var(--card-bg)">
+          <div style="display:grid;grid-template-columns:1.4fr 1.2fr 1.6fr .9fr 34px;gap:14px;padding:17px 22px;align-items:center;font-family:'Syne Mono',monospace;font-size:13px">
+            <span style="color:var(--text)">2020 → 2024</span>
+            <span style="color:var(--text)">Accra Institute of Tech</span>
+            <span style="color:var(--text)">BSc Computer Science</span>
+            <span style="display:inline-flex;align-items:center;gap:7px;color:var(--text-2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg>GRADUATED</span>
+            <span data-chev style="color:var(--text-2);transition:transform .25s ease;text-align:center">▾</span>
+          </div>
+          <div data-ct-detail style="max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)">
+            <p style="margin:0;padding:0 22px 20px;color:var(--text-2);font-size:14px;line-height:1.6;max-width:80ch">BSc in Computer Science — foundations in algorithms, data structures, databases and software engineering that underpin the backend and cloud work today.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT / CLOUDFORMATION ============ -->
+    <section id="contact" data-reveal style="padding:56px 0 72px">
+      <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Contact"</div>
+      <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 26px">Get in touch</h2>
+
+      <div id="dc-setContact" style="position:relative;overflow:hidden;background:#020a02;border:1px solid #173311;border-radius:16px;padding:clamp(22px,3.5vw,40px);box-shadow:0 30px 80px -36px rgba(106,255,0,.5)">
+        <div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(55% 60% at 15% 105%,rgba(106,255,0,.32),transparent 60%);pointer-events:none"></div>
+
+        <div class="cf-grid" style="position:relative;display:grid;grid-template-columns:0.85fr 1.15fr;gap:clamp(24px,4vw,48px);align-items:start">
+
+          <!-- left: friendly intro + quick links -->
+          <div class="cf-intro">
+            <p style="margin:0 0 10px;font-family:'Clash Display';font-weight:600;font-size:clamp(20px,2.4vw,26px);color:#eefff0;line-height:1.25">Let's build something together.</p>
+            <p style="margin:0 0 24px;font-family:'JetBrains Mono';font-size:14px;line-height:1.7;color:#c6e0b3">Fill in the form and I'll get back to you — usually within a day. Whether it's a role, a project, or just a hello, I'd love to hear from you.</p>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <a data-content="contact.email" href="mailto:daniel.lotsu.jnr@gmail.com" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:#eefff0;font-family:'JetBrains Mono';font-size:13px" style-hover="color:#6AFF00"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6AFF00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>daniel.lotsu.jnr@gmail.com</a>
+              <a data-content="contact.linkedin" href="https://linkedin.com/in/daniel-lotsu-jnr" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:#eefff0;font-family:'JetBrains Mono';font-size:13px" style-hover="color:#6AFF00"><svg width="16" height="16" viewBox="0 0 24 24" fill="#6AFF00"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>linkedin.com/in/daniel-lotsu-jnr</a>
+              <span style="display:flex;align-items:center;gap:11px;color:#c6e0b3;font-family:'JetBrains Mono';font-size:13px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6AFF00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Kumasi, Ghana · Remote friendly</span>
+            </div>
+          </div>
+
+          <!-- right: the form -->
+          <form data-cf-form id="dc-setForm" data-on-submit="sendMessage" novalidate style="position:relative;display:flex;flex-direction:column;gap:16px">
+            <div class="cf-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="cf-name" style="font-family:'JetBrains Mono';font-size:12px;color:#c6e0b3">Your name</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" required aria-required="true" placeholder="Ama Mensah" style="font-family:'JetBrains Mono';font-size:14px;color:#eefff0;background:#0b1f0a;border:1px solid #173311;border-radius:10px;padding:12px 14px;outline:none;transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease" style-focus="border-color:#6AFF00;background:#10290c;box-shadow:0 0 0 3px rgba(106,255,0,.28),0 0 18px -2px rgba(106,255,0,.4)">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <label for="cf-email" style="font-family:'JetBrains Mono';font-size:12px;color:#c6e0b3">Email address</label>
+                <input id="cf-email" name="email" type="email" autocomplete="email" required aria-required="true" placeholder="you@example.com" style="font-family:'JetBrains Mono';font-size:14px;color:#eefff0;background:#0b1f0a;border:1px solid #173311;border-radius:10px;padding:12px 14px;outline:none;transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease" style-focus="border-color:#6AFF00;background:#10290c;box-shadow:0 0 0 3px rgba(106,255,0,.28),0 0 18px -2px rgba(106,255,0,.4)">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="cf-msg" style="font-family:'JetBrains Mono';font-size:12px;color:#c6e0b3">Message</label>
+              <textarea id="cf-msg" name="message" rows="4" required aria-required="true" placeholder="Tell me a little about what you have in mind…" style="font-family:'JetBrains Mono';font-size:14px;color:#eefff0;background:#0b1f0a;border:1px solid #173311;border-radius:10px;padding:12px 14px;outline:none;resize:vertical;min-height:110px;transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease" style-focus="border-color:#6AFF00;background:#10290c;box-shadow:0 0 0 3px rgba(106,255,0,.28),0 0 18px -2px rgba(106,255,0,.4)"></textarea>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+              <button type="submit" style="display:inline-flex;align-items:center;gap:9px;font-family:'Clash Display';font-weight:600;font-size:15px;color:#04120a;background:#6AFF00;border:none;padding:13px 26px;border-radius:999px;cursor:pointer;box-shadow:0 14px 40px -10px rgba(106,255,0,.6);transition:transform .15s ease" style-hover="transform:translateY(-2px)">Send message<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg></button>
+              <span id="dc-setStatus" role="status" aria-live="polite" style="font-family:'JetBrains Mono';font-size:12.5px;color:#7fcc66"></span>
+            </div>
+          </form>
+
+          <!-- success state -->
+          <div data-cf-success style="display:none;grid-column:1/-1;position:relative;text-align:center;padding:26px 10px">
+            <div style="width:60px;height:60px;border-radius:50%;background:rgba(40,200,120,.14);border:1px solid rgba(40,200,120,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 16px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d17e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7L9 18l-5-5"/></svg></div>
+            <h3 style="font-family:'Clash Display';font-weight:600;font-size:24px;color:#eefff0;margin:0 0 8px">Thanks, <span data-cf-name>there</span>!</h3>
+            <p style="font-family:'JetBrains Mono';font-size:14px;color:#c6e0b3;margin:0;line-height:1.6">Your message is on its way. I'll get back to you within a day.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </div><!-- /home view -->
+
+    <!-- ============ RESUME ============ -->
+    <div class="view" data-view="resume" style="display:none">
+      <section style="padding:44px 0 72px">
+        <div data-print-hide style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px">
+          <div>
+            <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Resume"</div>
+            <h2 style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0">Curriculum · vitae</h2>
+          </div>
+          <button data-download-resume data-on-click="downloadResume" style="display:inline-flex;align-items:center;gap:9px;font-family:'Clash Display';font-weight:600;font-size:14px;color:#04120a;background:var(--primary);border:none;padding:12px 22px;border-radius:999px;cursor:pointer;box-shadow:0 14px 40px -12px var(--glow);transition:transform .15s ease" style-hover="transform:translateY(-2px)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Download PDF</button>
+        </div>
+
+        <article class="r-sheet" style="max-width:900px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px -46px var(--glow)">
+          <div class="r-topbar" style="height:6px;background:linear-gradient(90deg,var(--primary),#1f7a00)"></div>
+          <div style="padding:clamp(26px,4vw,48px)">
+            <header style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:22px;border-bottom:1px solid var(--border)">
+              <div>
+                <h1 data-content="resume.name" style="font-family:'Clash Display';font-weight:600;font-size:clamp(28px,4vw,40px);letter-spacing:-.02em;margin:0 0 6px;color:var(--text)">Daniel Ajayi Lotsu</h1>
+                <div class="r-accent" style="font-family:'Syne Mono',monospace;font-size:14px;color:var(--primary)">Backend &amp; Cloud Engineer</div>
+              </div>
+              <div style="font-family:'JetBrains Mono';font-size:12.5px;line-height:1.9;color:var(--text-2);text-align:right">
+                <div>daniel.lotsu.jnr@gmail.com</div>
+                <div>linkedin.com/in/daniel-lotsu-jnr</div>
+                <div>Kumasi, Ghana 🇬🇭 · Remote friendly</div>
+              </div>
+            </header>
+
+            <section style="padding:22px 0;border-bottom:1px solid var(--border)">
+              <h3 class="r-accent" style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin:0 0 12px">Summary</h3>
+              <p data-content="resume.summary" style="margin:0;color:var(--text);font-size:14.5px;line-height:1.7;max-width:72ch">Backend &amp; cloud engineer building scalable, cloud-native systems on AWS. I design REST APIs, model data, and ship serverless and containerised services that stay online — the quiet, well-architected engineering that keeps products and teams moving. AWS-certified, currently at AmaliTech in Kumasi, Ghana.</p>
+            </section>
+
+            <section style="padding:22px 0;border-bottom:1px solid var(--border)">
+              <h3 class="r-accent" style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin:0 0 18px">Experience</h3>
+              <div style="margin-bottom:24px">
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+                  <span style="font-family:'Clash Display';font-weight:600;font-size:16px;color:var(--text)">Software Engineer</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2)">Oct 2025 — Present</span>
+                </div>
+                <div class="r-accent" style="font-family:'Syne Mono',monospace;font-size:13px;color:var(--primary);margin:3px 0 10px">AmaliTech · Kumasi, Ghana</div>
+                <ul style="margin:0;padding-left:18px;color:var(--text-2);font-size:13.5px;line-height:1.75">
+                  <li>Design and ship REST APIs on AWS that back internal products used across the company.</li>
+                  <li>Model data in PostgreSQL and MySQL — owning migrations, indexing and query performance.</li>
+                  <li>Build serverless (Lambda + API Gateway) and containerised (Docker) workloads with CloudWatch observability.</li>
+                  <li>Partner with product teams across the full delivery lifecycle, from design to deploy.</li>
+                </ul>
+              </div>
+              <div>
+                <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+                  <span style="font-family:'Clash Display';font-weight:600;font-size:16px;color:var(--text)">Back End Developer · National Service</span>
+                  <span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2)">Oct 2024 — Sep 2025</span>
+                </div>
+                <div class="r-accent" style="font-family:'Syne Mono',monospace;font-size:13px;color:var(--primary);margin:3px 0 10px">AmaliTech · Kumasi, Ghana</div>
+                <ul style="margin:0;padding-left:18px;color:var(--text-2);font-size:13.5px;line-height:1.75">
+                  <li>Contributed to internal APIs and services, shipping production features end-to-end.</li>
+                  <li>Gained hands-on AWS experience and earned two AWS certifications during the placement.</li>
+                  <li>Wrote tests, reviewed pull requests and supported deployments alongside senior engineers.</li>
+                </ul>
+              </div>
+            </section>
+
+            <section style="padding:22px 0;border-bottom:1px solid var(--border)">
+              <h3 class="r-accent" style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin:0 0 14px">Education</h3>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px">
+                <span style="font-family:'Clash Display';font-weight:600;font-size:16px;color:var(--text)">BSc Computer Science</span>
+                <span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2)">2020 — 2024</span>
+              </div>
+              <div class="r-accent" style="font-family:'Syne Mono',monospace;font-size:13px;color:var(--primary);margin:3px 0 0">Accra Institute of Technology</div>
+            </section>
+
+            <section style="padding:22px 0;border-bottom:1px solid var(--border)">
+              <h3 class="r-accent" style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin:0 0 14px">Certifications</h3>
+              <ul style="margin:0;padding-left:18px;color:var(--text);font-size:13.5px;line-height:1.9">
+                <li>AWS Certified Developer — Associate <span style="color:var(--text-2)">· 2025</span></li>
+                <li>AWS Certified Cloud Practitioner <span style="color:var(--text-2)">· 2024</span></li>
+                <li>AWS Data Protection &amp; Disaster Recovery <span style="color:var(--text-2)">· 2025</span></li>
+              </ul>
+            </section>
+
+            <section style="padding:22px 0 0">
+              <h3 class="r-accent" style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin:0 0 16px">Technical skills</h3>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);min-width:130px">Cloud &amp; DevOps</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">AWS EC2</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">Lambda</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">S3</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">RDS</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">API Gateway</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">CloudWatch</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">Docker</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">Git</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">GitHub</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);min-width:130px">Backend</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">Node.js</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">JavaScript</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">REST API design</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+                  <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);min-width:130px">Databases</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">PostgreSQL</span>
+                  <span class="r-chip" style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--primary);border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:6px">MySQL</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <!-- ============ BLOG ============ -->
+    <div class="view" data-view="blog" data-on-click="onBlog" data-on-keydown="onBlogKey" style="display:none">
+      <section style="padding:44px 0 72px">
+        <div style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:6px 12px;border-radius:6px;margin-bottom:14px">ResourceType: "Blog"</div>
+        <h2 data-content="blog.heading" style="font-family:'Clash Display';font-weight:600;letter-spacing:-.02em;font-size:clamp(28px,4vw,46px);margin:0 0 10px">Field notes</h2>
+        <p data-content="blog.intro" style="color:var(--text-2);font-family:'Syne Mono',monospace;font-size:13px;margin:0 0 30px">// writing about backend systems, AWS, and keeping things online</p>
+
+        <div data-blog="list">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-3);letter-spacing:.06em">
+            <span>4 entries · newest first</span>
+            <span>stream/field-notes</span>
+          </div>
+
+          <div class="blog-layout" style="display:grid;grid-template-columns:minmax(0,1fr);gap:38px;align-items:start">
+            <div class="blog-feat" role="button" tabindex="0" data-open="post-cold-starts" data-post="post-cold-starts" style="display:block;cursor:pointer;min-width:0;background:linear-gradient(rgba(0,0,0,0.42),rgba(0,0,0,0.42)),rgba(106,255,0,0.05);backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%);border:1px solid var(--border);border-radius:20px;padding:clamp(16px,2vw,24px);transition:border-color .2s ease,box-shadow .2s ease" style-hover="border-color:var(--primary);box-shadow:0 26px 70px -40px var(--glow)">
+              <div style="aspect-ratio:24/9;overflow:hidden;border-radius:18px;border:1px solid var(--border);margin-bottom:22px"><img data-slot="blog-cover-cold-starts" src="assets/blog/cold-starts-cover.svg" alt="A tall 214ms cold start followed by warm invocations settling under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:'Syne Mono',monospace;font-size:11.5px;margin-bottom:12px">
+                <span style="color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:4px 10px;border-radius:5px">LATEST</span>
+                <span style="color:var(--primary)" data-cms-category>AWS Lambda</span>
+                <span style="color:var(--text-3)" data-cms-dateline>12 Nov 2025 · 6 min read</span>
+              </div>
+              <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:clamp(24px,3.2vw,38px);line-height:1.18;letter-spacing:-.02em;margin:0 0 14px;color:var(--text);transition:color .18s ease;max-width:26ch;text-wrap:pretty">Cold starts aren't the enemy — trimming Lambda latency by 60%</h3>
+              <p style="margin:0 0 12px;color:var(--text-2);font-size:15px;line-height:1.7;max-width:64ch;text-wrap:pretty">Everyone panics about cold starts. Here's what actually moved the needle on our serverless APIs — and what turned out to be noise.</p>
+              <span class="blog-arrow" style="font-family:'Syne Mono',monospace;font-size:12.5px;color:var(--primary);opacity:0;transform:translateX(-6px);transition:all .2s ease">Read post →</span>
+            </div>
+
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);letter-spacing:.06em;padding-bottom:11px;margin-bottom:16px;border-bottom:1px solid var(--border)">
+                <span>EARLIER ENTRIES</span><span>03</span>
+              </div>
+              <div class="blog-mini-row" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px">
+              <div class="blog-mini" role="button" tabindex="0" data-open="post-leave-api" data-post="post-leave-api" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-leave-api" src="assets/blog/leave-api-thumb.svg" alt="Three stacked services — gateway, requests, balances — connected top to bottom" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>Architecture</span>
+                <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">Designing a leave-management API that scales quietly</h3>
+                <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>04 Oct 2025 · 8 min</span>
+              </div>
+              <div class="blog-mini" role="button" tabindex="0" data-open="post-pooling" data-post="post-pooling" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-pooling" src="assets/blog/pooling-thumb.svg" alt="Four Lambda containers funnelling through a proxy into one database" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>PostgreSQL</span>
+                <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">Connection pooling in serverless: what finally worked</h3>
+                <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>19 Sep 2025 · 5 min</span>
+              </div>
+              <div class="blog-mini" role="button" tabindex="0" data-open="post-firstyear" data-post="post-firstyear" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-firstyear" src="assets/blog/first-year-thumb.svg" alt="A rising curve from 2024 to 2025 ending in a star" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>Career</span>
+                <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">From National Service to AWS-certified: my first year</h3>
+                <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>28 Aug 2025 · 4 min</span>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <article data-blog="article" data-id="post-cold-starts" data-post="post-cold-starts" style="display:none;max-width:760px;margin:0 auto">
+          <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
+          <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>AWS Lambda</span><span data-cms-dateline>· 6 min read · Nov 2025</span></div>
+          <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Cold starts aren't the enemy — trimming Lambda latency by 60%</h1>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-cold-starts" src="assets/blog/cold-starts-hero.svg" alt="Chart of Lambda invocation latency: a 214ms cold start, then warm invocations under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
+            <p>When a service feels slow, "cold starts" is the first thing everyone blames. It's a real cost — the container spins up, the runtime boots, your dependencies load — but on the leave-management API it turned out to be a small slice of the latency budget. Most of the time was being spent elsewhere, and chasing the wrong number cost me a week.</p>
+            <p>The biggest win was unglamorous: shrinking the deploy bundle. Every megabyte the runtime has to pull and parse is time on the critical path. Tree-shaking unused SDK clients and importing only the specific AWS modules I needed cut init time roughly in half.</p>
+            <pre style="background:var(--surface-elev);border:1px solid var(--border);border-radius:10px;padding:16px;overflow:auto;color:var(--primary);font-size:12.5px;line-height:1.7;margin:20px 0">// don't drag in the whole SDK
+- import AWS from "aws-sdk";
+// import just the client you call
++ import { S3Client } from "@aws-sdk/client-s3";</pre>
+            <p>Second: reuse everything you can across invocations. Database clients, secrets, config — initialise them <em>outside</em> the handler so a warm container keeps them alive. And for the handful of latency-sensitive endpoints, provisioned concurrency removed the tail entirely for a predictable cost.</p>
+            <p>The lesson I keep coming back to: measure before you optimise. CloudWatch and a few well-placed timing logs told me exactly where the milliseconds went — and it was rarely where I assumed.</p>
+          </div>
+        </article>
+
+        <article data-blog="article" data-id="post-leave-api" data-post="post-leave-api" style="display:none;max-width:760px;margin:0 auto">
+          <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
+          <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>Architecture</span><span data-cms-dateline>· 8 min read · Oct 2025</span></div>
+          <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Designing a leave-management API that scales quietly</h1>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-leave-api" src="assets/blog/leave-api-hero.svg" alt="Topology: API Gateway feeding request and balance services, joined by an event bus, writing to PostgreSQL" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
+            <p>A leave-management system looks trivial on a whiteboard: request time off, someone approves it, a balance goes down. The complexity hides in the edges — overlapping requests, approval chains, accrual rules, and notifications that must never fire twice.</p>
+            <p>I split the system along its natural seams. A request service owns the lifecycle of a leave request; a balance service is the source of truth for entitlements; and events tie them together. When a request is approved, it publishes an event rather than reaching into the balance tables directly — which keeps each service independently deployable and easy to reason about.</p>
+            <p>Idempotency was the decision that saved me the most grief. Every state-changing endpoint accepts an idempotency key, so a retried request from a flaky mobile connection can never double-book a day. It's a small amount of plumbing that removes a whole category of bugs.</p>
+            <p>None of this is exotic. It's boring on purpose — boring systems are the ones that stay online while everyone sleeps.</p>
+          </div>
+        </article>
+
+        <article data-blog="article" data-id="post-pooling" data-post="post-pooling" style="display:none;max-width:760px;margin:0 auto">
+          <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
+          <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>PostgreSQL</span><span data-cms-dateline>· 5 min read · Sep 2025</span></div>
+          <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Connection pooling in serverless: what finally worked</h1>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-pooling" src="assets/blog/pooling-hero.svg" alt="Many Lambda containers multiplexed through RDS Proxy onto three stable PostgreSQL connections" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
+            <p>Relational databases assume long-lived connections. Lambda assumes the opposite — thousands of short-lived containers, each wanting its own connection. Put them together naively and you'll exhaust Postgres's connection limit under the first real traffic spike.</p>
+            <p>My first instinct was a pool inside each function. That helps within a warm container, but it does nothing about the fleet of containers all opening connections at once. The pool-per-container just multiplied the problem.</p>
+            <pre style="background:var(--surface-elev);border:1px solid var(--border);border-radius:10px;padding:16px;overflow:auto;color:var(--primary);font-size:12.5px;line-height:1.7;margin:20px 0">// module scope — shared by a warm container
+const pool = new Pool({ max: 2, idleTimeoutMillis: 30000 });
+
+export const handler = async (event) =&gt; {
+  const client = await pool.connect();
+  try { /* ... */ } finally { client.release(); }
+};</pre>
+            <p>What finally worked was RDS Proxy sitting between Lambda and Postgres. It multiplexes many function connections onto a small, stable set of database connections and handles failover cleanly. Combined with a tiny per-container pool, connection exhaustion simply stopped being something I thought about.</p>
+          </div>
+        </article>
+
+        <article data-blog="article" data-id="post-firstyear" data-post="post-firstyear" style="display:none;max-width:760px;margin:0 auto">
+          <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
+          <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>Career</span><span data-cms-dateline>· 4 min read · Aug 2025</span></div>
+          <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">From National Service to AWS-certified: my first year at AmaliTech</h1>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-firstyear" src="assets/blog/first-year-hero.svg" alt="Rising timeline from National Service through two AWS certifications to Software Engineer" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
+            <p>I joined AmaliTech as a national-service backend developer with a computer-science degree and very little production experience. A year later I'd shipped features used across the company and earned two AWS certifications. Here's what compounded fastest.</p>
+            <p>Reading other people's code beat writing my own. Reviewing pull requests taught me the house style, the sharp edges of our systems, and why certain "clever" solutions had been rejected before. It was the fastest way to absorb a codebase I hadn't built.</p>
+            <p>The certifications mattered less for the badge than for the mental model. Studying for the Cloud Practitioner and Developer exams forced me to understand <em>why</em> services fit together — so when I reached for Lambda or RDS at work, I knew the trade-offs instead of copying a tutorial.</p>
+            <p>Mostly, though, it was showing up curious. Ask the naive question. Own the boring task. The trust that builds is what gets you the interesting problems next.</p>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <!-- ============ FOOTER ============ -->
+    <footer style="position:relative;z-index:10;margin:0 -100vw;padding:22px clamp(18px,5vw,48px);background:#020a02;border-top:1px solid #173311;color:#7fcc66">
+      <div style="max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">
+        <span style="font-family:'Clash Display';font-weight:600;font-size:14px;color:#eefff0">© 2025 Daniel Ajayi Lotsu</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;color:#7fcc66;border:1px solid #173311;padding:6px 13px;border-radius:999px">🌍 af-west-kumasi-1 · ONLINE <span style="width:8px;height:8px;border-radius:50%;background:#34d17e;animation:pulseDot 2s infinite"></span></span>
+        <div style="display:flex;gap:10px">
+          <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          <a href="https://linkedin.com/in/daniel-lotsu-jnr" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></a>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* Vanilla port of the Claude Design (dc) component logic for this page.
+   Refs are ids (dc-setX), handlers are data-on-<event> attributes. */
+(function () {
+  'use strict';
+
+  function styleShim() {
+    document.querySelectorAll('[style-hover]').forEach(function (el) {
+      var base = el.getAttribute('style') || '';
+      var hover = el.getAttribute('style-hover') || '';
+      el.addEventListener('mouseenter', function () { el.setAttribute('style', base + ';' + hover); });
+      el.addEventListener('mouseleave', function () { el.setAttribute('style', base); });
+    });
+    document.querySelectorAll('[style-focus]').forEach(function (el) {
+      var base = el.getAttribute('style') || '';
+      var focus = el.getAttribute('style-focus') || '';
+      el.addEventListener('focus', function () { el.setAttribute('style', base + ';' + focus); });
+      el.addEventListener('blur', function () { el.setAttribute('style', base); });
+    });
+  }
+
+  function bindHandlers(handlers, types) {
+    types.forEach(function (type) {
+      document.querySelectorAll('[data-on-' + type + ']').forEach(function (el) {
+        var fn = handlers[el.getAttribute('data-on-' + type)];
+        if (fn) el.addEventListener(type, fn);
+      });
+    });
+  }
+
+  var byId = function (n) { return document.getElementById('dc-' + n); };
+  var root = byId('setRoot');
+  var cursorRing = byId('setCursorRing');
+  var cursorDot = byId('setCursorDot');
+  var heroCanvas = byId('setHeroCanvas');
+  var heroPar = byId('setHeroParallax');
+  var stack = byId('setStack');
+  var scan = byId('setScan');
+  var contact = byId('setContact');
+  var form = byId('setForm');
+  var status = byId('setStatus');
+
+  function onScroll(fn) {
+    window.addEventListener('scroll', fn, { passive: true });
+    document.addEventListener('scroll', fn, { passive: true, capture: true });
+    window.addEventListener('resize', fn);
+  }
+
+  /* ---------- animated counters ---------- */
+  function initCounters() {
+    if (!root) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var run = function (el) {
+      if (el.dataset.ran) return;
+      el.dataset.ran = '1';
+      var target = parseFloat(el.dataset.count);
+      var suffix = el.dataset.suffix || '';
+      if (reduce) { el.textContent = target + suffix; return; }
+      var dur = 1500, start = Date.now(), timer;
+      var tick = function () {
+        var p = Math.min(1, (Date.now() - start) / dur);
+        var eased = 1 - Math.pow(1 - p, 3);
+        if (p >= 1) { el.textContent = target + suffix; clearInterval(timer); }
+        else el.textContent = Math.round(eased * target) + '';
+      };
+      timer = setInterval(tick, 33);
+      tick();
+    };
+    var counters = [].slice.call(root.querySelectorAll('[data-count]'));
+    var check = function () {
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      counters.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.top < vh * 0.92 && r.bottom > 0) run(el);
+      });
+    };
+    try {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) run(e.target); });
+      }, { threshold: 0.5 });
+      counters.forEach(function (el) { io.observe(el); });
+    } catch (_) {}
+    check();
+    onScroll(check);
+    setTimeout(function () { counters.forEach(run); }, 1700);
+  }
+
+  /* ---------- tech-stack scan sweep ---------- */
+  function initScan() {
+    if (!stack || !scan) return;
+    var done = false;
+    var trigger = function () {
+      if (done) return;
+      done = true;
+      scan.style.animation = 'scanSweep 1.5s ease-out forwards';
+    };
+    var check = function () {
+      var r = stack.getBoundingClientRect();
+      if (r.top < (window.innerHeight || 800) * 0.8 && r.bottom > 0) trigger();
+    };
+    try {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) trigger(); });
+      }, { threshold: 0.3 });
+      io.observe(stack);
+    } catch (_) {}
+    check();
+    onScroll(check);
+    setTimeout(trigger, 1900);
+  }
+
+  /* ---------- confetti burst on form success ---------- */
+  function burst(ox, oy) {
+    var host = contact;
+    if (!host) return;
+    var colors = ['#6AFF00', '#9dff5c', '#3aa300', '#06b6d4', '#ffffff'];
+    for (var i = 0; i < 46; i++) {
+      var p = document.createElement('div');
+      var size = 5 + Math.random() * 6;
+      p.style.cssText = 'position:absolute;z-index:6;pointer-events:none;border-radius:2px;left:' + ox +
+        'px;top:' + oy + 'px;width:' + size + 'px;height:' + size + 'px;background:' + colors[i % colors.length] +
+        ';box-shadow:0 0 8px ' + colors[i % colors.length];
+      host.appendChild(p);
+      var ang = Math.random() * Math.PI * 2;
+      var dist = 80 + Math.random() * 220;
+      var dx = Math.cos(ang) * dist;
+      var dy = Math.sin(ang) * dist - 120;
+      (function (el) {
+        if (el.animate) {
+          var anim = el.animate([
+            { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+            { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.3) rotate(' + (Math.random() * 540) + 'deg)', opacity: 0 }
+          ], { duration: 900 + Math.random() * 700, easing: 'cubic-bezier(.16,1,.3,1)' });
+          anim.onfinish = function () { el.remove(); };
+        }
+        setTimeout(function () { el.remove(); }, 1900);
+      })(p);
+    }
+  }
+
+  /* ---------- custom cursor ---------- */
+  function initCursor() {
+    var fine = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    if (!fine || !cursorRing || !root) return;
+    root.classList.add('cur-custom');
+    var place = function (x, y) {
+      var t = 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%)';
+      cursorRing.style.transform = t;
+      if (cursorDot) cursorDot.style.transform = t;
+    };
+    document.addEventListener('mousemove', function (e) {
+      cursorRing.style.opacity = '1';
+      if (cursorDot) cursorDot.style.opacity = '1';
+      place(e.clientX, e.clientY);
+      var t = e.target;
+      var textField = t && t.closest && t.closest('input,textarea,[contenteditable]');
+      if (textField) {
+        cursorRing.style.opacity = '0';
+        if (cursorDot) cursorDot.style.opacity = '0';
+        return;
+      }
+      var hot = t && t.closest && t.closest('a,button,[role="button"],[tabindex],.svc-tile,.proj-card,.cert-card,.nav-chip,[data-ct-row],label');
+      cursorRing.dataset.cursorHover = hot ? '1' : '';
+    }, { passive: true });
+    document.addEventListener('mousedown', function () { cursorRing.dataset.cursorDown = '1'; });
+    document.addEventListener('mouseup', function () { cursorRing.dataset.cursorDown = ''; });
+    var hide = function () {
+      cursorRing.style.opacity = '0';
+      if (cursorDot) cursorDot.style.opacity = '0';
+    };
+    document.addEventListener('mouseleave', hide);
+    window.addEventListener('blur', hide);
+  }
+
+  /* ---------- hero constellation canvas ---------- */
+  function initHero() {
+    var c = heroCanvas;
+    if (!c) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ctx = c.getContext('2d');
+    var host = c.parentElement;
+    var w = 0, h = 0;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var nodes = [];
+    var mouse = { x: -9999, y: -9999 };
+    var rnd = function (a, b) { return a + Math.random() * (b - a); };
+    var build = function () {
+      var r = host.getBoundingClientRect();
+      w = r.width; h = r.height;
+      c.width = w * dpr; c.height = h * dpr;
+      c.style.width = w + 'px'; c.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var count = Math.max(42, Math.min(94, Math.round(w * h / 15000)));
+      nodes = [];
+      for (var k = 0; k < count; k++) {
+        var z = rnd(0.35, 1);
+        nodes.push({ x: rnd(0, w), y: rnd(0, h), vx: rnd(-0.22, 0.22) * z, vy: rnd(-0.22, 0.22) * z, z: z });
+      }
+    };
+    var D = 145, DM = 200;
+    var frame = function () {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < -24) n.x = w + 24;
+        if (n.x > w + 24) n.x = -24;
+        if (n.y < -24) n.y = h + 24;
+        if (n.y > h + 24) n.y = -24;
+      }
+      for (var a = 0; a < nodes.length; a++) {
+        var p = nodes[a];
+        for (var b = a + 1; b < nodes.length; b++) {
+          var q = nodes[b];
+          var dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx * dx + dy * dy);
+          if (d < D) {
+            var al = (1 - d / D) * 0.5 * Math.min(p.z, q.z);
+            ctx.strokeStyle = 'rgba(106,255,0,' + al.toFixed(3) + ')';
+            ctx.lineWidth = 0.7;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+          }
+        }
+        var mdx = p.x - mouse.x, mdy = p.y - mouse.y, md = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (md < DM) {
+          var ml = (1 - md / DM) * 0.65;
+          ctx.strokeStyle = 'rgba(150,255,80,' + ml.toFixed(3) + ')';
+          ctx.lineWidth = 0.9;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+          p.x -= (mdx / (md || 1)) * (1 - md / DM) * 0.7;
+          p.y -= (mdy / (md || 1)) * (1 - md / DM) * 0.7;
+        }
+      }
+      for (var j = 0; j < nodes.length; j++) {
+        var nn = nodes[j];
+        var rr = 1.1 + nn.z * 1.9;
+        ctx.beginPath(); ctx.arc(nn.x, nn.y, rr, 0, 6.2832);
+        ctx.fillStyle = 'rgba(150,255,80,' + (0.45 + nn.z * 0.55).toFixed(2) + ')';
+        ctx.fill();
+      }
+    };
+    var rebuild = function () {
+      var r = host.getBoundingClientRect();
+      if (!r.width || !r.height) return false;
+      build(); frame();
+      return true;
+    };
+    // The dc runtime mounted after layout settled; running inline we may measure the
+    // hero before it has a size (background tab, restored page). Poll briefly until
+    // it reports one, then keep it in step with resizes.
+    if (!rebuild()) {
+      var tries = 0;
+      var poll = setInterval(function () {
+        if (rebuild() || ++tries > 100) clearInterval(poll);
+      }, 100);
+    }
+    window.addEventListener('resize', rebuild);
+    window.addEventListener('load', rebuild);
+    if (window.ResizeObserver) new ResizeObserver(rebuild).observe(host);
+    if (!reduce) setInterval(frame, 33);
+    document.addEventListener('mousemove', function (e) {
+      var r = host.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      var nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      var ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      if (heroPar) heroPar.style.transform = 'translate(' + (nx * -16).toFixed(1) + 'px,' + (ny * -13).toFixed(1) + 'px)';
+      host.querySelectorAll('.hero-float').forEach(function (f, i) {
+        var kf = (i % 2 ? 1.1 : 1.7);
+        f.style.transform = 'translate(' + (nx * 24 * kf).toFixed(1) + 'px,' + (ny * 20 * kf).toFixed(1) + 'px)';
+      });
+    }, { passive: true });
+    host.addEventListener('mouseleave', function () { mouse.x = -9999; mouse.y = -9999; });
+  }
+
+  /* ---------- views: home / resume / blog ---------- */
+  function showView(v) {
+    if (!root) return;
+    root.querySelectorAll('.view').forEach(function (el) {
+      el.style.display = (el.dataset.view === v) ? '' : 'none';
+    });
+    if (v === 'blog') showBlogList();
+  }
+  function openPost(id) {
+    if (!root) return;
+    var list = root.querySelector('[data-blog="list"]');
+    if (list) list.style.display = 'none';
+    root.querySelectorAll('[data-blog="article"]').forEach(function (a) {
+      a.style.display = (a.dataset.id === id) ? 'block' : 'none';
+    });
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  function showBlogList() {
+    if (!root) return;
+    var list = root.querySelector('[data-blog="list"]');
+    if (list) list.style.display = '';
+    root.querySelectorAll('[data-blog="article"]').forEach(function (a) { a.style.display = 'none'; });
+  }
+
+  /* ---------- handlers ---------- */
+  var handlers = {
+    onNav: function (e) {
+      var el = e.target.closest('[data-goto]');
+      if (!el) return;
+      e.preventDefault();
+      var goto = el.dataset.goto;
+      var href = el.getAttribute && el.getAttribute('href');
+      showView(goto);
+      if (goto === 'home' && href && href.charAt(0) === '#' && href.length > 1) {
+        var t = root.querySelector(href);
+        if (t) {
+          setTimeout(function () {
+            window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 72, behavior: 'smooth' });
+          }, 60);
+          return;
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    },
+
+    onBlog: function (e) {
+      var o = e.target.closest('[data-open]');
+      if (o) { openPost(o.dataset.open); return; }
+      var b = e.target.closest('[data-blog-back]');
+      if (b) { showBlogList(); window.scrollTo({ top: 0, behavior: 'auto' }); }
+    },
+
+    onBlogKey: function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var o = e.target.closest('[data-open]');
+      if (o) { e.preventDefault(); openPost(o.dataset.open); return; }
+      var b = e.target.closest('[data-blog-back]');
+      if (b) { e.preventDefault(); showBlogList(); window.scrollTo({ top: 0, behavior: 'auto' }); }
+    },
+
+    downloadResume: function () {
+      showView('resume');
+      setTimeout(function () { window.print(); }, 60);
+    },
+
+    onCardMove: function (e) {
+      var c = e.currentTarget, r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    },
+
+    toggleRow: function (e) {
+      var row = e.currentTarget;
+      var detail = row.querySelector('[data-ct-detail]');
+      var chev = row.querySelector('[data-chev]');
+      if (!detail) return;
+      var open = detail.style.maxHeight && detail.style.maxHeight !== '0px';
+      if (open) {
+        detail.style.maxHeight = '0px';
+        if (chev) chev.style.transform = 'rotate(0deg)';
+      } else {
+        detail.style.maxHeight = detail.scrollHeight + 'px';
+        if (chev) chev.style.transform = 'rotate(180deg)';
+      }
+    },
+
+    sendMessage: function (e) {
+      e.preventDefault();
+      var f = form, host = contact;
+      if (!f) return;
+      var name = f.querySelector('#cf-name'), email = f.querySelector('#cf-email'), msg = f.querySelector('#cf-msg');
+      var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      var fail = function (m, el) {
+        if (status) { status.textContent = m; status.style.color = '#ff8aa0'; }
+        if (el) el.focus();
+      };
+      if (!name.value.trim()) return fail('Please add your name so I know who I\u2019m talking to.', name);
+      if (!email.value.trim() || !emailRe.test(email.value.trim())) return fail('Please enter a valid email so I can reply.', email);
+      if (!msg.value.trim()) return fail('Add a short message and you\u2019re good to go.', msg);
+
+      var btn = f.querySelector('button[type="submit"]');
+      var succeed = function () {
+        if (status) status.textContent = '';
+        if (!host) return;
+        var r = host.getBoundingClientRect();
+        var b = btn ? btn.getBoundingClientRect() : r;
+        burst(b.left - r.left + b.width / 2, b.top - r.top + b.height / 2);
+        var success = host.querySelector('[data-cf-success]');
+        f.style.display = 'none';
+        if (success) {
+          success.style.display = 'block';
+          var who = success.querySelector('[data-cf-name]');
+          if (who) who.textContent = name.value.trim().split(' ')[0] || 'there';
+        }
+      };
+
+      if (status) { status.style.color = '#7fcc66'; status.textContent = 'Deploying message\u2026'; }
+      if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+      var release = function () { if (btn) { btn.disabled = false; btn.style.opacity = ''; } };
+
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.value.trim(), email: email.value.trim(), message: msg.value.trim() })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok || !data.ok) throw new Error((data && data.error) || 'Request failed');
+          release();
+          succeed();
+        });
+      }).catch(function () {
+        release();
+        fail('Couldn\u2019t send that \u2014 please email daniel.lotsu.jnr@gmail.com directly.');
+      });
+    }
+  };
+
+  /* ---------- boot ---------- */
+  if (root) root.dataset.theme = 'dark';
+  styleShim();
+  bindHandlers(handlers, ['click', 'mousemove', 'submit', 'keydown']);
+  initCounters();
+  initScan();
+  initCursor();
+  initHero();
+
+  var hash = (location.hash || '').replace('#', '');
+  if (hash === 'resume' || hash === 'blog') showView(hash);
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+
+  var root = document.getElementById('dc-setRoot');
+
+  function get(obj, path) {
+    return path.split('.').reduce(function (o, k) {
+      return o == null ? undefined : o[k];
+    }, obj);
+  }
+
+  // Several targets wrap an icon or a status dot alongside their label (the
+  // availability pill, the email and LinkedIn links). Writing textContent would
+  // delete those children, so when the element has element children only its
+  // last text node is rewritten.
+  function setText(el, value) {
+    if (!el || typeof value !== 'string' || value === '') return;
+
+    if (el.firstElementChild) {
+      var lastText = null;
+      for (var i = el.childNodes.length - 1; i >= 0; i--) {
+        var node = el.childNodes[i];
+        if (node.nodeType === 3 && node.nodeValue.trim() !== '') { lastText = node; break; }
+      }
+      if (lastText) {
+        if (lastText.nodeValue !== value) lastText.nodeValue = value;
+        return;
+      }
+      el.appendChild(document.createTextNode(value));
+      return;
+    }
+
+    if (el.textContent !== value) el.textContent = value;
+  }
+
+  function applyScalars(content) {
+    document.querySelectorAll('[data-content]').forEach(function (el) {
+      var value = get(content, el.getAttribute('data-content'));
+      if (typeof value !== 'string' || !value) return;
+      setText(el, value);
+      // keep mailto:/https: targets in step with the label they display
+      if (el.tagName === 'A') {
+        var path = el.getAttribute('data-content');
+        if (path === 'contact.email') el.href = 'mailto:' + value;
+        if (path === 'contact.linkedin') {
+          el.href = /^https?:/.test(value) ? value : 'https://' + value.replace(/^\/+/, '');
+        }
+      }
+    });
+  }
+
+  function applyVisibility(content) {
+    var avail = document.querySelector('[data-content="hero.availability"]');
+    if (avail && content.hero && content.hero.showAvailability === false) {
+      var badge = avail.closest('.hero-float') || avail;
+      badge.style.display = 'none';
+    }
+    if (content.contact && content.contact.showForm === false) {
+      var form = document.getElementById('dc-setForm');
+      if (form) form.style.display = 'none';
+    }
+    var dl = document.querySelector('[data-download-resume]');
+    if (dl && content.resume && content.resume.showDownload === false) dl.style.display = 'none';
+  }
+
+  function applyPosts(content) {
+    var posts = content.blog && content.blog.posts;
+    if (!Array.isArray(posts)) return;
+
+    posts.forEach(function (post) {
+      if (!post || !post.id) return;
+      document.querySelectorAll('[data-post="' + post.id + '"]').forEach(function (region) {
+        var isArticle = region.getAttribute('data-blog') === 'article';
+
+        setText(region.querySelector(isArticle ? 'h1' : '.blog-title'), post.title);
+
+        var cat = region.querySelector('[data-cms-category]');
+        if (cat) setText(cat, post.category);
+
+        var dateline = region.querySelector('[data-cms-dateline]');
+        if (dateline) {
+          setText(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
+        }
+
+        var img = region.querySelector('img[data-slot]');
+        if (img && post.alt) img.alt = post.alt;
+
+        // Only replace the article's prose when the CMS actually holds a body —
+        // otherwise the copy written into the design stands.
+        if (isArticle && typeof post.body === 'string' && post.body.trim()) {
+          var prose = region.querySelector('[data-cms-body]');
+          if (prose) {
+            prose.textContent = '';
+            post.body.split(/\n\s*\n/).forEach(function (para) {
+              var text = para.trim();
+              if (!text) return;
+              var p = document.createElement('p');
+              p.textContent = text;
+              prose.appendChild(p);
+            });
+          }
+        }
+
+        // an unpublished post disappears from the list and can't be opened
+        if (post.published === false && !isArticle) region.style.display = 'none';
+      });
+    });
+  }
+
+  function applyMedia(content) {
+    var media = content.media || {};
+    document.querySelectorAll('img[data-slot]').forEach(function (img) {
+      var url = media[img.getAttribute('data-slot')];
+      if (typeof url === 'string' && url) img.src = url;
+    });
+  }
+
+  function applySettings(content) {
+    var s = content.settings || {};
+    if (s.pageTitle) document.title = s.pageTitle;
+    if (s.metaDescription) {
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute('content', s.metaDescription);
+    }
+    if (s.accent && root) root.style.setProperty('--primary', s.accent);
+    if (s.reduceMotion && root) root.dataset.motion = 'off';
+  }
+
+  function hydrate(content) {
+    if (!content || typeof content !== 'object') return;
+    applyScalars(content);
+    applyPosts(content);
+    applyMedia(content);
+    applyVisibility(content);
+    applySettings(content);
+    document.documentElement.setAttribute('data-content-loaded', '1');
+  }
+
+  function load() {
+    return fetch('/api/content', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) { if (data && data.ok) hydrate(data.content); })
+      .catch(function () { /* offline or API down: the static markup already reads correctly */ });
+  }
+
+  load();
+
+  // Revalidate when the tab is looked at again, so publishing in the CMS and
+  // switching back to the portfolio shows the change without a manual reload.
+  var last = Date.now();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') return;
+    if (Date.now() - last < 2000) return; // don't refetch on rapid tab flicking
+    last = Date.now();
+    load();
+  });
+})();
+</script>
+
+</body>
+</html>

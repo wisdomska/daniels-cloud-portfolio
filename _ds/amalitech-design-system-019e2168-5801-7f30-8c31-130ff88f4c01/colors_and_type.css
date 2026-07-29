@@ -1,0 +1,325 @@
+/* =====================================================================
+   AmaliTech — Unified Experience Design System
+   Foundations: Color tokens, Type tokens, Spacing, Borders, Shadows.
+   
+   Loads Inter + Poppins + JetBrains Mono from Google Fonts.
+   ===================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+:root {
+  /* ---------------------------------------------------------------
+     PRIMARY — Dark Blue (the brand's preferred primary).
+     Used across all interactive elements: buttons, links, inputs.
+     --------------------------------------------------------------- */
+  --color-darkblue-50:  #E6EAEB;
+  --color-darkblue-100: #B2BCC2;
+  --color-darkblue-200: #8D9CA5;
+  --color-darkblue-300: #5A6F7C;
+  --color-darkblue-400: #395362;
+  --color-darkblue-500: #08283B;  /* PRIMARY */
+  --color-darkblue-600: #072436;
+  --color-darkblue-700: #061C2A;
+  --color-darkblue-800: #041620;
+  --color-darkblue-900: #031119;
+
+  /* ---------------------------------------------------------------
+     ACCENT — Orange (used in the wordmark; reserved for accents,
+     highlights, and the secondary brand pulse — not for primary CTAs
+     unless the surface requires it).
+     --------------------------------------------------------------- */
+  --color-orange-50:  #FFEFE6;
+  --color-orange-100: #FFCCB0;
+  --color-orange-200: #FFB38A;
+  --color-orange-300: #FF9054;
+  --color-orange-400: #FF7B33;
+  --color-orange-500: #FF5A00;  /* Brand accent */
+  --color-orange-600: #E85200;
+  --color-orange-700: #B54000;
+  --color-orange-800: #8C3200;
+  --color-orange-900: #6B2600;
+
+  /* ---------------------------------------------------------------
+     NEUTRALS — Gray (the foundation: text, dividers, surfaces).
+     --------------------------------------------------------------- */
+  --color-gray-50:  #ECECEB;
+  --color-gray-100: #C3C3C2;
+  --color-gray-200: #A6A6A4;
+  --color-gray-300: #7E7D7B;
+  --color-gray-400: #656461;
+  --color-gray-500: #3E3D3A;
+  --color-gray-600: #383835;
+  --color-gray-700: #2C2B29;
+  --color-gray-800: #222220;
+  --color-gray-900: #1A1A18;
+
+  --color-white: #FDFDFD;
+  --color-black: #000000;
+
+  /* ---------------------------------------------------------------
+     SUPPORT COLORS — backgrounds, accents, and supplementary use.
+     --------------------------------------------------------------- */
+  --color-lightblue-50:  #EFF7FE;
+  --color-lightblue-100: #CDE6FC;
+  --color-lightblue-200: #B4DAFB;
+  --color-lightblue-300: #92C9F9;
+  --color-lightblue-400: #7DBFF8;
+  --color-lightblue-500: #5DAFF6;
+  --color-lightblue-600: #559FE0;
+  --color-lightblue-700: #427CAF;
+  --color-lightblue-800: #336087;
+  --color-lightblue-900: #274A67;
+
+  --color-ultramarine-50:  #E6E7F9;
+  --color-ultramarine-100: #B1B4EB;
+  --color-ultramarine-200: #8C90E2;
+  --color-ultramarine-300: #575DD4;
+  --color-ultramarine-400: #363DCC;
+  --color-ultramarine-500: #040DBF;
+  --color-ultramarine-600: #040CAE;
+  --color-ultramarine-700: #030988;
+  --color-ultramarine-800: #020769;
+  --color-ultramarine-900: #020550;
+
+  /* ---------------------------------------------------------------
+     SEMANTIC — Red / Yellow / Green / Teal / Indigo / Purple / Pink.
+     --------------------------------------------------------------- */
+  --color-red-50:  #FDF2F2;
+  --color-red-100: #FDE8E8;
+  --color-red-200: #FBD5D5;
+  --color-red-300: #F8B4B4;
+  --color-red-400: #F98080;
+  --color-red-500: #F05252;
+  --color-red-600: #E02424;  /* destructive */
+  --color-red-700: #C81E1E;
+  --color-red-800: #9B1C1C;
+  --color-red-900: #771D1D;
+
+  --color-yellow-50:  #FFF9E6;
+  --color-yellow-100: #FFEBB0;
+  --color-yellow-200: #FFE18A;
+  --color-yellow-300: #FED354;
+  --color-yellow-400: #FECB33;
+  --color-yellow-500: #FEBE00;  /* warning */
+  --color-yellow-600: #E7AD00;
+  --color-yellow-700: #B48700;
+  --color-yellow-800: #8C6900;
+  --color-yellow-900: #6B5000;
+
+  --color-green-50:  #F3FAF7;
+  --color-green-100: #DEF7EC;
+  --color-green-200: #BCF0DA;
+  --color-green-300: #84E1BC;
+  --color-green-400: #31C48D;
+  --color-green-500: #0E9F6E;
+  --color-green-600: #057A55;  /* success */
+  --color-green-700: #046C4E;
+  --color-green-800: #03543F;
+  --color-green-900: #014737;
+
+  --color-teal-50:  #EDFAFA;
+  --color-teal-100: #D5F5F6;
+  --color-teal-200: #AFECEF;
+  --color-teal-300: #7EDCE2;
+  --color-teal-400: #16BDCA;
+  --color-teal-500: #0694A2;
+  --color-teal-600: #047481;
+  --color-teal-700: #036672;
+  --color-teal-800: #05505C;
+  --color-teal-900: #014451;
+
+  --color-indigo-50:  #F0F5FF;
+  --color-indigo-100: #E5EDFF;
+  --color-indigo-200: #CDDBFE;
+  --color-indigo-300: #B4C6FC;
+  --color-indigo-400: #8DA2FB;
+  --color-indigo-500: #6875F5;
+  --color-indigo-600: #5850EC;
+  --color-indigo-700: #5145CD;
+  --color-indigo-800: #42389D;
+  --color-indigo-900: #362F78;
+
+  --color-purple-50:  #F6F5FF;
+  --color-purple-100: #EDEBFE;
+  --color-purple-200: #DCD7FE;
+  --color-purple-300: #CABFFD;
+  --color-purple-400: #AC94FA;
+  --color-purple-500: #9061F9;
+  --color-purple-600: #7E3AF2;
+  --color-purple-700: #6C2BD9;
+  --color-purple-800: #5521B5;
+  --color-purple-900: #4A1D96;
+
+  --color-pink-50:  #FDF2F8;
+  --color-pink-100: #FCE8F3;
+  --color-pink-200: #FAD1E8;
+  --color-pink-300: #F8B4D9;
+  --color-pink-400: #F17EB8;
+  --color-pink-500: #E74694;
+  --color-pink-600: #D61F69;
+  --color-pink-700: #BF125D;
+  --color-pink-800: #99154B;
+  --color-pink-900: #751A3D;
+
+  /* ---------------------------------------------------------------
+     SEMANTIC ALIASES — write app code against these, not the scale.
+     --------------------------------------------------------------- */
+  --color-primary:        var(--color-darkblue-500);
+  --color-primary-hover:  var(--color-darkblue-600);
+  --color-primary-active: var(--color-darkblue-700);
+  --color-primary-soft:   var(--color-darkblue-50);
+  --color-accent:         var(--color-orange-500);
+  --color-accent-hover:   var(--color-orange-600);
+
+  --color-bg:             var(--color-white);
+  --color-bg-subtle:      #F9FAFB;          /* off-white panel */
+  --color-bg-muted:       #F2F4F5;          /* page wash */
+  --color-bg-inverse:     var(--color-darkblue-500);
+
+  --color-surface:        var(--color-white);
+  --color-surface-raised: var(--color-white);
+  --color-surface-sunken: #F4F6F7;
+
+  --color-border:         #E5E7EB;
+  --color-border-strong:  #D1D5DB;
+  --color-border-subtle:  #F0F1F3;
+  --color-divider:        #E6EAEB;
+
+  --color-fg-1:           var(--color-darkblue-500);  /* primary text */
+  --color-fg-2:           #374151;                    /* body text */
+  --color-fg-3:           #6B7280;                    /* secondary text */
+  --color-fg-4:           #9CA3AF;                    /* muted / placeholder */
+  --color-fg-inverse:     var(--color-white);
+  --color-fg-link:        var(--color-darkblue-500);
+  --color-fg-link-hover:  var(--color-orange-600);
+
+  --color-success: var(--color-green-600);
+  --color-warning: var(--color-yellow-500);
+  --color-error:   var(--color-red-600);
+  --color-info:    var(--color-lightblue-600);
+
+  /* ---------------------------------------------------------------
+     TYPOGRAPHY
+     Inter — UI, body, all general use (default sans).
+     Poppins — display headings, hero, marketing/section titles.
+     JetBrains Mono — code, tabular numerics, technical labels.
+     --------------------------------------------------------------- */
+  --font-sans:    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Poppins", "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Type scale — matches Figma's "Display *" + "Text *" tokens. */
+  --text-display-2xl:   72px;  --lh-display-2xl: 90px;   --ls-display-2xl: -0.02em;
+  --text-display-xl:    60px;  --lh-display-xl:  72px;   --ls-display-xl:  -0.02em;
+  --text-display-lg:    48px;  --lh-display-lg:  60px;   --ls-display-lg:  -0.02em;
+  --text-display-md:    36px;  --lh-display-md:  44px;   --ls-display-md:  -0.02em;
+  --text-display-sm:    30px;  --lh-display-sm:  38px;   --ls-display-sm:  0;
+  --text-display-xs:    24px;  --lh-display-xs:  32px;   --ls-display-xs:  0;
+  --text-xl:            20px;  --lh-xl: 30px;
+  --text-lg:            18px;  --lh-lg: 28px;
+  --text-md:            16px;  --lh-md: 24px;
+  --text-sm:            14px;  --lh-sm: 20px;
+  --text-xs:            12px;  --lh-xs: 18px;
+
+  /* Font weights — used by every Inter/Poppins token. */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extrabold:800;
+  --weight-black:    900;
+
+  /* ---------------------------------------------------------------
+     SPACING — 4px base.
+     --------------------------------------------------------------- */
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+  --space-20:  80px;
+  --space-24:  96px;
+  --space-32:  128px;
+
+  /* ---------------------------------------------------------------
+     RADII — Sharp / Semi-rounded / Fully-rounded as in Figma.
+     --------------------------------------------------------------- */
+  --radius-none: 0;
+  --radius-sm:   4px;     /* Tailwind .rounded */
+  --radius-md:   6px;     /* .rounded-md */
+  --radius-lg:   8px;     /* .rounded-lg — DEFAULT for cards/inputs */
+  --radius-xl:   12px;    /* .rounded-xl */
+  --radius-2xl:  16px;    /* .rounded-2xl */
+  --radius-3xl:  24px;    /* .rounded-3xl */
+  --radius-full: 9999px;
+
+  /* ---------------------------------------------------------------
+     SHADOWS — Tailwind shadow scale, used for elevation and focus.
+     --------------------------------------------------------------- */
+  --shadow-xs:  0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-sm:  0 1px 2px 0 rgba(0,0,0,0.06), 0 1px 3px 0 rgba(0,0,0,0.10);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.10), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --shadow-xl:  0 20px 25px -5px rgba(0,0,0,0.10), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0,0,0,0.25);
+
+  /* Focus rings — light blue (#B4DAFB = lightblue-200) for keyboard focus. */
+  --ring-focus: 0 0 0 3px #B4DAFB;
+  --ring-focus-primary: 0 0 0 3px rgba(8,40,59,0.20);
+
+  /* ---------------------------------------------------------------
+     MOTION
+     --------------------------------------------------------------- */
+  --ease-out:    cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+}
+
+/* =====================================================================
+   SEMANTIC TYPOGRAPHY CLASSES — apply directly OR mix into your own
+   selectors. Names mirror the Figma scale.
+   ===================================================================== */
+
+.display-2xl, h1.display { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-display-2xl); line-height: var(--lh-display-2xl); letter-spacing: var(--ls-display-2xl); color: var(--color-fg-1); }
+.display-xl              { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-display-xl);  line-height: var(--lh-display-xl);  letter-spacing: var(--ls-display-xl);  color: var(--color-fg-1); }
+.display-lg              { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-display-lg);  line-height: var(--lh-display-lg);  letter-spacing: var(--ls-display-lg);  color: var(--color-fg-1); }
+.display-md, h1          { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-display-md);  line-height: var(--lh-display-md);  letter-spacing: var(--ls-display-md);  color: var(--color-fg-1); }
+.display-sm, h2          { font-family: var(--font-sans);    font-weight: var(--weight-bold); font-size: var(--text-display-sm);  line-height: var(--lh-display-sm);  color: var(--color-fg-1); }
+.display-xs, h3          { font-family: var(--font-sans);    font-weight: var(--weight-semibold); font-size: var(--text-display-xs); line-height: var(--lh-display-xs); color: var(--color-fg-1); }
+
+.text-xl, h4 { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-xl); line-height: var(--lh-xl); color: var(--color-fg-1); }
+.text-lg, h5 { font-family: var(--font-sans); font-weight: var(--weight-semibold); font-size: var(--text-lg); line-height: var(--lh-lg); color: var(--color-fg-1); }
+.text-md, p  { font-family: var(--font-sans); font-weight: var(--weight-regular);  font-size: var(--text-md); line-height: var(--lh-md); color: var(--color-fg-2); }
+.text-sm     { font-family: var(--font-sans); font-weight: var(--weight-regular);  font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--color-fg-2); }
+.text-xs     { font-family: var(--font-sans); font-weight: var(--weight-regular);  font-size: var(--text-xs); line-height: var(--lh-xs); color: var(--color-fg-3); }
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-3);
+}
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-fg-2);
+}
+
+a {
+  color: var(--color-fg-link);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+a:hover { color: var(--color-fg-link-hover); text-decoration: underline; }

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-label="Rising timeline from National Service in October 2024 through the AWS Cloud Practitioner and Developer Associate certifications to Software Engineer in 2025">
+  <style>
+    .mono { font-family: "JetBrains Mono", ui-monospace, monospace }
+    .trace { stroke-dasharray: 1100; animation: draw 2.4s cubic-bezier(.16,1,.3,1) both }
+    @keyframes draw { from { stroke-dashoffset: 1100 } to { stroke-dashoffset: 0 } }
+    .node { animation: pop .5s cubic-bezier(.16,1,.3,1) both }
+    .node:nth-of-type(1) { animation-delay: .5s } .node:nth-of-type(2) { animation-delay: 1.1s }
+    .node:nth-of-type(3) { animation-delay: 1.7s } .node:nth-of-type(4) { animation-delay: 2.2s }
+    @keyframes pop { from { opacity: 0; transform: scale(.6) } to { opacity: 1; transform: scale(1) } }
+    @media (prefers-reduced-motion: reduce) { .trace, .node { animation: none } }
+  </style>
+  <defs>
+    <pattern id="fh-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#6AFF00" stroke-opacity=".07"/>
+    </pattern>
+    <linearGradient id="fh-line" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f8f00"/><stop offset="1" stop-color="#6AFF00"/>
+    </linearGradient>
+    <linearGradient id="fh-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6AFF00" stop-opacity=".2"/><stop offset="1" stop-color="#6AFF00" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="540" fill="#06140a"/>
+  <rect width="960" height="540" fill="url(#fh-grid)"/>
+
+  <text class="mono" x="56" y="62" font-size="20" fill="#eefff0">year one</text>
+  <text class="mono" x="56" y="86" font-size="13" fill="#7fcc66">national service &#8594; AWS-certified engineer</text>
+
+  <path d="M120 400 C300 396 320 288 480 278 C640 268 660 186 830 172 V450 H120 Z" fill="url(#fh-fill)"/>
+  <path class="trace" d="M120 400 C300 396 320 288 480 278 C640 268 660 186 830 172"
+        fill="none" stroke="url(#fh-line)" stroke-width="3.4" stroke-linecap="round"/>
+
+  <line x1="56" y1="450" x2="904" y2="450" stroke="#173311" stroke-width="1.5"/>
+
+  <g class="node" style="transform-origin:120px 400px">
+    <circle cx="120" cy="400" r="10" fill="#0b1f0a" stroke="#6AFF00" stroke-width="2.4"/>
+    <text class="mono" x="120" y="478" font-size="12" fill="#7fcc66" text-anchor="middle">Oct 2024</text>
+    <text class="mono" x="120" y="374" font-size="13" fill="#eefff0" text-anchor="middle">NSP</text>
+  </g>
+
+  <g class="node" style="transform-origin:480px 278px">
+    <circle cx="480" cy="278" r="13" fill="#0b1f0a" stroke="#6AFF00" stroke-width="2.4"/>
+    <path d="M473 278 l5 5 9-11" fill="none" stroke="#6AFF00" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="mono" x="480" y="478" font-size="12" fill="#7fcc66" text-anchor="middle">2024</text>
+    <text class="mono" x="480" y="246" font-size="13.5" fill="#eefff0" text-anchor="middle">Cloud Practitioner</text>
+  </g>
+
+  <g class="node" style="transform-origin:830px 172px">
+    <circle cx="830" cy="172" r="16" fill="#0b1f0a" stroke="#6AFF00" stroke-width="2.4"/>
+    <path d="M830 161 l3.2 6.6 7.3 1.1-5.3 5.2 1.2 7.3-6.4-3.4-6.4 3.4 1.2-7.3-5.3-5.2 7.3-1.1z" fill="#6AFF00"/>
+    <text class="mono" x="830" y="478" font-size="12" fill="#7fcc66" text-anchor="middle">2025</text>
+    <text class="mono" x="830" y="138" font-size="13.5" fill="#eefff0" text-anchor="middle">Developer Associate</text>
+  </g>
+
+  <g class="node">
+    <rect x="676" y="392" width="228" height="36" rx="18" fill="#0b1f0a" stroke="#173311"/>
+    <circle cx="698" cy="410" r="5" fill="#34d17e"/>
+    <text class="mono" x="714" y="415" font-size="12" fill="#7fcc66">Software Engineer</text>
+  </g>
+
+  <text class="mono" x="56" y="512" font-size="11.5" fill="#4d8c3c">ask the naive question &#183; own the boring task</text>
+</svg>
