@@ -72,15 +72,19 @@ Hero, About, Experience, Contact, Resume, Settings (page title, meta description
 reduce-motion), the four blog posts (title, category, date, read time, image alt, excerpt, body),
 per-post publish state, and the eight blog image slots via the Media pane.
 
+Certifications, Tech stack, Projects and the Experience timeline are **lists** — add, edit,
+reorder and remove entries in the dashboard. The portfolio clones the design's own first item as a
+template, so new entries inherit its exact styling rather than approximating it.
+
 ### Known limits
 
 - **The blog layout is built for four posts** — one featured plus three minis, each with its own
   image slot. The two extra drafts in the CMS are stored and editable, but publishing one does
   not add a fifth card; that needs a design change.
-- **Certifications, Tech stack and Projects** have no editable inputs in the CMS design (they're
-  static lists there), so those sections are not CMS-driven.
 - An article's prose is only replaced when the CMS body field is non-empty; otherwise the copy
   written into the design stands.
+- The CMS's **References** resume toggle persists but has no counterpart — the resume sheet in the
+  design has five sections and no References block to show.
 
 ## Environment
 
