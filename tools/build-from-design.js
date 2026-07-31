@@ -155,7 +155,7 @@ const BINDINGS = [
   ['about.heading', 'The engineer behind the cloud'],
   ['about.body', 'Daniel is a backend &amp; cloud engineer at AmaliTech who turns'],
 
-  ['experience.description', 'Building and maintaining backend services on AWS'],
+  // experience rows are rendered from experience.items[], so no single-field binding
 
   // anchors must not begin with '>' — that '>' is the target's own tag end, which
   // would resolve one level too high, to the parent
@@ -357,13 +357,14 @@ const CMS_FIELDS = {
     null, // range: grain, presentation only
   ],
   about: ['about.heading', 'about.body', 'about.region', 'about.timezone', 'about.years'],
+  // These edit the most recent role; the rest of the timeline is the list editor.
   experience: [
-    'experience.role',
-    'experience.company',
-    'experience.start',
-    'experience.end',
-    'experience.location',
-    'experience.description',
+    'experience.items.0.role',
+    'experience.items.0.company',
+    'experience.items.0.start',
+    'experience.items.0.end',
+    'experience.items.0.location',
+    'experience.items.0.description',
   ],
   contact: ['contact.email', 'contact.linkedin', 'contact.github', 'contact.successMessage'],
   resume: ['resume.name', 'resume.title', 'resume.summary', 'resume.filename'],
@@ -1033,6 +1034,9 @@ ${SHARED_RUNTIME}
   if (root) root.dataset.theme = 'dark';
   styleShim();
   bindHandlers(handlers, ['click', 'mousemove', 'submit', 'keydown']);
+
+  // the content hydrator clones experience rows, which need this handler attached
+  window.__toggleCtRow = handlers.toggleRow;
   initCounters();
   initScan();
   initCursor();
@@ -1211,6 +1215,207 @@ const HYDRATE_RUNTIME = `
     });
   }
 
+  /* ---------------- editable collections ----------------
+   * Certifications, tech stack, projects and the experience timeline are rendered
+   * from the content lists. The design's own first item is kept as a template and
+   * cloned, so CMS-added entries inherit the exact styling — including the
+   * per-position transforms on the certificate cards.
+   * ------------------------------------------------------ */
+
+  var templates = {};
+
+  function template(name, node) {
+    if (!templates[name] && node) templates[name] = node.cloneNode(true);
+    return templates[name];
+  }
+
+  // grow or shrink a container to hold exactly count clones of its template
+  function reflow(container, name, count, first) {
+    var tpl = template(name, first);
+    if (!container || !tpl) return [];
+    var existing = Array.prototype.slice.call(container.children).filter(function (c) {
+      return c.matches(tpl.tagName + (tpl.className ? '.' + tpl.className.split(' ')[0] : ''));
+    });
+    while (existing.length > count) container.removeChild(existing.pop());
+    while (existing.length < count) {
+      var clone = tpl.cloneNode(true);
+      container.appendChild(clone);
+      existing.push(clone);
+    }
+    return existing;
+  }
+
+  function applyCerts(content) {
+    var certs = content.certs;
+    if (!Array.isArray(certs) || !certs.length) return;
+    var grid = document.querySelector('.cert-grid');
+    if (!grid) return;
+    var cards = reflow(grid, 'cert', certs.length, grid.querySelector('.cert-card'));
+
+    cards.forEach(function (card, i) {
+      var cert = certs[i];
+      var level = card.querySelector('div[style*="text-transform:uppercase"]');
+      var title = card.querySelector('h3');
+      var meta = card.querySelector('p');
+      if (level) setText(level, cert.level);
+      if (title) setText(title, cert.title);
+      if (meta) {
+        meta.textContent = [cert.issuer, cert.year].filter(Boolean).join(' · ');
+      }
+    });
+  }
+
+  function applyStack(content) {
+    var groups = content.stack;
+    if (!Array.isArray(groups) || !groups.length) return;
+
+    // every group heading + its tile grid, in document order
+    var stackRoot = document.getElementById('dc-setStack');
+    if (!stackRoot) return;
+    var tileGrids = Array.prototype.slice.call(
+      stackRoot.querySelectorAll('div[style*="repeat(auto-fill"]')
+    );
+    if (!tileGrids.length) return;
+
+    var firstTile = stackRoot.querySelector('.svc-tile');
+    template('tile', firstTile);
+
+    groups.forEach(function (group, gi) {
+      var grid = tileGrids[gi];
+      if (!grid || !Array.isArray(group.items)) return;
+
+      // group label sits just above its grid
+      var heading = grid.previousElementSibling;
+      if (heading && group.group) setText(heading, group.group);
+
+      var tiles = reflow(grid, 'tile', group.items.length, firstTile);
+      tiles.forEach(function (tile, i) {
+        var item = group.items[i];
+        var spans = tile.querySelectorAll('span');
+        if (spans[0]) setText(spans[0], item.icon);
+        if (spans[1]) setText(spans[1], item.label);
+        var tip = tile.querySelector('.svc-tip');
+        if (tip) setText(tip, item.tip);
+        if (item.tip) tile.setAttribute('data-tip', item.tip);
+      });
+    });
+
+    // drop any group the content no longer has
+    tileGrids.slice(groups.length).forEach(function (grid) {
+      if (grid.previousElementSibling) grid.previousElementSibling.style.display = 'none';
+      grid.style.display = 'none';
+    });
+  }
+
+  function applyProjects(content) {
+    var projects = content.projects;
+    if (!Array.isArray(projects) || !projects.length) return;
+    var grid = document.querySelector('.proj-grid');
+    if (!grid) return;
+
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('article.proj-card'));
+    if (!cards.length) return;
+    // the featured card is its own shape; the rest share one
+    template('projFeat', cards[0]);
+    template('projSmall', cards[1] || cards[0]);
+
+    while (cards.length > projects.length) grid.removeChild(cards.pop());
+    while (cards.length < projects.length) {
+      var clone = templates.projSmall.cloneNode(true);
+      grid.appendChild(clone);
+      cards.push(clone);
+    }
+
+    cards.forEach(function (card, i) {
+      var project = projects[i];
+      var title = card.querySelector('h3');
+      var desc = card.querySelector('p:not([style*="Syne Mono"])') || card.querySelector('p');
+      if (title) setText(title, project.title);
+      if (desc) setText(desc, project.description);
+
+      // status chip: first span, recoloured for in-development entries
+      var chip = card.querySelector('span');
+      if (chip && project.status) {
+        setText(chip, project.status);
+        var live = project.live !== false;
+        chip.style.color = live ? '#34d17e' : '#f0a020';
+        chip.style.background = live ? 'rgba(40,200,120,.1)' : 'rgba(240,160,32,.1)';
+        chip.style.borderColor = live ? 'rgba(40,200,120,.35)' : 'rgba(240,160,32,.35)';
+      }
+
+      // tags: the row of chips inside the card's footer
+      if (Array.isArray(project.tags)) {
+        var tagRow = card.querySelector('div[style*="flex-wrap:wrap"]');
+        if (tagRow) {
+          var tagTpl = tagRow.querySelector('span');
+          if (tagTpl) {
+            var proto = tagTpl.cloneNode(true);
+            tagRow.textContent = '';
+            project.tags.forEach(function (tag) {
+              var span = proto.cloneNode(true);
+              span.textContent = tag;
+              tagRow.appendChild(span);
+            });
+          }
+        }
+      }
+
+      // repo link — hidden when there's nothing to point at
+      var link = card.querySelector('a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
+      if (link) {
+        if (project.repo) {
+          link.href = project.repo;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.style.display = '';
+        } else {
+          link.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  function applyExperience(content) {
+    var items = content.experience && content.experience.items;
+    if (!Array.isArray(items) || !items.length) return;
+    var card = document.querySelector('.ct-card');
+    if (!card) return;
+
+    var rows = Array.prototype.slice.call(card.querySelectorAll('[data-ct-row]'));
+    if (!rows.length) return;
+    template('ctRow', rows[0]);
+
+    while (rows.length > items.length) card.removeChild(rows.pop());
+    while (rows.length < items.length) {
+      var clone = templates.ctRow.cloneNode(true);
+      // cloned rows need the expand handler the ported runtime binds by attribute
+      clone.setAttribute('data-on-click', 'toggleRow');
+      clone.addEventListener('click', window.__toggleCtRow || function () {});
+      card.appendChild(clone);
+      rows.push(clone);
+    }
+
+    rows.forEach(function (row, i) {
+      var item = items[i];
+      var cells = row.querySelectorAll(':scope > div:first-child > span');
+      if (cells[0]) setText(cells[0], [item.start, item.end].filter(Boolean).join(' → '));
+      if (cells[1]) setText(cells[1], item.company);
+      if (cells[2]) setText(cells[2], item.role);
+      if (cells[3]) {
+        setText(cells[3], item.status || 'COMPLETED');
+        var active = (item.status || '').toUpperCase() === 'ACTIVE';
+        cells[3].style.color = active ? '#34d17e' : 'var(--text-2)';
+        var dot = cells[3].querySelector('span');
+        if (dot) dot.style.display = active ? '' : 'none';
+      }
+      var detail = row.querySelector('[data-ct-detail] p');
+      if (detail) setText(detail, item.description);
+      // collapse a freshly cloned row
+      var panel = row.querySelector('[data-ct-detail]');
+      if (panel && !panel.style.maxHeight) panel.style.maxHeight = '0px';
+    });
+  }
+
   function applyMedia(content) {
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
@@ -1233,6 +1438,10 @@ const HYDRATE_RUNTIME = `
   function hydrate(content) {
     if (!content || typeof content !== 'object') return;
     applyScalars(content);
+    applyCerts(content);
+    applyStack(content);
+    applyProjects(content);
+    applyExperience(content);
     applyPosts(content);
     applyMedia(content);
     applyVisibility(content);
@@ -1603,7 +1812,14 @@ const CMS_DATA_RUNTIME = `
   // ---- sidebar counts ----------------------------------------------------
   function populateCounts() {
     var posts = (content.blog && content.blog.posts) || [];
-    var counts = { posts: posts.filter(function (p) { return p.published !== false; }).length };
+    var stackGroups = get('stack') || [];
+    var counts = {
+      posts: posts.filter(function (p) { return p.published !== false; }).length,
+      certs: (get('certs') || []).length,
+      projects: (get('projects') || []).length,
+      experience: (get('experience.items') || []).length,
+      stack: stackGroups.reduce(function (n, g) { return n + ((g.items && g.items.length) || 0); }, 0),
+    };
     qa('[data-count]').forEach(function (el) {
       var key = el.getAttribute('data-count');
       if (counts[key] !== undefined) el.textContent = String(counts[key]);
@@ -1761,6 +1977,300 @@ const CMS_DATA_RUNTIME = `
         window.cmsToast('Image attached — save to publish it');
       })
       .catch(function (err) { window.cmsToast(err.message); });
+  }
+
+  /* ---------------- collection editors ----------------
+   * Certifications, tech stack, projects and the experience timeline are lists in
+   * the content document but static markup in the design. Each pane gets a real
+   * editor: one row per entry, add and remove, reorder — and the portfolio renders
+   * whatever ends up here.
+   * ---------------------------------------------------- */
+
+  var COLLECTIONS = {
+    certs: {
+      pane: 'certs',
+      path: 'certs',
+      label: 'certification',
+      fields: [
+        { key: 'title', label: 'Certification', width: '2fr' },
+        { key: 'level', label: 'Level', width: '1fr' },
+        { key: 'issuer', label: 'Issuer', width: '1.5fr' },
+        { key: 'year', label: 'Year', width: '.6fr' },
+      ],
+      blank: { title: '', level: 'Associate', issuer: 'Amazon Web Services', year: '' },
+    },
+    projects: {
+      pane: 'projects',
+      path: 'projects',
+      label: 'project',
+      fields: [
+        { key: 'title', label: 'Project', width: '1.4fr' },
+        { key: 'status', label: 'Status', width: '1fr' },
+        { key: 'description', label: 'Description', width: '2.4fr', textarea: true },
+        { key: 'tags', label: 'Tags (comma separated)', width: '1.4fr', list: true },
+        { key: 'repo', label: 'Repo URL', width: '1.2fr' },
+      ],
+      blank: { title: '', status: 'Status: In Development', live: false, description: '', tags: [], repo: '' },
+    },
+    experience: {
+      pane: 'experience',
+      path: 'experience.items',
+      label: 'timeline entry',
+      fields: [
+        { key: 'role', label: 'Role', width: '1.4fr' },
+        { key: 'company', label: 'Organisation', width: '1.2fr' },
+        { key: 'start', label: 'From', width: '.8fr' },
+        { key: 'end', label: 'To', width: '.8fr' },
+        { key: 'status', label: 'Status', width: '.9fr' },
+        { key: 'description', label: 'Detail', width: '2.4fr', textarea: true },
+      ],
+      blank: { role: '', company: '', start: '', end: '', location: '', status: 'COMPLETED', description: '' },
+    },
+  };
+
+  var inputCss =
+    "font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text,#eefff0);" +
+    'background:var(--bg,#020a02);border:1px solid var(--border-hi,#173311);border-radius:7px;' +
+    'padding:8px 10px;outline:none;width:100%;box-sizing:border-box';
+  var miniBtnCss =
+    "font-family:'Syne Mono',monospace;font-size:11px;padding:6px 9px;border-radius:6px;cursor:pointer;" +
+    'background:none;border:1px solid var(--border-hi,#173311);color:var(--text-2,#7fcc66)';
+
+  function collectionArray(spec) {
+    var arr = get(spec.path);
+    if (!Array.isArray(arr)) {
+      arr = [];
+      set(spec.path, arr);
+    }
+    return arr;
+  }
+
+  function buildCollectionEditor(spec) {
+    var pane = root.querySelector('[data-panel="' + spec.pane + '"]');
+    if (!pane) return;
+
+    var host = pane.querySelector('[data-collection]');
+    if (!host) {
+      host = document.createElement('div');
+      host.setAttribute('data-collection', spec.path);
+      host.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:18px';
+      // the design's static rows are a mockup of this data — hide them so there's
+      // one obvious place to edit
+      Array.prototype.slice.call(pane.children).forEach(function (child) {
+        if (child.querySelector && child.querySelector('[data-add]')) return; // keep the Add button row
+        if (child === host) return;
+        if (child.tagName === 'H2' || child.tagName === 'H3') return;
+        if (child.querySelector && (child.querySelector('input') || child.querySelector('textarea'))) return;
+        child.style.display = 'none';
+      });
+      pane.appendChild(host);
+    }
+    renderCollection(spec, host);
+  }
+
+  function renderCollection(spec, host) {
+    var arr = collectionArray(spec);
+    host.textContent = '';
+
+    if (!arr.length) {
+      var empty = document.createElement('p');
+      empty.textContent = 'Nothing here yet — use “+ Add” below.';
+      empty.style.cssText =
+        "margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3,#4d8c3c)";
+      host.appendChild(empty);
+    }
+
+    arr.forEach(function (item, index) {
+      var row = document.createElement('div');
+      row.style.cssText =
+        'display:grid;grid-template-columns:' +
+        spec.fields.map(function (f) { return f.width; }).join(' ') +
+        ' auto;gap:9px;align-items:end;padding:12px;border:1px solid var(--border-hi,#173311);' +
+        'border-radius:10px;background:var(--surface,#06140a)';
+
+      spec.fields.forEach(function (field) {
+        var wrap = document.createElement('label');
+        wrap.style.cssText =
+          "display:flex;flex-direction:column;gap:4px;font-family:'Syne Mono',monospace;" +
+          'font-size:10px;letter-spacing:.05em;color:var(--text-3,#4d8c3c);min-width:0';
+        var span = document.createElement('span');
+        span.textContent = field.label;
+
+        var input = document.createElement(field.textarea ? 'textarea' : 'input');
+        if (field.textarea) input.rows = 2;
+        input.style.cssText = inputCss + (field.textarea ? ';resize:vertical' : '');
+        var value = item[field.key];
+        input.value = field.list ? (Array.isArray(value) ? value.join(', ') : '') : value == null ? '' : value;
+
+        input.addEventListener('input', function () {
+          if (field.list) {
+            item[field.key] = input.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+          } else {
+            item[field.key] = input.value;
+          }
+          // keep the status chip colour honest for projects
+          if (spec.path === 'projects' && field.key === 'status') {
+            item.live = !/development|draft|planned|wip/i.test(input.value);
+          }
+          window.cmsDirty(true);
+        });
+
+        wrap.appendChild(span);
+        wrap.appendChild(input);
+        row.appendChild(wrap);
+      });
+
+      var tools = document.createElement('div');
+      tools.style.cssText = 'display:flex;gap:6px';
+
+      function toolBtn(label, title, onClick) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.title = title;
+        b.style.cssText = miniBtnCss;
+        b.addEventListener('click', onClick);
+        return b;
+      }
+
+      if (index > 0) {
+        tools.appendChild(toolBtn('↑', 'Move up', function () {
+          arr.splice(index - 1, 0, arr.splice(index, 1)[0]);
+          window.cmsDirty(true);
+          renderCollection(spec, host);
+        }));
+      }
+      if (index < arr.length - 1) {
+        tools.appendChild(toolBtn('↓', 'Move down', function () {
+          arr.splice(index + 1, 0, arr.splice(index, 1)[0]);
+          window.cmsDirty(true);
+          renderCollection(spec, host);
+        }));
+      }
+      var del = toolBtn('Remove', 'Remove this entry', function () {
+        if (!window.confirm('Remove “' + (item.title || item.role || 'this entry') + '”?')) return;
+        arr.splice(index, 1);
+        window.cmsDirty(true);
+        renderCollection(spec, host);
+        populateCounts();
+      });
+      del.style.cssText = miniBtnCss + ';border-color:rgba(255,138,160,.4);color:#ff8aa0';
+      tools.appendChild(del);
+
+      row.appendChild(tools);
+      host.appendChild(row);
+    });
+  }
+
+  // The tech stack is groups of tiles, so it gets its own editor shape.
+  function buildStackEditor() {
+    var pane = root.querySelector('[data-panel="stack"]');
+    if (!pane) return;
+    var host = pane.querySelector('[data-collection="stack"]');
+    if (!host) {
+      host = document.createElement('div');
+      host.setAttribute('data-collection', 'stack');
+      host.style.cssText = 'display:flex;flex-direction:column;gap:16px;margin-top:18px';
+      Array.prototype.slice.call(pane.children).forEach(function (child) {
+        if (child.querySelector && child.querySelector('[data-add]')) return;
+        if (child.tagName === 'H2' || child.tagName === 'H3') return;
+        child.style.display = 'none';
+      });
+      pane.appendChild(host);
+    }
+    renderStack(host);
+  }
+
+  function renderStack(host) {
+    var groups = get('stack');
+    if (!Array.isArray(groups)) { groups = []; set('stack', groups); }
+    host.textContent = '';
+
+    groups.forEach(function (group, gi) {
+      var box = document.createElement('div');
+      box.style.cssText =
+        'display:flex;flex-direction:column;gap:9px;padding:13px;border:1px solid var(--border-hi,#173311);' +
+        'border-radius:10px;background:var(--surface,#06140a)';
+
+      var head = document.createElement('div');
+      head.style.cssText = 'display:flex;gap:8px;align-items:center';
+      var name = document.createElement('input');
+      name.value = group.group || '';
+      name.style.cssText = inputCss + ';font-weight:600';
+      name.addEventListener('input', function () { group.group = name.value; window.cmsDirty(true); });
+
+      var addTile = document.createElement('button');
+      addTile.type = 'button';
+      addTile.textContent = '+ Service';
+      addTile.style.cssText = miniBtnCss;
+      addTile.addEventListener('click', function () {
+        if (!Array.isArray(group.items)) group.items = [];
+        group.items.push({ icon: '⬢', label: '', tip: '' });
+        window.cmsDirty(true);
+        renderStack(host);
+      });
+
+      var delGroup = document.createElement('button');
+      delGroup.type = 'button';
+      delGroup.textContent = 'Remove group';
+      delGroup.style.cssText = miniBtnCss + ';border-color:rgba(255,138,160,.4);color:#ff8aa0';
+      delGroup.addEventListener('click', function () {
+        if (!window.confirm('Remove the “' + (group.group || 'untitled') + '” group and its services?')) return;
+        groups.splice(gi, 1);
+        window.cmsDirty(true);
+        renderStack(host);
+      });
+
+      head.appendChild(name);
+      head.appendChild(addTile);
+      head.appendChild(delGroup);
+      box.appendChild(head);
+
+      (group.items || []).forEach(function (item, ii) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:grid;grid-template-columns:60px 1.2fr 2.4fr auto;gap:8px;align-items:center';
+
+        ['icon', 'label', 'tip'].forEach(function (key) {
+          var input = document.createElement('input');
+          input.value = item[key] == null ? '' : item[key];
+          input.placeholder = key === 'icon' ? '🖥️' : key === 'label' ? 'EC2' : 'Tooltip shown on hover';
+          input.style.cssText = inputCss + (key === 'icon' ? ';text-align:center' : '');
+          input.addEventListener('input', function () { item[key] = input.value; window.cmsDirty(true); });
+          row.appendChild(input);
+        });
+
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.textContent = '×';
+        rm.title = 'Remove service';
+        rm.style.cssText = miniBtnCss + ';border-color:rgba(255,138,160,.4);color:#ff8aa0';
+        rm.addEventListener('click', function () {
+          group.items.splice(ii, 1);
+          window.cmsDirty(true);
+          renderStack(host);
+        });
+        row.appendChild(rm);
+        box.appendChild(row);
+      });
+
+      host.appendChild(box);
+    });
+  }
+
+  function buildCollectionEditors() {
+    Object.keys(COLLECTIONS).forEach(function (key) { buildCollectionEditor(COLLECTIONS[key]); });
+    buildStackEditor();
+  }
+
+  function refreshCollections() {
+    Object.keys(COLLECTIONS).forEach(function (key) {
+      var spec = COLLECTIONS[key];
+      var pane = root.querySelector('[data-panel="' + spec.pane + '"]');
+      var host = pane && pane.querySelector('[data-collection]');
+      if (host) renderCollection(spec, host);
+    });
+    var stackHost = root.querySelector('[data-collection="stack"]');
+    if (stackHost) renderStack(stackHost);
   }
 
   /* ---------------- change password (settings pane) ---------------- */
@@ -2090,6 +2600,7 @@ const CMS_DATA_RUNTIME = `
       .then(function (data) {
         content = data.content;
         populate();
+        buildCollectionEditors();
         loadInbox();
         buildPasswordCard();
       })
@@ -2169,19 +2680,51 @@ const CMS_DATA_RUNTIME = `
       return;
     }
 
-    // The "+ Add" buttons for certifications, services and projects have nothing to
-    // write to: those portfolio sections are fixed markup in the design, not lists.
-    // Say so plainly instead of pretending something was added.
+    // "+ Add" appends a real entry to whichever collection this pane edits.
     var add = e.target.closest('[data-add]');
     if (add) {
       e.stopPropagation();
-      var label = (add.textContent || '').toLowerCase();
-      if (label.indexOf('media') !== -1 || label.indexOf('upload') !== -1) {
+      var pane = add.closest('[data-panel]');
+      var paneName = pane && pane.getAttribute('data-panel');
+
+      if (paneName === 'media' || paneName === 'blog') {
         if (window.cmsGo) window.cmsGo('media');
-        window.cmsToast('Pick a slot below and choose an image');
-      } else {
-        window.cmsToast('Not editable yet — this section is fixed in the portfolio design');
+        window.cmsToast('Pick a slot and choose an image');
+        return;
       }
+
+      if (paneName === 'stack') {
+        var groups = get('stack') || [];
+        groups.push({ group: 'New group', items: [{ icon: '⬢', label: '', tip: '' }] });
+        set('stack', groups);
+        renderStack(root.querySelector('[data-collection="stack"]'));
+        window.cmsDirty(true);
+        window.cmsToast('Group added — name it, then save');
+        return;
+      }
+
+      var spec = null;
+      Object.keys(COLLECTIONS).forEach(function (key) {
+        if (COLLECTIONS[key].pane === paneName) spec = COLLECTIONS[key];
+      });
+      if (spec) {
+        var arr = collectionArray(spec);
+        arr.push(JSON.parse(JSON.stringify(spec.blank)));
+        renderCollection(spec, root.querySelector('[data-panel="' + spec.pane + '"] [data-collection]'));
+        populateCounts();
+        window.cmsDirty(true);
+        window.cmsToast('Added a ' + spec.label + ' — fill it in, then save');
+        return;
+      }
+
+      // resume "version history": the real versions are the stored content snapshots
+      if (paneName === 'resume') {
+        if (window.cmsGo) window.cmsGo('media');
+        window.cmsToast('Upload a resume PDF in Media, then link it in Settings');
+        return;
+      }
+
+      window.cmsToast('Nothing to add here');
       return;
     }
 

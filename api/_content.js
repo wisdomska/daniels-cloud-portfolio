@@ -53,22 +53,112 @@ const DEFAULTS = {
     timezone: 'GMT+0',
     years: '2+',
   },
-  experience: {
-    role: 'Software Engineer',
-    company: 'AmaliTech',
-    start: 'Oct 2025',
-    end: 'Present',
-    location: 'Kumasi, Ghana',
-    description:
-      "Building and maintaining backend services on AWS — designing REST APIs, modelling data in PostgreSQL/MySQL, and shipping serverless and containerised workloads. Working across the full delivery lifecycle with AmaliTech's product teams.",
-  },
-  projects: {
-    statuses: {
-      'leave-management-api': 'Deployed: Production',
-      'incident-service': 'Deployed: Production',
-      's3-media-pipeline': 'Status: In Development',
-      'auth-identity-gateway': 'Deployed: Production',
+  // Editable collections. Each renders its portfolio section wholesale, so adding,
+  // reordering or removing an entry in the CMS changes the site.
+  certs: [
+    { level: 'Associate', title: 'AWS Certified Developer', issuer: 'Amazon Web Services', year: '2025' },
+    { level: 'Foundational', title: 'AWS Cloud Practitioner', issuer: 'Amazon Web Services', year: '2024' },
+    { level: 'Badge', title: 'Data Protection & DR', issuer: 'Amazon Web Services', year: '2025' },
+  ],
+  stack: [
+    {
+      group: 'Cloud · AWS',
+      items: [
+        { icon: '🖥️', label: 'EC2', tip: 'Core compute for AmaliTech services' },
+        { icon: 'λ', label: 'Lambda', tip: 'Serverless APIs & background jobs' },
+        { icon: '🪣', label: 'S3', tip: 'Static assets & media storage' },
+        { icon: '🗄️', label: 'RDS', tip: 'Managed relational databases' },
+        { icon: '🚪', label: 'API GW', tip: 'Request routing & throttling' },
+        { icon: '📊', label: 'CloudWatch', tip: 'Observability, logs & alarms' },
+      ],
     },
+    {
+      group: 'Backend & Languages',
+      items: [
+        { icon: '🟩', label: 'Node.js', tip: 'Primary runtime for APIs & services' },
+        { icon: '🟨', label: 'JavaScript', tip: 'Core language across the stack' },
+        { icon: '🔌', label: 'REST API', tip: 'Designing clean, versioned REST APIs' },
+      ],
+    },
+    {
+      group: 'Database & DevOps',
+      items: [
+        { icon: '🐘', label: 'PostgreSQL', tip: 'Primary relational store' },
+        { icon: '🐬', label: 'MySQL', tip: 'Relational workloads & reporting' },
+        { icon: '🐳', label: 'Docker', tip: 'Containerising services for deploy' },
+        { icon: '🌿', label: 'Git', tip: 'Version control, daily' },
+        { icon: '🐙', label: 'GitHub', tip: 'Collaboration, PRs & CI' },
+      ],
+    },
+  ],
+  projects: [
+    {
+      title: 'Leave Management API',
+      status: 'Deployed: Production',
+      live: true,
+      description:
+        "Serverless leave-request platform — approvals, balances and notifications running on Lambda + API Gateway with a PostgreSQL store. Designed for AmaliTech's internal tooling.",
+      tags: ['NODE.JS', 'AWS LAMBDA', 'POSTGRESQL', 'API GATEWAY'],
+      repo: '',
+    },
+    {
+      title: 'Incident Service',
+      status: 'Deployed: Production',
+      live: true,
+      description: 'REST microservice for tracking and routing incidents — containerised and observable.',
+      tags: ['NODE.JS', 'MYSQL', 'DOCKER'],
+      repo: '',
+    },
+    {
+      title: 'S3 Media Pipeline',
+      status: 'Status: In Development',
+      live: false,
+      description: 'Event-driven upload & transform pipeline — S3 triggers Lambda, metrics flow to CloudWatch.',
+      tags: ['AWS S3', 'LAMBDA', 'NODE.JS'],
+      repo: '',
+    },
+    {
+      title: 'Auth & Identity Gateway',
+      status: 'Deployed: Production',
+      live: true,
+      description: 'JWT-based authentication service with role-based access, powering downstream APIs.',
+      tags: ['NODE.JS', 'POSTGRESQL', 'REST'],
+      repo: '',
+    },
+  ],
+  experience: {
+    items: [
+      {
+        role: 'Software Engineer',
+        company: 'AmaliTech',
+        start: 'Oct 2025',
+        end: 'Now',
+        location: 'Kumasi, Ghana',
+        status: 'ACTIVE',
+        description:
+          "Building and maintaining backend services on AWS — designing REST APIs, modelling data in PostgreSQL/MySQL, and shipping serverless and containerised workloads. Working across the full delivery lifecycle with AmaliTech's product teams.",
+      },
+      {
+        role: 'Back End Developer · NSP',
+        company: 'AmaliTech',
+        start: 'Oct 2024',
+        end: 'Sep 2025',
+        location: 'Kumasi, Ghana',
+        status: 'COMPLETED',
+        description:
+          'National Service placement as a backend developer — contributed to internal APIs and services, gained hands-on AWS experience, and earned AWS certifications while shipping production features.',
+      },
+      {
+        role: 'BSc Computer Science',
+        company: 'Accra Institute of Tech',
+        start: '2020',
+        end: '2024',
+        location: 'Accra, Ghana',
+        status: 'GRADUATED',
+        description:
+          'BSc in Computer Science — foundations in algorithms, data structures, databases and software engineering that underpin the backend and cloud work today.',
+      },
+    ],
   },
   contact: {
     email: 'daniel.lotsu.jnr@gmail.com',
@@ -203,6 +293,10 @@ function withDefaults(stored, defaults = DEFAULTS) {
     const s = stored[key];
     if (isPlain(d)) out[key] = withDefaults(s, d);
     else if (s === undefined) out[key] = d;
+    // A stored value of a different shape than the default is from an older
+    // schema — e.g. projects used to be an object of statuses and is now a list.
+    // Take the default so the new shape wins instead of shipping the old one.
+    else if (Array.isArray(d) !== Array.isArray(s)) out[key] = d;
     else out[key] = s;
   }
   // preserve extra keys the CMS may add ahead of this file

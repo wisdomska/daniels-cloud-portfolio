@@ -530,7 +530,7 @@ apply complete · 6 added · 0 changed
             <span data-chev style="color:var(--text-2);transition:transform .25s ease;text-align:center">▾</span>
           </div>
           <div data-ct-detail style="max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.16,1,.3,1)">
-            <p data-content="experience.description" style="margin:0;padding:0 22px 20px;color:var(--text-2);font-size:14px;line-height:1.6;max-width:80ch">Building and maintaining backend services on AWS — designing REST APIs, modelling data in PostgreSQL/MySQL, and shipping serverless and containerised workloads. Working across the full delivery lifecycle with AmaliTech's product teams.</p>
+            <p style="margin:0;padding:0 22px 20px;color:var(--text-2);font-size:14px;line-height:1.6;max-width:80ch">Building and maintaining backend services on AWS — designing REST APIs, modelling data in PostgreSQL/MySQL, and shipping serverless and containerised workloads. Working across the full delivery lifecycle with AmaliTech's product teams.</p>
           </div>
         </div>
 
@@ -1287,6 +1287,9 @@ export const handler = async (event) =&gt; {
   if (root) root.dataset.theme = 'dark';
   styleShim();
   bindHandlers(handlers, ['click', 'mousemove', 'submit', 'keydown']);
+
+  // the content hydrator clones experience rows, which need this handler attached
+  window.__toggleCtRow = handlers.toggleRow;
   initCounters();
   initScan();
   initCursor();
@@ -1456,6 +1459,207 @@ export const handler = async (event) =&gt; {
     });
   }
 
+  /* ---------------- editable collections ----------------
+   * Certifications, tech stack, projects and the experience timeline are rendered
+   * from the content lists. The design's own first item is kept as a template and
+   * cloned, so CMS-added entries inherit the exact styling — including the
+   * per-position transforms on the certificate cards.
+   * ------------------------------------------------------ */
+
+  var templates = {};
+
+  function template(name, node) {
+    if (!templates[name] && node) templates[name] = node.cloneNode(true);
+    return templates[name];
+  }
+
+  // grow or shrink a container to hold exactly count clones of its template
+  function reflow(container, name, count, first) {
+    var tpl = template(name, first);
+    if (!container || !tpl) return [];
+    var existing = Array.prototype.slice.call(container.children).filter(function (c) {
+      return c.matches(tpl.tagName + (tpl.className ? '.' + tpl.className.split(' ')[0] : ''));
+    });
+    while (existing.length > count) container.removeChild(existing.pop());
+    while (existing.length < count) {
+      var clone = tpl.cloneNode(true);
+      container.appendChild(clone);
+      existing.push(clone);
+    }
+    return existing;
+  }
+
+  function applyCerts(content) {
+    var certs = content.certs;
+    if (!Array.isArray(certs) || !certs.length) return;
+    var grid = document.querySelector('.cert-grid');
+    if (!grid) return;
+    var cards = reflow(grid, 'cert', certs.length, grid.querySelector('.cert-card'));
+
+    cards.forEach(function (card, i) {
+      var cert = certs[i];
+      var level = card.querySelector('div[style*="text-transform:uppercase"]');
+      var title = card.querySelector('h3');
+      var meta = card.querySelector('p');
+      if (level) setText(level, cert.level);
+      if (title) setText(title, cert.title);
+      if (meta) {
+        meta.textContent = [cert.issuer, cert.year].filter(Boolean).join(' · ');
+      }
+    });
+  }
+
+  function applyStack(content) {
+    var groups = content.stack;
+    if (!Array.isArray(groups) || !groups.length) return;
+
+    // every group heading + its tile grid, in document order
+    var stackRoot = document.getElementById('dc-setStack');
+    if (!stackRoot) return;
+    var tileGrids = Array.prototype.slice.call(
+      stackRoot.querySelectorAll('div[style*="repeat(auto-fill"]')
+    );
+    if (!tileGrids.length) return;
+
+    var firstTile = stackRoot.querySelector('.svc-tile');
+    template('tile', firstTile);
+
+    groups.forEach(function (group, gi) {
+      var grid = tileGrids[gi];
+      if (!grid || !Array.isArray(group.items)) return;
+
+      // group label sits just above its grid
+      var heading = grid.previousElementSibling;
+      if (heading && group.group) setText(heading, group.group);
+
+      var tiles = reflow(grid, 'tile', group.items.length, firstTile);
+      tiles.forEach(function (tile, i) {
+        var item = group.items[i];
+        var spans = tile.querySelectorAll('span');
+        if (spans[0]) setText(spans[0], item.icon);
+        if (spans[1]) setText(spans[1], item.label);
+        var tip = tile.querySelector('.svc-tip');
+        if (tip) setText(tip, item.tip);
+        if (item.tip) tile.setAttribute('data-tip', item.tip);
+      });
+    });
+
+    // drop any group the content no longer has
+    tileGrids.slice(groups.length).forEach(function (grid) {
+      if (grid.previousElementSibling) grid.previousElementSibling.style.display = 'none';
+      grid.style.display = 'none';
+    });
+  }
+
+  function applyProjects(content) {
+    var projects = content.projects;
+    if (!Array.isArray(projects) || !projects.length) return;
+    var grid = document.querySelector('.proj-grid');
+    if (!grid) return;
+
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('article.proj-card'));
+    if (!cards.length) return;
+    // the featured card is its own shape; the rest share one
+    template('projFeat', cards[0]);
+    template('projSmall', cards[1] || cards[0]);
+
+    while (cards.length > projects.length) grid.removeChild(cards.pop());
+    while (cards.length < projects.length) {
+      var clone = templates.projSmall.cloneNode(true);
+      grid.appendChild(clone);
+      cards.push(clone);
+    }
+
+    cards.forEach(function (card, i) {
+      var project = projects[i];
+      var title = card.querySelector('h3');
+      var desc = card.querySelector('p:not([style*="Syne Mono"])') || card.querySelector('p');
+      if (title) setText(title, project.title);
+      if (desc) setText(desc, project.description);
+
+      // status chip: first span, recoloured for in-development entries
+      var chip = card.querySelector('span');
+      if (chip && project.status) {
+        setText(chip, project.status);
+        var live = project.live !== false;
+        chip.style.color = live ? '#34d17e' : '#f0a020';
+        chip.style.background = live ? 'rgba(40,200,120,.1)' : 'rgba(240,160,32,.1)';
+        chip.style.borderColor = live ? 'rgba(40,200,120,.35)' : 'rgba(240,160,32,.35)';
+      }
+
+      // tags: the row of chips inside the card's footer
+      if (Array.isArray(project.tags)) {
+        var tagRow = card.querySelector('div[style*="flex-wrap:wrap"]');
+        if (tagRow) {
+          var tagTpl = tagRow.querySelector('span');
+          if (tagTpl) {
+            var proto = tagTpl.cloneNode(true);
+            tagRow.textContent = '';
+            project.tags.forEach(function (tag) {
+              var span = proto.cloneNode(true);
+              span.textContent = tag;
+              tagRow.appendChild(span);
+            });
+          }
+        }
+      }
+
+      // repo link — hidden when there's nothing to point at
+      var link = card.querySelector('a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
+      if (link) {
+        if (project.repo) {
+          link.href = project.repo;
+          link.target = '_blank';
+          link.rel = 'noopener';
+          link.style.display = '';
+        } else {
+          link.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  function applyExperience(content) {
+    var items = content.experience && content.experience.items;
+    if (!Array.isArray(items) || !items.length) return;
+    var card = document.querySelector('.ct-card');
+    if (!card) return;
+
+    var rows = Array.prototype.slice.call(card.querySelectorAll('[data-ct-row]'));
+    if (!rows.length) return;
+    template('ctRow', rows[0]);
+
+    while (rows.length > items.length) card.removeChild(rows.pop());
+    while (rows.length < items.length) {
+      var clone = templates.ctRow.cloneNode(true);
+      // cloned rows need the expand handler the ported runtime binds by attribute
+      clone.setAttribute('data-on-click', 'toggleRow');
+      clone.addEventListener('click', window.__toggleCtRow || function () {});
+      card.appendChild(clone);
+      rows.push(clone);
+    }
+
+    rows.forEach(function (row, i) {
+      var item = items[i];
+      var cells = row.querySelectorAll(':scope > div:first-child > span');
+      if (cells[0]) setText(cells[0], [item.start, item.end].filter(Boolean).join(' → '));
+      if (cells[1]) setText(cells[1], item.company);
+      if (cells[2]) setText(cells[2], item.role);
+      if (cells[3]) {
+        setText(cells[3], item.status || 'COMPLETED');
+        var active = (item.status || '').toUpperCase() === 'ACTIVE';
+        cells[3].style.color = active ? '#34d17e' : 'var(--text-2)';
+        var dot = cells[3].querySelector('span');
+        if (dot) dot.style.display = active ? '' : 'none';
+      }
+      var detail = row.querySelector('[data-ct-detail] p');
+      if (detail) setText(detail, item.description);
+      // collapse a freshly cloned row
+      var panel = row.querySelector('[data-ct-detail]');
+      if (panel && !panel.style.maxHeight) panel.style.maxHeight = '0px';
+    });
+  }
+
   function applyMedia(content) {
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
@@ -1478,6 +1682,10 @@ export const handler = async (event) =&gt; {
   function hydrate(content) {
     if (!content || typeof content !== 'object') return;
     applyScalars(content);
+    applyCerts(content);
+    applyStack(content);
+    applyProjects(content);
+    applyExperience(content);
     applyPosts(content);
     applyMedia(content);
     applyVisibility(content);
