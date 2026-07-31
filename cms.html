@@ -1351,6 +1351,129 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       .catch(function (err) { window.cmsToast(err.message); });
   }
 
+  /* ---------------- change password (settings pane) ---------------- */
+
+  // The design's settings pane has no security section, so build one. Kept out of
+  // the content document entirely: the password is stored hashed by /api/password.
+  function buildPasswordCard() {
+    var pane = root.querySelector('[data-panel="settings"]');
+    if (!pane || pane.querySelector('[data-password-card]')) return;
+
+    var card = document.createElement('form');
+    card.setAttribute('data-password-card', '');
+    card.style.cssText =
+      'display:flex;flex-direction:column;gap:12px;max-width:420px;margin-top:26px;padding:18px;' +
+      'border:1px solid var(--border-hi,#173311);border-radius:12px;background:var(--surface,#06140a)';
+
+    var title = document.createElement('div');
+    title.textContent = 'CMS password';
+    title.style.cssText =
+      "font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;color:var(--text,#eefff0)";
+
+    var hint = document.createElement('p');
+    hint.setAttribute('data-password-hint', '');
+    hint.style.cssText =
+      "margin:0;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--text-3,#4d8c3c)";
+
+    var labelStyle =
+      "display:flex;flex-direction:column;gap:5px;font-family:'JetBrains Mono',monospace;" +
+      'font-size:11.5px;color:var(--text-2,#7fcc66)';
+    var inputStyle =
+      "font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text,#eefff0);" +
+      'background:var(--bg,#020a02);border:1px solid var(--border-hi,#173311);border-radius:8px;' +
+      'padding:10px 12px;outline:none';
+
+    function field(labelText, autocomplete) {
+      var wrap = document.createElement('label');
+      wrap.style.cssText = labelStyle;
+      var span = document.createElement('span');
+      span.textContent = labelText;
+      var input = document.createElement('input');
+      input.type = 'password';
+      input.autocomplete = autocomplete;
+      input.required = true;
+      input.style.cssText = inputStyle;
+      wrap.appendChild(span);
+      wrap.appendChild(input);
+      return { wrap: wrap, input: input };
+    }
+
+    var current = field('Current password', 'current-password');
+    var next = field('New password (8+ characters)', 'new-password');
+    var confirm = field('Confirm new password', 'new-password');
+
+    var submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.textContent = 'Change password';
+    submit.style.cssText =
+      "align-self:flex-start;font-family:'Clash Display',sans-serif;font-weight:600;font-size:13px;" +
+      'color:#04120a;background:var(--primary,#6AFF00);border:none;border-radius:8px;padding:10px 18px;cursor:pointer';
+
+    var note = document.createElement('span');
+    note.setAttribute('role', 'status');
+    note.style.cssText =
+      "font-family:'JetBrains Mono',monospace;font-size:11.5px;min-height:15px;color:var(--text-3,#4d8c3c)";
+
+    card.appendChild(title);
+    card.appendChild(hint);
+    card.appendChild(current.wrap);
+    card.appendChild(next.wrap);
+    card.appendChild(confirm.wrap);
+    card.appendChild(submit);
+    card.appendChild(note);
+    pane.appendChild(card);
+
+    // say where the current password comes from
+    api('/api/password')
+      .then(function (d) {
+        hint.textContent = d.custom
+          ? 'Changed from here previously. Deleting the stored credential falls back to the CMS_PASSWORD environment variable.'
+          : 'Currently the CMS_PASSWORD environment variable. Changing it here stores it instead — no redeploy needed.';
+      })
+      .catch(function () { hint.textContent = ''; });
+
+    card.addEventListener('submit', function (e) {
+      e.preventDefault();
+      note.style.color = 'var(--text-3,#4d8c3c)';
+
+      if (next.input.value !== confirm.input.value) {
+        note.style.color = '#ff8aa0';
+        note.textContent = "The two new passwords don't match.";
+        confirm.input.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      note.textContent = 'Saving\u2026';
+
+      api('/api/password', {
+        method: 'POST',
+        body: JSON.stringify({
+          currentPassword: current.input.value,
+          newPassword: next.input.value,
+        }),
+      })
+        .then(function (d) {
+          if (d.token) {
+            token = d.token;
+            try { sessionStorage.setItem(TOKEN_KEY, token); } catch (err) {}
+          }
+          card.reset();
+          submit.disabled = false;
+          note.style.color = 'var(--primary,#6AFF00)';
+          note.textContent = 'Password changed. Use it next time you sign in.';
+          hint.textContent =
+            'Changed from here previously. Deleting the stored credential falls back to the CMS_PASSWORD environment variable.';
+          window.cmsToast('Password changed');
+        })
+        .catch(function (err) {
+          submit.disabled = false;
+          note.style.color = '#ff8aa0';
+          note.textContent = err.message;
+        });
+    });
+  }
+
   /* ---------------- inbox ---------------- */
 
   function loadInbox() {
@@ -1556,6 +1679,7 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
         content = data.content;
         populate();
         loadInbox();
+        buildPasswordCard();
       })
       .catch(function (err) { window.cmsToast('Could not load content: ' + err.message); });
   }

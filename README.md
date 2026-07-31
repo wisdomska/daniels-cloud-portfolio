@@ -20,6 +20,8 @@ content API it writes to.
 | `tools/build-from-design.js` | Builds both pages from the two `.dc.html` design exports |
 | `api/content.js` | `GET` (public) / `PUT` (authenticated) the content document |
 | `api/login.js` | Password → short-lived HMAC bearer token |
+| `api/password.js` | Change the CMS password from Settings |
+| `api/_auth.js` | Where the password lives: scrypt hash in Blob, env var as bootstrap |
 | `api/upload.js` | Authenticated image upload to Vercel Blob |
 | `api/messages.js` | The CMS inbox: list / mark read / delete |
 | `api/contact.js` | Contact form: stores the message, then emails it |
@@ -85,7 +87,7 @@ per-post publish state, and the eight blog image slots via the Media pane.
 | Variable | Required for | Notes |
 | --- | --- | --- |
 | `BLOB_READ_WRITE_TOKEN` | Saving content, uploads, inbox | Provisioned by the Vercel Blob store |
-| `CMS_PASSWORD` | Signing in to the CMS | Without it, `/api/login` returns 503 |
+| `CMS_PASSWORD` | Bootstrapping CMS sign-in | Only used until a password is set in Settings — see below |
 | `CMS_SECRET` | optional | Token signing key; falls back to the blob token |
 | `RESEND_API_KEY` | Emailing contact submissions | Without it, messages are still stored and shown in the inbox |
 | `CONTACT_TO` / `CONTACT_FROM` | optional | Recipient and verified sender |
@@ -93,6 +95,21 @@ per-post publish state, and the eight blog image slots via the Media pane.
 
 Contact submissions live in their own blob, deliberately: the CMS `PUT`s the whole content
 document on save, so a save holding a stale copy would otherwise wipe the inbox.
+
+### The CMS password
+
+`CMS_PASSWORD` is only the **bootstrap**. Settings → *CMS password* changes it without touching
+env vars or redeploying; from then on the stored credential wins and the env var is ignored.
+
+Only a **scrypt hash** (with a per-password random salt) is ever stored — never the password
+itself. Changing it requires the *current* password as well as a valid session, so a stolen token
+alone can't lock you out of your own dashboard. Minimum length is 8.
+
+**Recovery:** if the password is ever forgotten, delete the `auth/` blobs from the store; sign-in
+falls straight back to `CMS_PASSWORD`.
+
+One caveat: sessions are signed independently of the password, so changing it does not kick out
+sessions that are already signed in — those expire on their own within 12 hours.
 
 ## Local development
 
