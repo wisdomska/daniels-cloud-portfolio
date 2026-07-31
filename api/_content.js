@@ -41,6 +41,9 @@ const DEFAULTS = {
     chips: ['uptime 99.98%', 'p99 · 42ms', 'region · eu-west-1'],
     showAvailability: true,
     showCodeLines: true,
+    // hero canvas, driven by the CMS sliders
+    starDensity: 64, // 20-140; scales the node count
+    cursorPull: 42, // 0-100; how strongly nodes lean toward the cursor
   },
   about: {
     heading: 'The engineer behind the cloud',
@@ -74,6 +77,8 @@ const DEFAULTS = {
     successMessage: "Message received — I'll reply within a day",
     showForm: true,
     showSocials: true,
+    confetti: true, // the burst on successful submit
+    emailOnMessage: true, // email as well as storing in the inbox
   },
   resume: {
     name: 'Daniel Ajayi Lotsu',

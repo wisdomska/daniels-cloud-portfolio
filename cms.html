@@ -29,6 +29,20 @@
   .fld:focus{border-color:var(--primary)!important;background:var(--surface-hi)!important;box-shadow:0 0 0 3px rgba(106,255,0,.12)}
   .rail-item:hover{background:var(--fill);color:var(--text)}
   .rail-item[data-active="1"]{background:var(--fill);color:var(--primary);border-left-color:var(--primary)}
+  /* active nav item: bordered so it reads as selected (see markCmsActiveNav) */
+  .rail-item{
+    border:1px solid transparent!important;border-left-width:2px!important;
+    border-radius:8px!important;margin:0 8px!important;width:auto!important;
+  }
+  .rail-item[data-active="1"]{
+    background:var(--fill)!important;color:var(--primary)!important;
+    border-color:var(--primary)!important;
+    box-shadow:0 0 0 1px rgba(106,255,0,.18),0 6px 18px -12px var(--primary)!important;
+  }
+  .rail-item:hover:not([data-active="1"]){
+    background:var(--fill)!important;color:var(--text)!important;
+    border-color:var(--border)!important;
+  }
   .row-item:hover{background:var(--surface-elev);border-color:var(--border-hi)}
   .row-item[data-active="1"]{border-color:var(--primary);background:var(--fill)}
   .ghost:hover{border-color:var(--primary);color:var(--primary)}
@@ -246,28 +260,28 @@
               <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">CANVAS</div>
               <label style="display:flex;flex-direction:column;gap:8px">
                 <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Star density<span data-out="density" style="color:var(--primary)">64</span></span>
-                <input data-range="density" data-dirty type="range" min="20" max="140" value="64" style="width:100%;accent-color:var(--primary)">
+                <input data-range-field="hero.starDensity" data-range="density" data-dirty type="range" min="20" max="140" value="64" style="width:100%;accent-color:var(--primary)">
               </label>
               <label style="display:flex;flex-direction:column;gap:8px">
                 <span style="display:flex;justify-content:space-between;font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Cursor pull<span data-out="pull" style="color:var(--primary)">42</span></span>
-                <input data-range="pull" data-dirty type="range" min="0" max="100" value="42" style="width:100%;accent-color:var(--primary)">
+                <input data-range-field="hero.cursorPull" data-range="pull" data-dirty type="range" min="0" max="100" value="42" style="width:100%;accent-color:var(--primary)">
               </label>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px">
                 <span style="font-size:12.5px">Background code lines</span>
-                <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+                <button data-toggle-field="hero.showCodeLines" data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
                 <span style="font-size:12.5px">Reduce motion fallback</span>
-                <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+                <button data-toggle-field="settings.reduceMotion" data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
               </div>
             </div>
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
               <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">ACCENT COLOR</div>
               <div style="display:flex;gap:9px">
-                <button data-swatch="1" style="width:34px;height:34px;border-radius:8px;background:#6AFF00;border:2px solid var(--text);cursor:pointer"></button>
-                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#00E5FF;border:2px solid transparent;cursor:pointer"></button>
-                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#B388FF;border:2px solid transparent;cursor:pointer"></button>
-                <button data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#FF8A3D;border:2px solid transparent;cursor:pointer"></button>
+                <button data-swatch-value="#6AFF00" data-swatch="1" style="width:34px;height:34px;border-radius:8px;background:#6AFF00;border:2px solid var(--text);cursor:pointer"></button>
+                <button data-swatch-value="#00E5FF" data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#00E5FF;border:2px solid transparent;cursor:pointer"></button>
+                <button data-swatch-value="#B388FF" data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#B388FF;border:2px solid transparent;cursor:pointer"></button>
+                <button data-swatch-value="#FF8A3D" data-swatch="0" style="width:34px;height:34px;border-radius:8px;background:#FF8A3D;border:2px solid transparent;cursor:pointer"></button>
               </div>
               <div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">#6AFF00 · applied site-wide</div>
             </div>
@@ -555,11 +569,11 @@ Partner with product teams across the full delivery lifecycle.</textarea></label
           <label style="display:flex;flex-direction:column;gap:7px"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2)">Success message</span><input data-field="contact.successMessage" class="fld" data-dirty type="text" value="Message received — I'll reply within a day." style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13.5px;padding:11px 13px;transition:all .15s ease"></label>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px;border-top:1px solid var(--border)">
             <div><div style="font-size:12.5px">Confetti on submit</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:3px">neon-green burst</div></div>
-            <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+            <button data-toggle-field="contact.confetti" data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
             <div><div style="font-size:12.5px">Email me on new message</div><div style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3);margin-top:3px">via SES</div></div>
-            <button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
+            <button data-toggle-field="contact.emailOnMessage" data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button>
           </div>
         </div>
       </section>
@@ -599,12 +613,12 @@ Partner with product teams across the full delivery lifecycle.</textarea></label
                 <span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-3)">drag to reorder</span>
               </div>
               <div style="display:flex;flex-direction:column;gap:8px">
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Summary</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Experience</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Education</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Certifications</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Technical skills</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
-                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px;opacity:.55"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">References</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)">hidden</span><button data-toggle="0" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--border-hi);background:var(--surface);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-3);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Summary</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle-field="resume.sections.summary" data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Experience</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle-field="resume.sections.experience" data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Education</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle-field="resume.sections.education" data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Certifications</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle-field="resume.sections.certifications" data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">Technical skills</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--primary)">visible</span><button data-toggle-field="resume.sections.skills" data-toggle="1" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:18px;width:14px;height:14px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+                <div class="drag" style="display:flex;align-items:center;gap:11px;background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;padding:11px 13px;opacity:.55"><span class="grip" style="color:var(--text-3);cursor:grab">⠿</span><span style="flex:1;font-size:12.5px">References</span><span style="font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)">hidden</span><button data-toggle-field="resume.sections.references" data-toggle="0" style="width:36px;height:20px;border-radius:999px;border:1px solid var(--border-hi);background:var(--surface);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-3);transition:left .16s ease"></span></button></div>
               </div>
             </div>
           </div>
@@ -634,7 +648,7 @@ Partner with product teams across the full delivery lifecycle.</textarea></label
             <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px">
               <div style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--text-3)">DOWNLOAD FILENAME</div>
               <input data-field="resume.filename" class="fld" data-dirty type="text" value="daniel-lotsu-resume.pdf" style="background:var(--surface-elev);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12.5px;padding:10px 12px;transition:all .15s ease">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-size:12.5px">Show download button</span><button data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-size:12.5px">Show download button</span><button data-toggle-field="resume.showDownload" data-toggle="1" style="width:40px;height:22px;border-radius:999px;border:1px solid var(--primary);background:var(--fill);position:relative;cursor:pointer;padding:0"><span style="position:absolute;top:2px;left:20px;width:16px;height:16px;border-radius:50%;background:var(--primary);transition:left .16s ease"></span></button></div>
             </div>
           </div>
         </div>
@@ -1023,6 +1037,7 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
   window.cmsDirty = setDirty;
   window.cmsIsDirty = function () { return dirtyState; };
   window.cmsSync = sync;
+  window.cmsGo = go;
 })();
 </script>
 
@@ -1113,13 +1128,111 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       if (el.value !== value) el.value = value;
     });
 
-    // reflect the selected post in the list
-    qa('[data-post]').forEach(function (b) {
-      var on = b.getAttribute('data-post-id') === selectedPost;
-      if (b.hasAttribute('data-post-id')) b.dataset.active = on ? '1' : '';
+    populateToggles();
+    populateSwatches();
+    populateRanges();
+    populateCounts();
+    populatePostList();
+    renderMedia();
+    if (window.cmsSync) window.cmsSync();
+  }
+
+  // ---- switches ----------------------------------------------------------
+  // The mockup's toggle handler moves the knob and recolours the track; this only
+  // has to put each switch in the state the document says, then let that run.
+  function setToggle(el, on) {
+    el.dataset.toggle = on ? '1' : '0';
+    var knob = el.firstElementChild;
+    if (knob) {
+      var w = el.offsetWidth || 40;
+      var kw = knob.offsetWidth || 16;
+      knob.style.left = on ? w - kw - 3 + 'px' : '2px';
+      knob.style.background = on ? 'var(--primary)' : 'var(--text-3)';
+    }
+    el.style.borderColor = on ? 'var(--primary)' : 'var(--border-hi)';
+    el.style.background = on ? 'var(--fill)' : 'var(--surface)';
+
+    // the design pairs some switches with a visible/hidden label
+    var row = el.parentElement;
+    var label = row && row.querySelector('span[style*="10.5px"]');
+    if (label && (label.textContent === 'visible' || label.textContent === 'hidden')) {
+      label.textContent = on ? 'visible' : 'hidden';
+      label.style.color = on ? 'var(--primary)' : 'var(--text-3)';
+      row.style.opacity = on ? '1' : '.55';
+    }
+  }
+
+  function populateToggles() {
+    qa('[data-toggle-field]').forEach(function (el) {
+      setToggle(el, get(el.getAttribute('data-toggle-field')) !== false);
+    });
+  }
+
+  // ---- accent swatches ---------------------------------------------------
+  function populateSwatches() {
+    var accent = (get('settings.accent') || '').toLowerCase();
+    qa('[data-swatch-value]').forEach(function (el) {
+      var on = el.getAttribute('data-swatch-value').toLowerCase() === accent;
+      el.dataset.swatch = on ? '1' : '0';
+      el.style.borderColor = on ? 'var(--text)' : 'transparent';
+    });
+  }
+
+  // ---- sliders -----------------------------------------------------------
+  function populateRanges() {
+    qa('[data-range-field]').forEach(function (el) {
+      var value = get(el.getAttribute('data-range-field'));
+      if (value !== undefined && value !== null) el.value = String(value);
+      var out = root.querySelector('[data-out="' + el.getAttribute('data-range') + '"]');
+      if (out) out.textContent = el.value;
+    });
+  }
+
+  // ---- sidebar counts ----------------------------------------------------
+  function populateCounts() {
+    var posts = (content.blog && content.blog.posts) || [];
+    var counts = { posts: posts.filter(function (p) { return p.published !== false; }).length };
+    qa('[data-count]').forEach(function (el) {
+      var key = el.getAttribute('data-count');
+      if (counts[key] !== undefined) el.textContent = String(counts[key]);
+    });
+  }
+
+  // ---- post list ---------------------------------------------------------
+  function populatePostList() {
+    var posts = (content.blog && content.blog.posts) || [];
+    qa('[data-post-id]').forEach(function (row) {
+      var id = row.getAttribute('data-post-id');
+      var post = posts.filter(function (p) { return p.id === id; })[0];
+      var on = id === selectedPost;
+      row.dataset.active = on ? '1' : '';
+      row.style.background = on ? 'var(--fill)' : 'none';
+      row.style.borderLeftColor = on ? 'var(--primary)' : 'transparent';
+      if (!post) { row.style.display = 'none'; return; }
+      row.style.display = '';
+
+      // keep each row's title and LIVE/DRAFT pill honest
+      var title = row.querySelector('div:last-child, span:last-child');
+      var pill = row.querySelector('span');
+      if (pill && /^(LIVE|DRAFT)$/.test(pill.textContent.trim())) {
+        var live = post.published !== false;
+        pill.textContent = live ? 'LIVE' : 'DRAFT';
+        pill.style.color = live ? 'var(--primary)' : 'var(--warn)';
+      }
+      if (title && title !== pill && post.title) title.textContent = post.title;
     });
 
-    renderMedia();
+    // the publish/unpublish button + status pill reflect the selected post
+    var post = currentPost();
+    var btn = root.querySelector('[data-unpublish]');
+    var statusPill = root.querySelector('[data-status-pill]');
+    if (post && btn) btn.textContent = post.published === false ? 'Publish' : 'Unpublish';
+    if (post && statusPill) {
+      var live = post.published !== false;
+      statusPill.textContent = live ? 'PUBLISHED' : 'DRAFT';
+      statusPill.style.color = live ? 'var(--primary)' : 'var(--warn)';
+      statusPill.style.borderColor = live ? 'var(--primary)' : 'var(--warn)';
+    }
   }
 
   function collect() {
@@ -1133,6 +1246,18 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
         set(path, value);
       }
     });
+
+    qa('[data-toggle-field]').forEach(function (el) {
+      set(el.getAttribute('data-toggle-field'), el.dataset.toggle === '1');
+    });
+
+    qa('[data-range-field]').forEach(function (el) {
+      var n = parseInt(el.value, 10);
+      if (!isNaN(n)) set(el.getAttribute('data-range-field'), n);
+    });
+
+    var chosen = qa('[data-swatch-value]').filter(function (el) { return el.dataset.swatch === '1'; })[0];
+    if (chosen) set('settings.accent', chosen.getAttribute('data-swatch-value'));
   }
 
   /* ---------------- media pane ---------------- */
@@ -1283,8 +1408,49 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
 
       head.appendChild(who);
       head.appendChild(when);
+
+      var actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:8px;margin-top:4px';
+
+      var btnStyle =
+        "font-family:'Syne Mono',monospace;font-size:11px;padding:5px 10px;border-radius:6px;" +
+        'cursor:pointer;background:none;border:1px solid var(--border-hi,#173311);color:var(--text-2,#7fcc66)';
+
+      var readBtn = document.createElement('button');
+      readBtn.type = 'button';
+      readBtn.textContent = msg.read ? 'Mark unread' : 'Mark read';
+      readBtn.style.cssText = btnStyle;
+      readBtn.addEventListener('click', function () {
+        readBtn.disabled = true;
+        api('/api/messages', { method: 'PATCH', body: JSON.stringify({ id: msg.id, read: !msg.read }) })
+          .then(function (d) { renderInbox(d.messages || []); })
+          .catch(function (err) { readBtn.disabled = false; window.cmsToast(err.message); });
+      });
+
+      var replyBtn = document.createElement('a');
+      replyBtn.textContent = 'Reply';
+      replyBtn.href = 'mailto:' + msg.email + '?subject=' + encodeURIComponent('Re: your message');
+      replyBtn.style.cssText = btnStyle + ';text-decoration:none';
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.textContent = 'Delete';
+      delBtn.style.cssText = btnStyle + ';border-color:rgba(255,138,160,.4);color:#ff8aa0';
+      delBtn.addEventListener('click', function () {
+        if (!window.confirm('Delete this message from ' + msg.name + '? This cannot be undone.')) return;
+        delBtn.disabled = true;
+        api('/api/messages?id=' + encodeURIComponent(msg.id), { method: 'DELETE' })
+          .then(function (d) { renderInbox(d.messages || []); window.cmsToast('Message deleted'); })
+          .catch(function (err) { delBtn.disabled = false; window.cmsToast(err.message); });
+      });
+
+      actions.appendChild(readBtn);
+      actions.appendChild(replyBtn);
+      actions.appendChild(delBtn);
+
       row.appendChild(head);
       row.appendChild(body);
+      row.appendChild(actions);
       list.appendChild(row);
     });
   }
@@ -1418,6 +1584,71 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       return;
     }
 
+    // Publish / unpublish the selected post, for real.
+    var unpub = e.target.closest('[data-unpublish]');
+    if (unpub) {
+      e.stopPropagation();
+      var post = currentPost();
+      if (post) {
+        post.published = post.published === false;
+        populatePostList();
+        populateCounts();
+        window.cmsDirty(true);
+        window.cmsToast(post.published ? 'Marked for publishing — save to apply' : 'Moved to drafts — save to apply');
+      }
+      return;
+    }
+
+    // New post: create one and select it, rather than toasting about it.
+    if (e.target.closest('[data-new-post]')) {
+      e.stopPropagation();
+      var posts = (content.blog && content.blog.posts) || [];
+      if (posts.length >= 6) {
+        window.cmsToast('The blog layout holds 6 entries — edit an existing one');
+        return;
+      }
+      var id = 'post-' + Date.now().toString(36);
+      posts.push({
+        id: id, title: 'Untitled post', category: '', date: '', readTime: '',
+        alt: '', excerpt: '', body: '', published: false,
+      });
+      selectedPost = id;
+      populate();
+      window.cmsDirty(true);
+      window.cmsToast('Draft created — fill it in, then save');
+      return;
+    }
+
+    // Accent swatches: record the choice so collect() can persist it.
+    var swatch = e.target.closest('[data-swatch-value]');
+    if (swatch) {
+      e.stopPropagation();
+      qa('[data-swatch-value]').forEach(function (el) {
+        var on = el === swatch;
+        el.dataset.swatch = on ? '1' : '0';
+        el.style.borderColor = on ? 'var(--text)' : 'transparent';
+      });
+      set('settings.accent', swatch.getAttribute('data-swatch-value'));
+      window.cmsDirty(true);
+      return;
+    }
+
+    // The "+ Add" buttons for certifications, services and projects have nothing to
+    // write to: those portfolio sections are fixed markup in the design, not lists.
+    // Say so plainly instead of pretending something was added.
+    var add = e.target.closest('[data-add]');
+    if (add) {
+      e.stopPropagation();
+      var label = (add.textContent || '').toLowerCase();
+      if (label.indexOf('media') !== -1 || label.indexOf('upload') !== -1) {
+        if (window.cmsGo) window.cmsGo('media');
+        window.cmsToast('Pick a slot below and choose an image');
+      } else {
+        window.cmsToast('Not editable yet — this section is fixed in the portfolio design');
+      }
+      return;
+    }
+
     // post selection: let the mockup's highlight logic run too, so don't stop here
     var postRow = e.target.closest('[data-post-id]');
     if (postRow) {
@@ -1426,6 +1657,24 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       populate();
     }
   }, true);
+
+  // Toggles and sliders: let the mockup animate them, then record the new value.
+  root.addEventListener('click', function (e) {
+    var toggle = e.target.closest('[data-toggle-field]');
+    if (toggle) {
+      set(toggle.getAttribute('data-toggle-field'), toggle.dataset.toggle === '1');
+      window.cmsDirty(true);
+    }
+  });
+
+  root.addEventListener('input', function (e) {
+    var slider = e.target.closest && e.target.closest('[data-range-field]');
+    if (slider) {
+      var n = parseInt(slider.value, 10);
+      if (!isNaN(n)) set(slider.getAttribute('data-range-field'), n);
+      window.cmsDirty(true);
+    }
+  });
 
   root.addEventListener('input', function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute('data-field')) window.cmsDirty(true);

@@ -976,6 +976,8 @@ export const handler = async (event) =&gt; {
   function burst(ox, oy) {
     var host = contact;
     if (!host) return;
+    // CMS: Contact -> "Confetti on submit"
+    if (window.__contactConfetti === false) return;
     var colors = ['#6AFF00', '#9dff5c', '#3aa300', '#06b6d4', '#ffffff'];
     for (var i = 0; i < 46; i++) {
       var p = document.createElement('div');
@@ -1053,7 +1055,10 @@ export const handler = async (event) =&gt; {
       c.width = w * dpr; c.height = h * dpr;
       c.style.width = w + 'px'; c.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var count = Math.max(42, Math.min(94, Math.round(w * h / 15000)));
+      // area-derived count, scaled by the CMS star-density setting (64 = as designed)
+      var density = typeof window.__heroStarDensity === 'number' ? window.__heroStarDensity : 64;
+      var base = Math.round(w * h / 15000);
+      var count = Math.max(12, Math.min(220, Math.round(base * (density / 64))));
       nodes = [];
       for (var k = 0; k < count; k++) {
         var z = rnd(0.35, 1);
@@ -1089,8 +1094,11 @@ export const handler = async (event) =&gt; {
           ctx.strokeStyle = 'rgba(150,255,80,' + ml.toFixed(3) + ')';
           ctx.lineWidth = 0.9;
           ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
-          p.x -= (mdx / (md || 1)) * (1 - md / DM) * 0.7;
-          p.y -= (mdy / (md || 1)) * (1 - md / DM) * 0.7;
+          // pull strength is CMS-controlled (42 = as designed, 0 = no attraction)
+          var pull = typeof window.__heroCursorPull === 'number' ? window.__heroCursorPull : 42;
+          var k = (pull / 42) * 0.7;
+          p.x -= (mdx / (md || 1)) * (1 - md / DM) * k;
+          p.y -= (mdy / (md || 1)) * (1 - md / DM) * k;
         }
       }
       for (var j = 0; j < nodes.length; j++) {
@@ -1119,6 +1127,9 @@ export const handler = async (event) =&gt; {
     window.addEventListener('resize', rebuild);
     window.addEventListener('load', rebuild);
     if (window.ResizeObserver) new ResizeObserver(rebuild).observe(host);
+
+    // lets the content hydrator re-seed the field after a density change
+    window.__heroRebuild = rebuild;
     if (!reduce) setInterval(frame, 33);
     document.addEventListener('mousemove', function (e) {
       var r = host.getBoundingClientRect();
@@ -1339,17 +1350,66 @@ export const handler = async (event) =&gt; {
   }
 
   function applyVisibility(content) {
+    var hero = content.hero || {};
     var avail = document.querySelector('[data-content="hero.availability"]');
-    if (avail && content.hero && content.hero.showAvailability === false) {
+    if (avail && hero.showAvailability === false) {
       var badge = avail.closest('.hero-float') || avail;
       badge.style.display = 'none';
     }
+
+    // the scrolling code columns behind the page
+    if (hero.showCodeLines === false) {
+      var codeLayer = document.querySelector('pre[style*="codeRise"]');
+      var layer = codeLayer && codeLayer.parentElement;
+      if (layer) layer.style.display = 'none';
+    }
+
     if (content.contact && content.contact.showForm === false) {
       var form = document.getElementById('dc-setForm');
       if (form) form.style.display = 'none';
     }
+
+    var contactCfg = content.contact || {};
+    window.__contactConfetti = contactCfg.confetti !== false;
+    if (contactCfg.showSocials === false) {
+      var socials = document.querySelector('footer div[style*="display:flex;gap:10px"]');
+      if (socials) socials.style.display = 'none';
+    }
+
+    var resume = content.resume || {};
     var dl = document.querySelector('[data-download-resume]');
-    if (dl && content.resume && content.resume.showDownload === false) dl.style.display = 'none';
+    if (dl && resume.showDownload === false) dl.style.display = 'none';
+
+    // Resume sections, hidden by their heading's text. The sheet's <section>s carry
+    // no ids, so match on the uppercase label the design gives each one.
+    var sections = resume.sections || {};
+    var labels = {
+      summary: 'summary', experience: 'experience', education: 'education',
+      certifications: 'certifications', skills: 'technical skills', references: 'references',
+    };
+    var sheet = document.querySelector('.r-sheet');
+    if (sheet) {
+      Object.keys(labels).forEach(function (key) {
+        if (sections[key] !== false) return;
+        var heads = sheet.querySelectorAll('h3');
+        for (var i = 0; i < heads.length; i++) {
+          if ((heads[i].textContent || '').trim().toLowerCase() === labels[key]) {
+            var section = heads[i].closest('section');
+            if (section) section.style.display = 'none';
+            break;
+          }
+        }
+      });
+    }
+  }
+
+  // The hero canvas reads these on each frame, so a published change to either
+  // slider changes the constellation without a reload.
+  function applyCanvas(content) {
+    var hero = content.hero || {};
+    if (typeof hero.starDensity === 'number') window.__heroStarDensity = hero.starDensity;
+    if (typeof hero.cursorPull === 'number') window.__heroCursorPull = hero.cursorPull;
+    if (window.__heroRebuild) window.__heroRebuild();
   }
 
   function applyPosts(content) {
@@ -1421,6 +1481,7 @@ export const handler = async (event) =&gt; {
     applyPosts(content);
     applyMedia(content);
     applyVisibility(content);
+    applyCanvas(content);
     applySettings(content);
     document.documentElement.setAttribute('data-content-loaded', '1');
   }

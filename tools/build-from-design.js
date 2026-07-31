@@ -380,6 +380,82 @@ const CMS_FIELDS = {
   settings: ['settings.pageTitle', 'settings.metaDescription', 'settings.domain'],
 };
 
+/* The mockup's switches, accent swatches and sliders carry no identity either.
+ * Toggles are listed per pane in document order, like CMS_FIELDS. */
+const CMS_TOGGLES = {
+  hero: ['hero.showCodeLines', 'settings.reduceMotion'],
+  contact: ['contact.confetti', 'contact.emailOnMessage'],
+  resume: [
+    'resume.sections.summary',
+    'resume.sections.experience',
+    'resume.sections.education',
+    'resume.sections.certifications',
+    'resume.sections.skills',
+    'resume.sections.references',
+    'resume.showDownload',
+  ],
+};
+
+// data-range names already exist in the design (density, pull) — map them to paths.
+const CMS_RANGES = { density: 'hero.starDensity', pull: 'hero.cursorPull' };
+
+function annotateCmsControls(body) {
+  const panes = [];
+  const re = /data-panel="([a-z]+)"/g;
+  let m;
+  while ((m = re.exec(body))) panes.push({ name: m[1], start: m.index });
+  panes.push({ name: '__end', start: body.length });
+
+  let toggles = 0;
+  for (let i = panes.length - 2; i >= 0; i--) {
+    const expected = CMS_TOGGLES[panes[i].name];
+    const slice = body.slice(panes[i].start, panes[i + 1].start);
+    const found = [...slice.matchAll(/<button\b[^>]*\bdata-toggle=/g)];
+
+    if (!expected) {
+      if (found.length) throw new Error(`CMS pane "${panes[i].name}" has unmapped toggles`);
+      continue;
+    }
+    if (found.length !== expected.length) {
+      throw new Error(
+        `CMS pane "${panes[i].name}" has ${found.length} toggles but CMS_TOGGLES lists ${expected.length}`
+      );
+    }
+
+    let patched = slice;
+    for (let f = found.length - 1; f >= 0; f--) {
+      const at = found[f].index + '<button'.length;
+      patched = patched.slice(0, at) + ` data-toggle-field="${expected[f]}"` + patched.slice(at);
+      toggles++;
+    }
+    body = body.slice(0, panes[i].start) + patched + body.slice(panes[i + 1].start);
+  }
+
+  // Accent swatches: the colour each one selects is only in its inline background.
+  let swatches = 0;
+  body = body.replace(/<button\b([^>]*\bdata-swatch=[^>]*)>/g, (whole, attrs) => {
+    const colour = (attrs.match(/background:\s*(#[0-9A-Fa-f]{3,8})/) || [])[1];
+    if (!colour) return whole;
+    swatches++;
+    return `<button data-swatch-value="${colour}"${attrs}>`;
+  });
+
+  // Sliders map to content paths by their existing data-range name.
+  let ranges = 0;
+  body = body.replace(/<input\b([^>]*\bdata-range="([a-z]+)"[^>]*)>/g, (whole, attrs, name) => {
+    const contentPath = CMS_RANGES[name];
+    if (!contentPath) throw new Error(`CMS: no content path for slider "${name}"`);
+    ranges++;
+    return `<input data-range-field="${contentPath}"${attrs}>`;
+  });
+
+  if (toggles !== 11) throw new Error(`CMS: expected 11 toggles, bound ${toggles}`);
+  if (swatches !== 4) throw new Error(`CMS: expected 4 accent swatches, bound ${swatches}`);
+  if (ranges !== 2) throw new Error(`CMS: expected 2 sliders, bound ${ranges}`);
+
+  return { body, toggles, swatches, ranges };
+}
+
 function annotateCmsFields(body) {
   const panes = [];
   const re = /data-panel="([a-z]+)"/g;
@@ -467,6 +543,44 @@ function fixMobileNav(helmet) {
       '    .nav-links .nav-chip{font-size:11px!important;padding:6px 8px!important}',
     ].join('\n')
   );
+}
+
+/* The CMS rail buttons carry inline `background:none; color:var(--text-2);
+ * border-left:2px solid transparent`, and inline styles beat stylesheet rules —
+ * so the design's own `.rail-item[data-active="1"]` rule never applied and the
+ * selected pane looked pixel-identical to every other one. These overrides need
+ * !important to get past the inline styles.
+ *
+ * The transparent border is on every item, not just the active one, so revealing
+ * it cannot shift the rail's layout as you move between panes. */
+function markCmsActiveNav(helmet) {
+  const rule = '.rail-item[data-active="1"]{background:var(--fill);color:var(--primary);border-left-color:var(--primary)}';
+  if (!helmet.includes(rule)) {
+    throw new Error(
+      "CMS: the .rail-item active rule wasn't found — the design changed, so re-check " +
+        'how the active nav item is styled before overriding it.'
+    );
+  }
+
+  const overrides = [
+    '',
+    '  /* active nav item: bordered so it reads as selected (see markCmsActiveNav) */',
+    '  .rail-item{',
+    '    border:1px solid transparent!important;border-left-width:2px!important;',
+    '    border-radius:8px!important;margin:0 8px!important;width:auto!important;',
+    '  }',
+    '  .rail-item[data-active="1"]{',
+    '    background:var(--fill)!important;color:var(--primary)!important;',
+    '    border-color:var(--primary)!important;',
+    '    box-shadow:0 0 0 1px rgba(106,255,0,.18),0 6px 18px -12px var(--primary)!important;',
+    '  }',
+    '  .rail-item:hover:not([data-active="1"]){',
+    '    background:var(--fill)!important;color:var(--text)!important;',
+    '    border-color:var(--border)!important;',
+    '  }',
+  ].join('\n');
+
+  return helmet.replace(rule, rule + overrides);
 }
 
 function page({ helmet, body, runtime, head }) {
@@ -608,6 +722,8 @@ ${SHARED_RUNTIME}
   function burst(ox, oy) {
     var host = contact;
     if (!host) return;
+    // CMS: Contact -> "Confetti on submit"
+    if (window.__contactConfetti === false) return;
     var colors = ['#6AFF00', '#9dff5c', '#3aa300', '#06b6d4', '#ffffff'];
     for (var i = 0; i < 46; i++) {
       var p = document.createElement('div');
@@ -685,7 +801,10 @@ ${SHARED_RUNTIME}
       c.width = w * dpr; c.height = h * dpr;
       c.style.width = w + 'px'; c.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var count = Math.max(42, Math.min(94, Math.round(w * h / 15000)));
+      // area-derived count, scaled by the CMS star-density setting (64 = as designed)
+      var density = typeof window.__heroStarDensity === 'number' ? window.__heroStarDensity : 64;
+      var base = Math.round(w * h / 15000);
+      var count = Math.max(12, Math.min(220, Math.round(base * (density / 64))));
       nodes = [];
       for (var k = 0; k < count; k++) {
         var z = rnd(0.35, 1);
@@ -721,8 +840,11 @@ ${SHARED_RUNTIME}
           ctx.strokeStyle = 'rgba(150,255,80,' + ml.toFixed(3) + ')';
           ctx.lineWidth = 0.9;
           ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
-          p.x -= (mdx / (md || 1)) * (1 - md / DM) * 0.7;
-          p.y -= (mdy / (md || 1)) * (1 - md / DM) * 0.7;
+          // pull strength is CMS-controlled (42 = as designed, 0 = no attraction)
+          var pull = typeof window.__heroCursorPull === 'number' ? window.__heroCursorPull : 42;
+          var k = (pull / 42) * 0.7;
+          p.x -= (mdx / (md || 1)) * (1 - md / DM) * k;
+          p.y -= (mdy / (md || 1)) * (1 - md / DM) * k;
         }
       }
       for (var j = 0; j < nodes.length; j++) {
@@ -751,6 +873,9 @@ ${SHARED_RUNTIME}
     window.addEventListener('resize', rebuild);
     window.addEventListener('load', rebuild);
     if (window.ResizeObserver) new ResizeObserver(rebuild).observe(host);
+
+    // lets the content hydrator re-seed the field after a density change
+    window.__heroRebuild = rebuild;
     if (!reduce) setInterval(frame, 33);
     document.addEventListener('mousemove', function (e) {
       var r = host.getBoundingClientRect();
@@ -980,17 +1105,66 @@ const HYDRATE_RUNTIME = `
   }
 
   function applyVisibility(content) {
+    var hero = content.hero || {};
     var avail = document.querySelector('[data-content="hero.availability"]');
-    if (avail && content.hero && content.hero.showAvailability === false) {
+    if (avail && hero.showAvailability === false) {
       var badge = avail.closest('.hero-float') || avail;
       badge.style.display = 'none';
     }
+
+    // the scrolling code columns behind the page
+    if (hero.showCodeLines === false) {
+      var codeLayer = document.querySelector('pre[style*="codeRise"]');
+      var layer = codeLayer && codeLayer.parentElement;
+      if (layer) layer.style.display = 'none';
+    }
+
     if (content.contact && content.contact.showForm === false) {
       var form = document.getElementById('dc-setForm');
       if (form) form.style.display = 'none';
     }
+
+    var contactCfg = content.contact || {};
+    window.__contactConfetti = contactCfg.confetti !== false;
+    if (contactCfg.showSocials === false) {
+      var socials = document.querySelector('footer div[style*="display:flex;gap:10px"]');
+      if (socials) socials.style.display = 'none';
+    }
+
+    var resume = content.resume || {};
     var dl = document.querySelector('[data-download-resume]');
-    if (dl && content.resume && content.resume.showDownload === false) dl.style.display = 'none';
+    if (dl && resume.showDownload === false) dl.style.display = 'none';
+
+    // Resume sections, hidden by their heading's text. The sheet's <section>s carry
+    // no ids, so match on the uppercase label the design gives each one.
+    var sections = resume.sections || {};
+    var labels = {
+      summary: 'summary', experience: 'experience', education: 'education',
+      certifications: 'certifications', skills: 'technical skills', references: 'references',
+    };
+    var sheet = document.querySelector('.r-sheet');
+    if (sheet) {
+      Object.keys(labels).forEach(function (key) {
+        if (sections[key] !== false) return;
+        var heads = sheet.querySelectorAll('h3');
+        for (var i = 0; i < heads.length; i++) {
+          if ((heads[i].textContent || '').trim().toLowerCase() === labels[key]) {
+            var section = heads[i].closest('section');
+            if (section) section.style.display = 'none';
+            break;
+          }
+        }
+      });
+    }
+  }
+
+  // The hero canvas reads these on each frame, so a published change to either
+  // slider changes the constellation without a reload.
+  function applyCanvas(content) {
+    var hero = content.hero || {};
+    if (typeof hero.starDensity === 'number') window.__heroStarDensity = hero.starDensity;
+    if (typeof hero.cursorPull === 'number') window.__heroCursorPull = hero.cursorPull;
+    if (window.__heroRebuild) window.__heroRebuild();
   }
 
   function applyPosts(content) {
@@ -1062,6 +1236,7 @@ const HYDRATE_RUNTIME = `
     applyPosts(content);
     applyMedia(content);
     applyVisibility(content);
+    applyCanvas(content);
     applySettings(content);
     document.documentElement.setAttribute('data-content-loaded', '1');
   }
@@ -1264,6 +1439,7 @@ ${SHARED_RUNTIME}
   window.cmsDirty = setDirty;
   window.cmsIsDirty = function () { return dirtyState; };
   window.cmsSync = sync;
+  window.cmsGo = go;
 })();
 </script>
 `;
@@ -1364,13 +1540,111 @@ const CMS_DATA_RUNTIME = `
       if (el.value !== value) el.value = value;
     });
 
-    // reflect the selected post in the list
-    qa('[data-post]').forEach(function (b) {
-      var on = b.getAttribute('data-post-id') === selectedPost;
-      if (b.hasAttribute('data-post-id')) b.dataset.active = on ? '1' : '';
+    populateToggles();
+    populateSwatches();
+    populateRanges();
+    populateCounts();
+    populatePostList();
+    renderMedia();
+    if (window.cmsSync) window.cmsSync();
+  }
+
+  // ---- switches ----------------------------------------------------------
+  // The mockup's toggle handler moves the knob and recolours the track; this only
+  // has to put each switch in the state the document says, then let that run.
+  function setToggle(el, on) {
+    el.dataset.toggle = on ? '1' : '0';
+    var knob = el.firstElementChild;
+    if (knob) {
+      var w = el.offsetWidth || 40;
+      var kw = knob.offsetWidth || 16;
+      knob.style.left = on ? w - kw - 3 + 'px' : '2px';
+      knob.style.background = on ? 'var(--primary)' : 'var(--text-3)';
+    }
+    el.style.borderColor = on ? 'var(--primary)' : 'var(--border-hi)';
+    el.style.background = on ? 'var(--fill)' : 'var(--surface)';
+
+    // the design pairs some switches with a visible/hidden label
+    var row = el.parentElement;
+    var label = row && row.querySelector('span[style*="10.5px"]');
+    if (label && (label.textContent === 'visible' || label.textContent === 'hidden')) {
+      label.textContent = on ? 'visible' : 'hidden';
+      label.style.color = on ? 'var(--primary)' : 'var(--text-3)';
+      row.style.opacity = on ? '1' : '.55';
+    }
+  }
+
+  function populateToggles() {
+    qa('[data-toggle-field]').forEach(function (el) {
+      setToggle(el, get(el.getAttribute('data-toggle-field')) !== false);
+    });
+  }
+
+  // ---- accent swatches ---------------------------------------------------
+  function populateSwatches() {
+    var accent = (get('settings.accent') || '').toLowerCase();
+    qa('[data-swatch-value]').forEach(function (el) {
+      var on = el.getAttribute('data-swatch-value').toLowerCase() === accent;
+      el.dataset.swatch = on ? '1' : '0';
+      el.style.borderColor = on ? 'var(--text)' : 'transparent';
+    });
+  }
+
+  // ---- sliders -----------------------------------------------------------
+  function populateRanges() {
+    qa('[data-range-field]').forEach(function (el) {
+      var value = get(el.getAttribute('data-range-field'));
+      if (value !== undefined && value !== null) el.value = String(value);
+      var out = root.querySelector('[data-out="' + el.getAttribute('data-range') + '"]');
+      if (out) out.textContent = el.value;
+    });
+  }
+
+  // ---- sidebar counts ----------------------------------------------------
+  function populateCounts() {
+    var posts = (content.blog && content.blog.posts) || [];
+    var counts = { posts: posts.filter(function (p) { return p.published !== false; }).length };
+    qa('[data-count]').forEach(function (el) {
+      var key = el.getAttribute('data-count');
+      if (counts[key] !== undefined) el.textContent = String(counts[key]);
+    });
+  }
+
+  // ---- post list ---------------------------------------------------------
+  function populatePostList() {
+    var posts = (content.blog && content.blog.posts) || [];
+    qa('[data-post-id]').forEach(function (row) {
+      var id = row.getAttribute('data-post-id');
+      var post = posts.filter(function (p) { return p.id === id; })[0];
+      var on = id === selectedPost;
+      row.dataset.active = on ? '1' : '';
+      row.style.background = on ? 'var(--fill)' : 'none';
+      row.style.borderLeftColor = on ? 'var(--primary)' : 'transparent';
+      if (!post) { row.style.display = 'none'; return; }
+      row.style.display = '';
+
+      // keep each row's title and LIVE/DRAFT pill honest
+      var title = row.querySelector('div:last-child, span:last-child');
+      var pill = row.querySelector('span');
+      if (pill && /^(LIVE|DRAFT)$/.test(pill.textContent.trim())) {
+        var live = post.published !== false;
+        pill.textContent = live ? 'LIVE' : 'DRAFT';
+        pill.style.color = live ? 'var(--primary)' : 'var(--warn)';
+      }
+      if (title && title !== pill && post.title) title.textContent = post.title;
     });
 
-    renderMedia();
+    // the publish/unpublish button + status pill reflect the selected post
+    var post = currentPost();
+    var btn = root.querySelector('[data-unpublish]');
+    var statusPill = root.querySelector('[data-status-pill]');
+    if (post && btn) btn.textContent = post.published === false ? 'Publish' : 'Unpublish';
+    if (post && statusPill) {
+      var live = post.published !== false;
+      statusPill.textContent = live ? 'PUBLISHED' : 'DRAFT';
+      statusPill.style.color = live ? 'var(--primary)' : 'var(--warn)';
+      statusPill.style.borderColor = live ? 'var(--primary)' : 'var(--warn)';
+    }
   }
 
   function collect() {
@@ -1384,6 +1658,18 @@ const CMS_DATA_RUNTIME = `
         set(path, value);
       }
     });
+
+    qa('[data-toggle-field]').forEach(function (el) {
+      set(el.getAttribute('data-toggle-field'), el.dataset.toggle === '1');
+    });
+
+    qa('[data-range-field]').forEach(function (el) {
+      var n = parseInt(el.value, 10);
+      if (!isNaN(n)) set(el.getAttribute('data-range-field'), n);
+    });
+
+    var chosen = qa('[data-swatch-value]').filter(function (el) { return el.dataset.swatch === '1'; })[0];
+    if (chosen) set('settings.accent', chosen.getAttribute('data-swatch-value'));
   }
 
   /* ---------------- media pane ---------------- */
@@ -1534,8 +1820,49 @@ const CMS_DATA_RUNTIME = `
 
       head.appendChild(who);
       head.appendChild(when);
+
+      var actions = document.createElement('div');
+      actions.style.cssText = 'display:flex;gap:8px;margin-top:4px';
+
+      var btnStyle =
+        "font-family:'Syne Mono',monospace;font-size:11px;padding:5px 10px;border-radius:6px;" +
+        'cursor:pointer;background:none;border:1px solid var(--border-hi,#173311);color:var(--text-2,#7fcc66)';
+
+      var readBtn = document.createElement('button');
+      readBtn.type = 'button';
+      readBtn.textContent = msg.read ? 'Mark unread' : 'Mark read';
+      readBtn.style.cssText = btnStyle;
+      readBtn.addEventListener('click', function () {
+        readBtn.disabled = true;
+        api('/api/messages', { method: 'PATCH', body: JSON.stringify({ id: msg.id, read: !msg.read }) })
+          .then(function (d) { renderInbox(d.messages || []); })
+          .catch(function (err) { readBtn.disabled = false; window.cmsToast(err.message); });
+      });
+
+      var replyBtn = document.createElement('a');
+      replyBtn.textContent = 'Reply';
+      replyBtn.href = 'mailto:' + msg.email + '?subject=' + encodeURIComponent('Re: your message');
+      replyBtn.style.cssText = btnStyle + ';text-decoration:none';
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.textContent = 'Delete';
+      delBtn.style.cssText = btnStyle + ';border-color:rgba(255,138,160,.4);color:#ff8aa0';
+      delBtn.addEventListener('click', function () {
+        if (!window.confirm('Delete this message from ' + msg.name + '? This cannot be undone.')) return;
+        delBtn.disabled = true;
+        api('/api/messages?id=' + encodeURIComponent(msg.id), { method: 'DELETE' })
+          .then(function (d) { renderInbox(d.messages || []); window.cmsToast('Message deleted'); })
+          .catch(function (err) { delBtn.disabled = false; window.cmsToast(err.message); });
+      });
+
+      actions.appendChild(readBtn);
+      actions.appendChild(replyBtn);
+      actions.appendChild(delBtn);
+
       row.appendChild(head);
       row.appendChild(body);
+      row.appendChild(actions);
       list.appendChild(row);
     });
   }
@@ -1669,6 +1996,71 @@ const CMS_DATA_RUNTIME = `
       return;
     }
 
+    // Publish / unpublish the selected post, for real.
+    var unpub = e.target.closest('[data-unpublish]');
+    if (unpub) {
+      e.stopPropagation();
+      var post = currentPost();
+      if (post) {
+        post.published = post.published === false;
+        populatePostList();
+        populateCounts();
+        window.cmsDirty(true);
+        window.cmsToast(post.published ? 'Marked for publishing — save to apply' : 'Moved to drafts — save to apply');
+      }
+      return;
+    }
+
+    // New post: create one and select it, rather than toasting about it.
+    if (e.target.closest('[data-new-post]')) {
+      e.stopPropagation();
+      var posts = (content.blog && content.blog.posts) || [];
+      if (posts.length >= 6) {
+        window.cmsToast('The blog layout holds 6 entries — edit an existing one');
+        return;
+      }
+      var id = 'post-' + Date.now().toString(36);
+      posts.push({
+        id: id, title: 'Untitled post', category: '', date: '', readTime: '',
+        alt: '', excerpt: '', body: '', published: false,
+      });
+      selectedPost = id;
+      populate();
+      window.cmsDirty(true);
+      window.cmsToast('Draft created — fill it in, then save');
+      return;
+    }
+
+    // Accent swatches: record the choice so collect() can persist it.
+    var swatch = e.target.closest('[data-swatch-value]');
+    if (swatch) {
+      e.stopPropagation();
+      qa('[data-swatch-value]').forEach(function (el) {
+        var on = el === swatch;
+        el.dataset.swatch = on ? '1' : '0';
+        el.style.borderColor = on ? 'var(--text)' : 'transparent';
+      });
+      set('settings.accent', swatch.getAttribute('data-swatch-value'));
+      window.cmsDirty(true);
+      return;
+    }
+
+    // The "+ Add" buttons for certifications, services and projects have nothing to
+    // write to: those portfolio sections are fixed markup in the design, not lists.
+    // Say so plainly instead of pretending something was added.
+    var add = e.target.closest('[data-add]');
+    if (add) {
+      e.stopPropagation();
+      var label = (add.textContent || '').toLowerCase();
+      if (label.indexOf('media') !== -1 || label.indexOf('upload') !== -1) {
+        if (window.cmsGo) window.cmsGo('media');
+        window.cmsToast('Pick a slot below and choose an image');
+      } else {
+        window.cmsToast('Not editable yet — this section is fixed in the portfolio design');
+      }
+      return;
+    }
+
     // post selection: let the mockup's highlight logic run too, so don't stop here
     var postRow = e.target.closest('[data-post-id]');
     if (postRow) {
@@ -1677,6 +2069,24 @@ const CMS_DATA_RUNTIME = `
       populate();
     }
   }, true);
+
+  // Toggles and sliders: let the mockup animate them, then record the new value.
+  root.addEventListener('click', function (e) {
+    var toggle = e.target.closest('[data-toggle-field]');
+    if (toggle) {
+      set(toggle.getAttribute('data-toggle-field'), toggle.dataset.toggle === '1');
+      window.cmsDirty(true);
+    }
+  });
+
+  root.addEventListener('input', function (e) {
+    var slider = e.target.closest && e.target.closest('[data-range-field]');
+    if (slider) {
+      var n = parseInt(slider.value, 10);
+      if (!isNaN(n)) set(slider.getAttribute('data-range-field'), n);
+      window.cmsDirty(true);
+    }
+  });
 
   root.addEventListener('input', function (e) {
     if (e.target.hasAttribute && e.target.hasAttribute('data-field')) window.cmsDirty(true);
@@ -1741,8 +2151,9 @@ function buildPortfolio() {
 function buildCms() {
   const src = fs.readFileSync(path.join(dir, 'Portfolio CMS.dc.html'), 'utf8');
   const parts = extractParts(src);
-  const helmet = stripUnusedScripts(parts.helmet);
-  const fields = annotateCmsFields(parts.body);
+  const helmet = markCmsActiveNav(stripUnusedScripts(parts.helmet));
+  const controls = annotateCmsControls(parts.body);
+  const fields = annotateCmsFields(controls.body);
   const t = transformBindings(fields.body);
   if (!t.refs.has('setRoot')) throw new Error('CMS: missing setRoot ref');
 
@@ -1765,7 +2176,10 @@ function buildCms() {
   console.log(
     'wrote cms.html    · refs:', t.refs.size,
     '· events:', [...t.events].join(','),
-    '· fields bound:', fields.bound
+    '· fields:', fields.bound,
+    '· toggles:', controls.toggles,
+    '· swatches:', controls.swatches,
+    '· sliders:', controls.ranges
   );
 }
 

@@ -63,6 +63,20 @@ module.exports = async function handler(req, res) {
     console.error('[contact] could not store the message for the inbox:', err);
   }
 
+  // CMS: Contact -> "Email me on new message". When off, the submission is kept in
+  // the inbox only.
+  let emailWanted = true;
+  try {
+    const { readContent } = require('./_content');
+    const { content } = await readContent();
+    emailWanted = !(content && content.contact && content.contact.emailOnMessage === false);
+  } catch (err) {
+    console.error('[contact] could not read the email preference, defaulting to send:', err);
+  }
+  if (!emailWanted) {
+    return res.status(200).json({ ok: true, delivered: false, stored, suppressed: true });
+  }
+
   if (!process.env.RESEND_API_KEY) {
     console.log('[contact] no RESEND_API_KEY set — message accepted but not emailed:', { name, email });
     return res.status(200).json({ ok: true, delivered: false, stored });
