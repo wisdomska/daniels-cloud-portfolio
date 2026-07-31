@@ -601,22 +601,299 @@ ${runtime}
 `;
 }
 
+/* ------------------- theming -------------------
+ * Setting --primary alone themed almost nothing: the design hardcodes its greens
+ * in inline styles, derives --glow/--accent-fill/--card-bg/the nebula gradients
+ * from literal rgba(106,255,0,…), paints the hero canvas with colour strings in
+ * JS, and lists confetti colours in an array.
+ *
+ * So instead of swapping one variable, every green-family colour in the page is
+ * rotated to the accent's hue — stylesheets, inline styles, hover/focus
+ * attributes, SVG fill/stroke attributes, canvas strokes and confetti. Saturation
+ * and lightness are preserved, which keeps the design's contrast relationships
+ * intact while moving the whole palette onto the new hue.
+ *
+ * Originals are cached on the first run so repeated changes always recompute from
+ * the design's own values rather than compounding.
+ * ----------------------------------------------- */
+const THEME_RUNTIME = `
+<script>
+(function () {
+  'use strict';
+
+  var BASE_HEX = '#6AFF00';           // the accent the design was drawn with
+  var GREEN_MIN = 55, GREEN_MAX = 178; // hues treated as "the theme colour"
+
+  function hexToRgb(hex) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h = 0, s = 0, l = (max + min) / 2, d = max - min;
+    if (d) {
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (max === r) h = ((g - b) / d + (g < b ? 6 : 0));
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+    }
+    return { h: h, s: s, l: l };
+  }
+
+  function hslToRgb(h, s, l) {
+    h = ((h % 360) + 360) % 360 / 360;
+    if (!s) { var v = Math.round(l * 255); return { r: v, g: v, b: v }; }
+    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    var p = 2 * l - q;
+    function hue(t) {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    }
+    return {
+      r: Math.round(hue(h + 1 / 3) * 255),
+      g: Math.round(hue(h) * 255),
+      b: Math.round(hue(h - 1 / 3) * 255),
+    };
+  }
+
+  var delta = 0;
+
+  function shift(r, g, b) {
+    var hsl = rgbToHsl(r, g, b);
+    // leave anything outside the green family alone — status ambers, error pinks,
+    // the near-black background and pure greys keep their meaning
+    if (hsl.s < 0.12) return null;
+    if (hsl.h < GREEN_MIN || hsl.h > GREEN_MAX) return null;
+    return hslToRgb(hsl.h + delta, hsl.s, hsl.l);
+  }
+
+  var HEX_RE = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\\b/g;
+  var RGB_RE = /rgba?\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*(?:,\\s*([\\d.]+)\\s*)?\\)/g;
+
+  // Concrete replacements for var(--x) references, filled once the originals are
+  // known. Inline styles get the concrete value substituted rather than left as a
+  // var(): the design's tiles kept their old border colour even after --border was
+  // updated on the declaring element, so relying on var resolution here is not
+  // dependable. Substituting removes the indirection.
+  var varValues = {};
+
+  function substituteVars(text) {
+    if (!text || !text.indexOf) return text;
+    return text.replace(/var\\(\\s*(--[a-z0-9-]+)\\s*(?:,[^()]*)?\\)/gi, function (whole, name) {
+      var value = varValues[name];
+      return value ? value : whole;
+    });
+  }
+
+  // rewrite every colour token in an arbitrary CSS/attribute string
+  function recolour(text) {
+    if (!text || delta === 0) return text;
+    return text
+      .replace(HEX_RE, function (whole, body) {
+        var rgb = hexToRgb(body);
+        var out = shift(rgb.r, rgb.g, rgb.b);
+        if (!out) return whole;
+        return 'rgb(' + out.r + ',' + out.g + ',' + out.b + ')';
+      })
+      .replace(RGB_RE, function (whole, r, g, b, a) {
+        var out = shift(+r, +g, +b);
+        if (!out) return whole;
+        return a === undefined
+          ? 'rgb(' + out.r + ',' + out.g + ',' + out.b + ')'
+          : 'rgba(' + out.r + ',' + out.g + ',' + out.b + ',' + a + ')';
+      });
+  }
+
+  var ATTRS = ['style', 'style-hover', 'style-focus', 'fill', 'stroke', 'data-tip'];
+  var cached = false;
+
+  // Every custom property either page themes from. Rewriting the stylesheet text
+  // alone proved unreliable — elements using var(--border) kept their old computed
+  // colour — so the rotated values are also set inline on the elements that declare
+  // them, which forces the cascade to recompute.
+  var THEME_VARS = [
+    '--bg', '--surface', '--surface-elev', '--surface-2', '--text', '--text-2', '--text-3',
+    '--border', '--border-hi', '--primary', '--glow', '--card-bg', '--accent-fill', '--fill',
+    '--neb1', '--neb2', '--neb3', '--grid-line', '--hair',
+  ];
+  var varHosts = [];
+  var origVars = [];
+
+  function cacheVarHosts() {
+    varHosts = [document.documentElement, document.body].concat(
+      Array.prototype.slice.call(document.querySelectorAll('[data-theme]'))
+    ).filter(Boolean);
+
+    origVars = varHosts.map(function (host) {
+      var computed = getComputedStyle(host);
+      var values = {};
+      THEME_VARS.forEach(function (name) {
+        var value = computed.getPropertyValue(name);
+        if (value && value.trim()) values[name] = value.trim();
+      });
+      return values;
+    });
+  }
+
+  function repaintVars() {
+    varValues = {};
+    varHosts.forEach(function (host, i) {
+      var values = origVars[i] || {};
+      Object.keys(values).forEach(function (name) {
+        var next = recolour(values[name]);
+        host.style.setProperty(name, next);
+        // last host wins, which is the innermost [data-theme] element
+        varValues[name] = next;
+      });
+    });
+  }
+
+  // Captures anything not yet captured. Called on every accent change, because the
+  // content hydrator clones cards and rows after the first theming pass and those
+  // clones need their own originals recorded.
+  function cacheNewElements() {
+    document.querySelectorAll('[style],[style-hover],[style-focus],[fill],[stroke]').forEach(function (el) {
+      ATTRS.forEach(function (name) {
+        if (name === 'data-tip') return;
+        var value = el.getAttribute(name);
+        if (value && !el.hasAttribute('data-orig-' + name)) {
+          el.setAttribute('data-orig-' + name, value);
+        }
+      });
+    });
+  }
+
+  function cacheOriginals() {
+    if (!cached) {
+      cached = true;
+      cacheVarHosts();
+      document.querySelectorAll('style').forEach(function (el) {
+        if (!el.id) el.setAttribute('data-theme-src', el.textContent);
+      });
+    }
+    cacheNewElements();
+  }
+
+  function repaint() {
+    document.querySelectorAll('style[data-theme-src]').forEach(function (el) {
+      var src = el.getAttribute('data-theme-src');
+      var next = recolour(src);
+      if (el.textContent !== next) el.textContent = next;
+    });
+    ATTRS.forEach(function (name) {
+      if (name === 'data-tip') return;
+      document.querySelectorAll('[data-orig-' + name + ']').forEach(function (el) {
+        var src = el.getAttribute('data-orig-' + name);
+        var next = recolour(substituteVars(src));
+        if (el.getAttribute(name) !== next) el.setAttribute(name, next);
+      });
+    });
+  }
+
+  // The bundled blog art is a separate SVG document, so its colours can't be
+  // rewritten from here — rotate it with a filter instead so it matches.
+  function paintArt() {
+    var id = 'theme-art-filter';
+    var el = document.getElementById(id);
+    if (!delta) { if (el) el.remove(); return; }
+    if (!el) {
+      el = document.createElement('style');
+      el.id = id;
+      document.head.appendChild(el);
+    }
+    el.textContent =
+      'img[data-slot],img[data-media-preview]{filter:hue-rotate(' + delta.toFixed(1) + 'deg)}';
+  }
+
+  // Belt to the braces above. Rewriting stylesheets, inline styles and the custom
+  // properties covers nearly everything, but a few elements kept resolving
+  // var(--border) to the original green whatever was done to the declaring element.
+  // This pass reads what is actually painted and rotates anything still in the green
+  // band, which is verifiable rather than hopeful. Safe to repeat: once rotated, a
+  // colour is out of the band and gets skipped.
+  var PAINTED = [
+    'color', 'background-color', 'border-top-color', 'border-right-color',
+    'border-bottom-color', 'border-left-color', 'outline-color', 'fill', 'stroke',
+  ];
+
+  function forcePainted() {
+    if (!delta) return 0;
+    var fixed = 0;
+    document.querySelectorAll('*').forEach(function (el) {
+      if (el.tagName === 'STYLE' || el.tagName === 'SCRIPT') return;
+      var cs = getComputedStyle(el);
+      PAINTED.forEach(function (prop) {
+        var value = cs.getPropertyValue(prop);
+        var m = value && value.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*([\\d.]+))?\\)/);
+        if (!m) return;
+        var out = shift(+m[1], +m[2], +m[3]);
+        if (!out) return;
+        var next = m[4] === undefined
+          ? 'rgb(' + out.r + ',' + out.g + ',' + out.b + ')'
+          : 'rgba(' + out.r + ',' + out.g + ',' + out.b + ',' + m[4] + ')';
+        el.style.setProperty(prop, next, 'important');
+        fixed++;
+      });
+    });
+    return fixed;
+  }
+
+  window.__applyAccent = function (hex) {
+    if (typeof hex !== 'string' || !/^#[0-9a-fA-F]{3,6}$/.test(hex)) return;
+    var base = hexToRgb(BASE_HEX);
+    var target = hexToRgb(hex);
+    var from = rgbToHsl(base.r, base.g, base.b);
+    var to = rgbToHsl(target.r, target.g, target.b);
+
+    cacheOriginals();
+    delta = to.h - from.h;
+
+    repaintVars(); // fills the var -> concrete map that repaint() substitutes with
+    repaint();
+    paintArt();
+    window.__themeForced = forcePainted();
+
+    // canvas paints with colour strings in JS, so hand it the rotated values
+    var node = hslToRgb(to.h, 0.85, 0.65);
+    window.__accentLine = to.h;
+    window.__accentNode = node.r + ',' + node.g + ',' + node.b;
+    window.__accentHex = hex;
+    if (window.__heroRebuild) window.__heroRebuild();
+  };
+})();
+</script>
+`;
+
 /* ------------------- shared runtime preamble ------------------- */
 // style-hover / style-focus shim + data-on-* binding, used by both pages.
 const SHARED_RUNTIME = `
   function styleShim() {
-    document.querySelectorAll('[style-hover]').forEach(function (el) {
-      var base = el.getAttribute('style') || '';
-      var hover = el.getAttribute('style-hover') || '';
-      el.addEventListener('mouseenter', function () { el.setAttribute('style', base + ';' + hover); });
-      el.addEventListener('mouseleave', function () { el.setAttribute('style', base); });
-    });
-    document.querySelectorAll('[style-focus]').forEach(function (el) {
-      var base = el.getAttribute('style') || '';
-      var focus = el.getAttribute('style-focus') || '';
-      el.addEventListener('focus', function () { el.setAttribute('style', base + ';' + focus); });
-      el.addEventListener('blur', function () { el.setAttribute('style', base); });
-    });
+    // Values are read at event time, not cached at bind time: theming rewrites
+    // these attributes later, and a cached copy would revert the new colours on
+    // the next mouseleave.
+    function pair(selector, extra, on, off) {
+      document.querySelectorAll(selector).forEach(function (el) {
+        el.addEventListener(on, function () {
+          var base = el.getAttribute('style') || '';
+          el.setAttribute('data-style-base', base);
+          el.setAttribute('style', base + ';' + (el.getAttribute(extra) || ''));
+        });
+        el.addEventListener(off, function () {
+          el.setAttribute('style', el.getAttribute('data-style-base') || '');
+        });
+      });
+    }
+    pair('[style-hover]', 'style-hover', 'mouseenter', 'mouseleave');
+    pair('[style-focus]', 'style-focus', 'focus', 'blur');
   }
 
   function bindHandlers(handlers, types) {
@@ -725,7 +1002,8 @@ ${SHARED_RUNTIME}
     if (!host) return;
     // CMS: Contact -> "Confetti on submit"
     if (window.__contactConfetti === false) return;
-    var colors = ['#6AFF00', '#9dff5c', '#3aa300', '#06b6d4', '#ffffff'];
+    var accent = window.__accentHex || '#6AFF00';
+    var colors = [accent, accent, '#3aa300', '#06b6d4', '#ffffff'];
     for (var i = 0; i < 46; i++) {
       var p = document.createElement('div');
       var size = 5 + Math.random() * 6;
@@ -830,7 +1108,7 @@ ${SHARED_RUNTIME}
           var dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx * dx + dy * dy);
           if (d < D) {
             var al = (1 - d / D) * 0.5 * Math.min(p.z, q.z);
-            ctx.strokeStyle = 'rgba(106,255,0,' + al.toFixed(3) + ')';
+            ctx.strokeStyle = 'rgba(' + (window.__accentLink || '106,255,0') + ',' + al.toFixed(3) + ')';
             ctx.lineWidth = 0.7;
             ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
           }
@@ -838,7 +1116,7 @@ ${SHARED_RUNTIME}
         var mdx = p.x - mouse.x, mdy = p.y - mouse.y, md = Math.sqrt(mdx * mdx + mdy * mdy);
         if (md < DM) {
           var ml = (1 - md / DM) * 0.65;
-          ctx.strokeStyle = 'rgba(150,255,80,' + ml.toFixed(3) + ')';
+          ctx.strokeStyle = 'rgba(' + (window.__accentNode || '150,255,80') + ',' + ml.toFixed(3) + ')';
           ctx.lineWidth = 0.9;
           ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
           // pull strength is CMS-controlled (42 = as designed, 0 = no attraction)
@@ -852,7 +1130,7 @@ ${SHARED_RUNTIME}
         var nn = nodes[j];
         var rr = 1.1 + nn.z * 1.9;
         ctx.beginPath(); ctx.arc(nn.x, nn.y, rr, 0, 6.2832);
-        ctx.fillStyle = 'rgba(150,255,80,' + (0.45 + nn.z * 0.55).toFixed(2) + ')';
+        ctx.fillStyle = 'rgba(' + (window.__accentNode || '150,255,80') + ',' + (0.45 + nn.z * 0.55).toFixed(2) + ')';
         ctx.fill();
       }
     };
@@ -1171,47 +1449,133 @@ const HYDRATE_RUNTIME = `
     if (window.__heroRebuild) window.__heroRebuild();
   }
 
+  // Slot ids follow the design's own naming, so the four original posts keep the
+  // art already bundled for them and new posts get their own slots.
+  function slotId(kind, postId) {
+    return kind + '-' + String(postId || '').replace(/^post-/, '');
+  }
+
+  function fillCard(card, post, kind) {
+    card.setAttribute('data-open', post.id);
+    card.setAttribute('data-post', post.id);
+    setText(card.querySelector('.blog-title'), post.title);
+
+    var cat = card.querySelector('[data-cms-category]');
+    if (cat) setText(cat, post.category);
+
+    var dateline = card.querySelector('[data-cms-dateline]');
+    if (dateline) setText(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
+
+    // the featured card also carries an excerpt
+    var excerpt = card.querySelector('p');
+    if (excerpt && post.excerpt) setText(excerpt, post.excerpt);
+
+    var img = card.querySelector('img[data-slot]');
+    if (img) {
+      img.setAttribute('data-slot', slotId(kind, post.id));
+      if (post.alt) img.alt = post.alt;
+    }
+  }
+
   function applyPosts(content) {
-    var posts = content.blog && content.blog.posts;
-    if (!Array.isArray(posts)) return;
+    var all = content.blog && content.blog.posts;
+    if (!Array.isArray(all) || !all.length) return;
+    var posts = all.filter(function (p) { return p && p.id && p.published !== false; });
+    if (!posts.length) return;
+
+    var list = document.querySelector('[data-blog="list"]');
+    var feat = list && list.querySelector('.blog-feat');
+    var miniRow = list && list.querySelector('.blog-mini-row');
+    if (!list || !feat || !miniRow) return;
+
+    template('blogFeat', feat);
+    template('blogMini', miniRow.querySelector('.blog-mini'));
+
+    // newest post is the featured one; the rest flow through the 4-column grid,
+    // wrapping into as many rows as it takes
+    fillCard(feat, posts[0], 'blog-cover');
+
+    var minis = reflow(miniRow, 'blogMini', posts.length - 1, miniRow.querySelector('.blog-mini'));
+    minis.forEach(function (card, i) { fillCard(card, posts[i + 1], 'blog-cover'); });
+
+    // the two counters above the list
+    var entries = list.querySelector('span');
+    if (entries && /entries/.test(entries.textContent || '')) {
+      setText(entries, posts.length + (posts.length === 1 ? ' entry' : ' entries') + ' · newest first');
+    }
+    var earlier = miniRow.parentElement && miniRow.parentElement.querySelector('span:last-child');
+    if (earlier && /^\\d+$/.test((earlier.textContent || '').trim())) {
+      setText(earlier, String(minis.length).padStart(2, '0'));
+    }
+
+    applyArticles(content, posts);
+  }
+
+  // One article per published post: the four the design ships keep their written
+  // prose, and any post added in the CMS gets a cloned article filled from its body.
+  function applyArticles(content, posts) {
+    var host = document.querySelector('[data-view="blog"] section');
+    if (!host) return;
+    var existing = Array.prototype.slice.call(document.querySelectorAll('[data-blog="article"]'));
+    if (!existing.length) return;
+    template('blogArticle', existing[0]);
 
     posts.forEach(function (post) {
-      if (!post || !post.id) return;
-      document.querySelectorAll('[data-post="' + post.id + '"]').forEach(function (region) {
-        var isArticle = region.getAttribute('data-blog') === 'article';
+      var article = document.querySelector('[data-blog="article"][data-id="' + post.id + '"]');
+      var isNew = false;
 
-        setText(region.querySelector(isArticle ? 'h1' : '.blog-title'), post.title);
+      if (!article) {
+        article = templates.blogArticle.cloneNode(true);
+        article.setAttribute('data-id', post.id);
+        article.setAttribute('data-post', post.id);
+        article.style.display = 'none';
+        host.appendChild(article);
+        isNew = true;
+      }
 
-        var cat = region.querySelector('[data-cms-category]');
-        if (cat) setText(cat, post.category);
+      setText(article.querySelector('h1'), post.title);
+      var cat = article.querySelector('[data-cms-category]');
+      if (cat) setText(cat, post.category);
+      var dateline = article.querySelector('[data-cms-dateline]');
+      if (dateline) setText(dateline, [post.readTime, post.date].filter(Boolean).join(' · '));
 
-        var dateline = region.querySelector('[data-cms-dateline]');
-        if (dateline) {
-          setText(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
+      var img = article.querySelector('img[data-slot]');
+      if (img) {
+        img.setAttribute('data-slot', slotId('blog-hero', post.id));
+        if (post.alt) img.alt = post.alt;
+      }
+
+      var prose = article.querySelector('[data-cms-body]');
+      var body = typeof post.body === 'string' ? post.body.trim() : '';
+
+      // Replace the prose when the CMS holds a body. A cloned article starts with
+      // the template's copy, which belongs to a different post, so it must always
+      // be replaced — with the excerpt if there's no body yet.
+      if (prose && (body || isNew)) {
+        prose.textContent = '';
+        var text = body || post.excerpt || '';
+        if (!text) {
+          var placeholder = document.createElement('p');
+          placeholder.textContent = 'This post has no body yet.';
+          placeholder.style.opacity = '.75';
+          prose.appendChild(placeholder);
+        } else {
+          text.split(/\\n\\s*\\n/).forEach(function (para) {
+            var trimmed = para.trim();
+            if (!trimmed) return;
+            var p = document.createElement('p');
+            p.textContent = trimmed;
+            prose.appendChild(p);
+          });
         }
+      }
+    });
 
-        var img = region.querySelector('img[data-slot]');
-        if (img && post.alt) img.alt = post.alt;
-
-        // Only replace the article's prose when the CMS actually holds a body —
-        // otherwise the copy written into the design stands.
-        if (isArticle && typeof post.body === 'string' && post.body.trim()) {
-          var prose = region.querySelector('[data-cms-body]');
-          if (prose) {
-            prose.textContent = '';
-            post.body.split(/\\n\\s*\\n/).forEach(function (para) {
-              var text = para.trim();
-              if (!text) return;
-              var p = document.createElement('p');
-              p.textContent = text;
-              prose.appendChild(p);
-            });
-          }
-        }
-
-        // an unpublished post disappears from the list and can't be opened
-        if (post.published === false && !isArticle) region.style.display = 'none';
-      });
+    // articles whose post was unpublished or deleted must not be reachable
+    var live = posts.map(function (p) { return p.id; });
+    existing.concat([]).forEach(function (article) {
+      var id = article.getAttribute('data-id');
+      if (live.indexOf(id) === -1) article.remove();
     });
   }
 
@@ -1416,11 +1780,19 @@ const HYDRATE_RUNTIME = `
     });
   }
 
+  // Precedence: a CMS upload, else the art bundled for that slot, else the shared
+  // placeholder. The last case matters for CMS-added posts — their cards are clones,
+  // so without this they would show the template post's picture.
+  var SLOT_ART = __SLOT_ART__;
+  var PLACEHOLDER = 'assets/blog/placeholder.svg';
+
   function applyMedia(content) {
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
-      var url = media[img.getAttribute('data-slot')];
-      if (typeof url === 'string' && url) img.src = url;
+      var slot = img.getAttribute('data-slot');
+      var url = media[slot] || SLOT_ART[slot] || PLACEHOLDER;
+      var current = img.getAttribute('src');
+      if (current !== url) img.src = url;
     });
   }
 
@@ -1431,7 +1803,8 @@ const HYDRATE_RUNTIME = `
       var meta = document.querySelector('meta[name="description"]');
       if (meta) meta.setAttribute('content', s.metaDescription);
     }
-    if (s.accent && root) root.style.setProperty('--primary', s.accent);
+    // rotates the whole palette onto the accent's hue, not just --primary
+    if (s.accent && window.__applyAccent) window.__applyAccent(s.accent);
     if (s.reduceMotion && root) root.dataset.motion = 'off';
   }
 
@@ -1446,7 +1819,7 @@ const HYDRATE_RUNTIME = `
     applyMedia(content);
     applyVisibility(content);
     applyCanvas(content);
-    applySettings(content);
+    applySettings(content); // themes the page, last so it covers everything above
     document.documentElement.setAttribute('data-content-loaded', '1');
   }
 
@@ -1797,6 +2170,8 @@ const CMS_DATA_RUNTIME = `
       el.dataset.swatch = on ? '1' : '0';
       el.style.borderColor = on ? 'var(--text)' : 'transparent';
     });
+    // the dashboard wears the theme too, so the choice can be judged in place
+    if (accent && window.__applyAccent) window.__applyAccent(accent);
   }
 
   // ---- sliders -----------------------------------------------------------
@@ -1827,8 +2202,32 @@ const CMS_DATA_RUNTIME = `
   }
 
   // ---- post list ---------------------------------------------------------
+  // The design ships six fixed rows; the blog can hold any number of posts, so the
+  // list is rendered from the data with the first row kept as the template.
+  var postRowTemplate = null;
+
   function populatePostList() {
     var posts = (content.blog && content.blog.posts) || [];
+    var listHost = root.querySelector('[data-postlist]');
+
+    if (listHost) {
+      var rows = qa('[data-postlist] [data-post-id]');
+      if (!postRowTemplate && rows.length) postRowTemplate = rows[0].cloneNode(true);
+
+      if (postRowTemplate) {
+        while (rows.length > posts.length) {
+          var extra = rows.pop();
+          if (extra.parentElement) extra.parentElement.removeChild(extra);
+        }
+        while (rows.length < posts.length) {
+          var clone = postRowTemplate.cloneNode(true);
+          listHost.appendChild(clone);
+          rows.push(clone);
+        }
+        rows.forEach(function (row, i) { row.setAttribute('data-post-id', posts[i].id); });
+      }
+    }
+
     qa('[data-post-id]').forEach(function (row) {
       var id = row.getAttribute('data-post-id');
       var post = posts.filter(function (p) { return p.id === id; })[0];
@@ -1848,6 +2247,30 @@ const CMS_DATA_RUNTIME = `
         pill.style.color = live ? 'var(--primary)' : 'var(--warn)';
       }
       if (title && title !== pill && post.title) title.textContent = post.title;
+
+      // a delete affordance, which the mockup's rows never had
+      if (!row.querySelector('[data-del-post]')) {
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.setAttribute('data-del-post', '');
+        del.textContent = '×';
+        del.title = 'Delete this post';
+        del.style.cssText =
+          'position:absolute;top:6px;right:6px;background:none;border:none;cursor:pointer;' +
+          "color:var(--text-3,#4d8c3c);font-size:15px;line-height:1;padding:2px 5px;font-family:'Syne Mono',monospace";
+        del.addEventListener('click', function (ev) {
+          ev.stopPropagation();
+          if (!window.confirm('Delete “' + (post.title || 'this post') + '”? This cannot be undone.')) return;
+          var idx = posts.indexOf(post);
+          if (idx > -1) posts.splice(idx, 1);
+          if (selectedPost === post.id) selectedPost = posts.length ? posts[0].id : null;
+          populate();
+          window.cmsDirty(true);
+          window.cmsToast('Post deleted — save to apply');
+        });
+        if (getComputedStyle(row).position === 'static') row.style.position = 'relative';
+        row.appendChild(del);
+      }
     });
 
     // the publish/unpublish button + status pill reflect the selected post
@@ -1892,15 +2315,37 @@ const CMS_DATA_RUNTIME = `
 
   // The media pane in the design is a static gallery. Give each known image slot a
   // labelled file input so a new image can actually be attached to it.
+  // Every post has a cover and a hero slot, so the list is derived from the posts
+  // rather than from whichever slots happen to have an image already.
+  function mediaSlots() {
+    var slots = [];
+    var posts = (content && content.blog && content.blog.posts) || [];
+    posts.forEach(function (post) {
+      var key = String(post.id || '').replace(/^post-/, '');
+      slots.push('blog-cover-' + key, 'blog-hero-' + key);
+    });
+    Object.keys((content && content.media) || {}).forEach(function (slot) {
+      if (slots.indexOf(slot) === -1) slots.push(slot);
+    });
+    return slots;
+  }
+
   function buildMediaPane() {
     var pane = root.querySelector('[data-panel="media"]');
-    if (!pane || pane.querySelector('[data-media-editor]')) return;
+    if (!pane) return;
+    var existing = pane.querySelector('[data-media-editor]');
+    if (existing) {
+      // posts may have been added or removed since this was built
+      if (existing.getAttribute('data-slots') === mediaSlots().join(',')) return;
+      existing.remove();
+    }
 
-    var slots = (content && content.media) ? Object.keys(content.media) : [];
+    var slots = mediaSlots();
     if (!slots.length) return;
 
     var wrap = document.createElement('div');
     wrap.setAttribute('data-media-editor', '');
+    wrap.setAttribute('data-slots', slots.join(','));
     wrap.style.cssText =
       'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:20px';
 
@@ -1955,7 +2400,7 @@ const CMS_DATA_RUNTIME = `
   var SLOT_ART = __SLOT_ART__;
 
   function defaultArt(slot) {
-    return SLOT_ART[slot] || '';
+    return SLOT_ART[slot] || 'assets/blog/placeholder.svg';
   }
 
   function uploadTo(slot, file, preview) {
@@ -2650,12 +3095,9 @@ const CMS_DATA_RUNTIME = `
     if (e.target.closest('[data-new-post]')) {
       e.stopPropagation();
       var posts = (content.blog && content.blog.posts) || [];
-      if (posts.length >= 6) {
-        window.cmsToast('The blog layout holds 6 entries — edit an existing one');
-        return;
-      }
       var id = 'post-' + Date.now().toString(36);
-      posts.push({
+      // newest first: the blog's featured slot shows posts[0]
+      posts.unshift({
         id: id, title: 'Untitled post', category: '', date: '', readTime: '',
         alt: '', excerpt: '', body: '', published: false,
       });
@@ -2670,12 +3112,15 @@ const CMS_DATA_RUNTIME = `
     var swatch = e.target.closest('[data-swatch-value]');
     if (swatch) {
       e.stopPropagation();
+      var chosenColour = swatch.getAttribute('data-swatch-value');
       qa('[data-swatch-value]').forEach(function (el) {
         var on = el === swatch;
         el.dataset.swatch = on ? '1' : '0';
         el.style.borderColor = on ? 'var(--text)' : 'transparent';
       });
-      set('settings.accent', swatch.getAttribute('data-swatch-value'));
+      set('settings.accent', chosenColour);
+      // retheme immediately so the choice is visible before saving
+      if (window.__applyAccent) window.__applyAccent(chosenColour);
       window.cmsDirty(true);
       return;
     }
@@ -2802,9 +3247,15 @@ function buildPortfolio() {
 <meta property="og:description" content="AWS-certified backend &amp; cloud engineer building reliable, well-architected services from Kumasi, Ghana.">
 <meta name="twitter:card" content="summary_large_image">`;
 
+  // the hydrator needs the slot -> bundled art map to fall back correctly
+  const slotArt = {};
+  for (const [id, art] of Object.entries(SLOT_ART)) slotArt[id] = art.file;
+  const hydrate = HYDRATE_RUNTIME.replace('__SLOT_ART__', JSON.stringify(slotArt));
+  if (hydrate.includes('__SLOT_ART__')) throw new Error('slot art placeholder not replaced');
+
   fs.writeFileSync(
     path.join(dir, 'index.html'),
-    page({ helmet, body: t.body, runtime: PORTFOLIO_RUNTIME + HYDRATE_RUNTIME, head })
+    page({ helmet, body: t.body, runtime: THEME_RUNTIME + PORTFOLIO_RUNTIME + hydrate, head })
   );
   console.log(
     'wrote index.html  · refs:', t.refs.size,
@@ -2838,7 +3289,7 @@ function buildCms() {
 
   fs.writeFileSync(
     path.join(dir, 'cms.html'),
-    page({ helmet, body: t.body, runtime: CMS_RUNTIME + dataRuntime, head })
+    page({ helmet, body: t.body, runtime: THEME_RUNTIME + CMS_RUNTIME + dataRuntime, head })
   );
   console.log(
     'wrote cms.html    · refs:', t.refs.size,
