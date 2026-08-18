@@ -767,7 +767,7 @@ apply complete · 6 added · 0 changed
 
           <div class="blog-layout" style="display:grid;grid-template-columns:minmax(0,1fr);gap:38px;align-items:start">
             <div class="blog-feat" role="button" tabindex="0" data-open="post-cold-starts" data-post="post-cold-starts" style="display:block;cursor:pointer;min-width:0;background:linear-gradient(rgba(0,0,0,0.42),rgba(0,0,0,0.42)),rgba(106,255,0,0.05);backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%);border:1px solid var(--border);border-radius:20px;padding:clamp(16px,2vw,24px);transition:border-color .2s ease,box-shadow .2s ease" style-hover="border-color:var(--primary);box-shadow:0 26px 70px -40px var(--glow)">
-              <div style="aspect-ratio:24/9;overflow:hidden;border-radius:18px;border:1px solid var(--border);margin-bottom:22px"><img data-slot="blog-cover-cold-starts" src="assets/blog/cold-starts-cover.svg" alt="A tall 214ms cold start followed by warm invocations settling under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+              <div style="aspect-ratio:24/9;overflow:hidden;border-radius:18px;border:1px solid var(--border);margin-bottom:22px"><img data-slot="blog-cover-cold-starts" data-default="assets/blog/cold-starts-cover.svg" data-default-for="blog-cover-cold-starts" src="assets/blog/cold-starts-cover.svg" alt="A tall 214ms cold start followed by warm invocations settling under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
               <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-family:'Syne Mono',monospace;font-size:11.5px;margin-bottom:12px">
                 <span style="color:var(--primary);background:var(--accent-fill);border:1px solid var(--border);padding:4px 10px;border-radius:5px">LATEST</span>
                 <span style="color:var(--primary)" data-cms-category>AWS Lambda</span>
@@ -784,19 +784,19 @@ apply complete · 6 added · 0 changed
               </div>
               <div class="blog-mini-row" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px">
               <div class="blog-mini" role="button" tabindex="0" data-open="post-leave-api" data-post="post-leave-api" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
-                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-leave-api" src="assets/blog/leave-api-thumb.svg" alt="Three stacked services — gateway, requests, balances — connected top to bottom" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-leave-api" data-default="assets/blog/leave-api-thumb.svg" data-default-for="blog-cover-leave-api" src="assets/blog/leave-api-thumb.svg" alt="Three stacked services — gateway, requests, balances — connected top to bottom" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
                 <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>Architecture</span>
                 <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">Designing a leave-management API that scales quietly</h3>
                 <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>04 Oct 2025 · 8 min</span>
               </div>
               <div class="blog-mini" role="button" tabindex="0" data-open="post-pooling" data-post="post-pooling" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
-                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-pooling" src="assets/blog/pooling-thumb.svg" alt="Four Lambda containers funnelling through a proxy into one database" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-pooling" data-default="assets/blog/pooling-thumb.svg" data-default-for="blog-cover-pooling" src="assets/blog/pooling-thumb.svg" alt="Four Lambda containers funnelling through a proxy into one database" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
                 <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>PostgreSQL</span>
                 <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">Connection pooling in serverless: what finally worked</h3>
                 <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>19 Sep 2025 · 5 min</span>
               </div>
               <div class="blog-mini" role="button" tabindex="0" data-open="post-firstyear" data-post="post-firstyear" style="display:flex;flex-direction:column;gap:11px;min-width:0;cursor:pointer;background:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),rgba(106,255,0,0.055);backdrop-filter:blur(16px) saturate(130%);-webkit-backdrop-filter:blur(16px) saturate(130%);border:1px solid var(--border);border-radius:14px;padding:13px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 18px 44px -28px var(--glow)">
-                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-firstyear" src="assets/blog/first-year-thumb.svg" alt="A rising curve from 2024 to 2025 ending in a star" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+                <div class="blog-thumb" style="aspect-ratio:4/3;overflow:hidden;border-radius:8px;border:1px solid var(--border);transition:border-color .18s ease"><img data-slot="blog-cover-firstyear" data-default="assets/blog/first-year-thumb.svg" data-default-for="blog-cover-firstyear" src="assets/blog/first-year-thumb.svg" alt="A rising curve from 2024 to 2025 ending in a star" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
                 <span style="font-family:'Syne Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--primary)" data-cms-category>Career</span>
                 <h3 class="blog-title" style="font-family:'Clash Display';font-weight:600;font-size:14.5px;line-height:1.32;margin:0;color:var(--text);transition:color .18s ease;text-wrap:pretty">From National Service to AWS-certified: my first year</h3>
                 <span style="margin-top:auto;font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3)" data-cms-dateline>28 Aug 2025 · 4 min</span>
@@ -810,7 +810,7 @@ apply complete · 6 added · 0 changed
           <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
           <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>AWS Lambda</span><span data-cms-dateline>· 6 min read · Nov 2025</span></div>
           <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Cold starts aren't the enemy — trimming Lambda latency by 60%</h1>
-          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-cold-starts" src="assets/blog/cold-starts-hero.svg" alt="Chart of Lambda invocation latency: a 214ms cold start, then warm invocations under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-cover-cold-starts" data-default="assets/blog/cold-starts-hero.svg" data-default-for="blog-cover-cold-starts" src="assets/blog/cold-starts-hero.svg" alt="Chart of Lambda invocation latency: a 214ms cold start, then warm invocations under 90ms" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
           <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
             <p>When a service feels slow, "cold starts" is the first thing everyone blames. It's a real cost — the container spins up, the runtime boots, your dependencies load — but on the leave-management API it turned out to be a small slice of the latency budget. Most of the time was being spent elsewhere, and chasing the wrong number cost me a week.</p>
             <p>The biggest win was unglamorous: shrinking the deploy bundle. Every megabyte the runtime has to pull and parse is time on the critical path. Tree-shaking unused SDK clients and importing only the specific AWS modules I needed cut init time roughly in half.</p>
@@ -827,7 +827,7 @@ apply complete · 6 added · 0 changed
           <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
           <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>Architecture</span><span data-cms-dateline>· 8 min read · Oct 2025</span></div>
           <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Designing a leave-management API that scales quietly</h1>
-          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-leave-api" src="assets/blog/leave-api-hero.svg" alt="Topology: API Gateway feeding request and balance services, joined by an event bus, writing to PostgreSQL" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-cover-leave-api" data-default="assets/blog/leave-api-hero.svg" data-default-for="blog-cover-leave-api" src="assets/blog/leave-api-hero.svg" alt="Topology: API Gateway feeding request and balance services, joined by an event bus, writing to PostgreSQL" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
           <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
             <p>A leave-management system looks trivial on a whiteboard: request time off, someone approves it, a balance goes down. The complexity hides in the edges — overlapping requests, approval chains, accrual rules, and notifications that must never fire twice.</p>
             <p>I split the system along its natural seams. A request service owns the lifecycle of a leave request; a balance service is the source of truth for entitlements; and events tie them together. When a request is approved, it publishes an event rather than reaching into the balance tables directly — which keeps each service independently deployable and easy to reason about.</p>
@@ -840,7 +840,7 @@ apply complete · 6 added · 0 changed
           <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
           <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>PostgreSQL</span><span data-cms-dateline>· 5 min read · Sep 2025</span></div>
           <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">Connection pooling in serverless: what finally worked</h1>
-          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-pooling" src="assets/blog/pooling-hero.svg" alt="Many Lambda containers multiplexed through RDS Proxy onto three stable PostgreSQL connections" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-cover-pooling" data-default="assets/blog/pooling-hero.svg" data-default-for="blog-cover-pooling" src="assets/blog/pooling-hero.svg" alt="Many Lambda containers multiplexed through RDS Proxy onto three stable PostgreSQL connections" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
           <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
             <p>Relational databases assume long-lived connections. Lambda assumes the opposite — thousands of short-lived containers, each wanting its own connection. Put them together naively and you'll exhaust Postgres's connection limit under the first real traffic spike.</p>
             <p>My first instinct was a pool inside each function. That helps within a warm container, but it does nothing about the fleet of containers all opening connections at once. The pool-per-container just multiplied the problem.</p>
@@ -859,7 +859,7 @@ export const handler = async (event) =&gt; {
           <button data-blog-back style="display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:14px;color:var(--text);background:color-mix(in srgb,var(--surface) 55%,transparent);backdrop-filter:blur(10px);padding:13px 24px;border-radius:999px;border:1px solid var(--primary);cursor:pointer;margin-bottom:26px;transition:background .15s ease" style-hover="background:var(--accent-fill)">← All posts</button>
           <div style="display:flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-2);margin-bottom:14px"><span style="color:var(--primary)" data-cms-category>Career</span><span data-cms-dateline>· 4 min read · Aug 2025</span></div>
           <h1 style="font-family:'Clash Display';font-weight:600;font-size:clamp(26px,4vw,38px);line-height:1.2;letter-spacing:-.02em;margin:0 0 22px;color:var(--text)">From National Service to AWS-certified: my first year at AmaliTech</h1>
-          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-hero-firstyear" src="assets/blog/first-year-hero.svg" alt="Rising timeline from National Service through two AWS certifications to Software Engineer" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <div style="aspect-ratio:16/9;margin:0 0 28px;overflow:hidden;border-radius:14px;border:1px solid var(--border)"><img data-slot="blog-cover-firstyear" data-default="assets/blog/first-year-hero.svg" data-default-for="blog-cover-firstyear" src="assets/blog/first-year-hero.svg" alt="Rising timeline from National Service through two AWS certifications to Software Engineer" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block"></div>
           <div data-cms-body style="color:var(--text-2);font-size:15px;line-height:1.8">
             <p>I joined AmaliTech as a national-service backend developer with a computer-science degree and very little production experience. A year later I'd shipped features used across the company and earned two AWS certifications. Here's what compounded fastest.</p>
             <p>Reading other people's code beat writing my own. Reviewing pull requests taught me the house style, the sharp edges of our systems, and why certain "clever" solutions had been rejected before. It was the fastest way to absorb a codebase I hadn't built.</p>
@@ -1792,6 +1792,68 @@ export const handler = async (event) =&gt; {
     applyArticles(content, posts);
   }
 
+  // Supporting media: extra images shown only in the expanded article, never on the
+  // card. Uploads rather than bundled art, so they are laid out at their own aspect
+  // ratio and left out of the theme's hue rotation.
+  function renderGallery(article, post) {
+    var items = (Array.isArray(post.gallery) ? post.gallery : []).filter(function (g) {
+      return g && typeof g.url === 'string' && g.url;
+    });
+    var host = article.querySelector('[data-gallery]');
+
+    if (!items.length) {
+      if (host && host.parentNode) host.parentNode.removeChild(host);
+      return;
+    }
+
+    if (!host) {
+      host = document.createElement('div');
+      host.setAttribute('data-gallery', '');
+      host.style.cssText = 'display:grid;gap:18px;margin:32px 0 0';
+      var prose = article.querySelector('[data-cms-body]');
+      if (prose && prose.parentNode) prose.parentNode.insertBefore(host, prose.nextSibling);
+      else article.appendChild(host);
+    }
+
+    // a single image gets the full column; several share a responsive grid
+    host.style.gridTemplateColumns = items.length > 1 ? 'repeat(auto-fit,minmax(250px,1fr))' : '1fr';
+    host.textContent = '';
+
+    items.forEach(function (item) {
+      var figure = document.createElement('figure');
+      figure.style.cssText = 'margin:0;display:flex;flex-direction:column;gap:9px';
+
+      // Reserve the picture's own shape when its dimensions are known, so the article
+      // does not reflow as it loads and the image is never cropped. Not lazy: the
+      // article sits inside a view that starts display:none, where lazy loading does
+      // not reliably kick in, and a reader who opened the post wants these anyway.
+      var frame = document.createElement('div');
+      var ratio = Number(item.w) > 0 && Number(item.h) > 0 ? Number(item.w) / Number(item.h) : 0;
+      frame.style.cssText =
+        'overflow:hidden;border-radius:12px;border:1px solid var(--border);' +
+        'background:var(--surface)' +
+        (ratio ? ';aspect-ratio:' + item.w + '/' + item.h : '');
+      var img = document.createElement('img');
+      img.src = item.url;
+      img.alt = item.caption || '';
+      img.decoding = 'async';
+      img.style.cssText = ratio
+        ? 'width:100%;height:100%;object-fit:cover;display:block'
+        : 'width:100%;height:auto;display:block';
+      frame.appendChild(img);
+      figure.appendChild(frame);
+
+      if (item.caption) {
+        var caption = document.createElement('figcaption');
+        caption.textContent = item.caption;
+        caption.style.cssText =
+          "font-family:'Syne Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--text-3)";
+        figure.appendChild(caption);
+      }
+      host.appendChild(figure);
+    });
+  }
+
   // One article per published post: the four the design ships keep their written
   // prose, and any post added in the CMS gets a cloned article filled from its body.
   function applyArticles(content, posts) {
@@ -1822,9 +1884,12 @@ export const handler = async (event) =&gt; {
 
       var img = article.querySelector('img[data-slot]');
       if (img) {
-        img.setAttribute('data-slot', slotId('blog-hero', post.id));
+        // the same picture as the card: one image per post
+        img.setAttribute('data-slot', slotId('blog-cover', post.id));
         if (post.alt) img.alt = post.alt;
       }
+
+      renderGallery(article, post);
 
       var prose = article.querySelector('[data-cms-body]');
       var body = typeof post.body === 'string' ? post.body.trim() : '';
@@ -2136,7 +2201,10 @@ export const handler = async (event) =&gt; {
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
       var slot = img.getAttribute('data-slot');
-      var url = media[slot] || SLOT_ART[slot] || PLACEHOLDER;
+      // an upload wins; then this frame's own bundled art, but only while the frame
+      // still belongs to that slot; then the slot's art; then the shared placeholder
+      var own = img.getAttribute('data-default-for') === slot ? img.getAttribute('data-default') : '';
+      var url = media[slot] || own || SLOT_ART[slot] || PLACEHOLDER;
       var current = img.getAttribute('src');
       if (current !== url) img.src = url;
     });

@@ -44,19 +44,31 @@ const SLOT_ART = {
     file: 'assets/blog/first-year-thumb.svg',
     alt: 'A rising curve from 2024 to 2025 ending in a star',
   },
+  // the article frame: same slot as the card, so one upload serves both — only
+  // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-cold-starts': {
+    as: 'blog-cover-cold-starts',
     file: 'assets/blog/cold-starts-hero.svg',
     alt: 'Chart of Lambda invocation latency: a 214ms cold start, then warm invocations under 90ms',
   },
+  // the article frame: same slot as the card, so one upload serves both — only
+  // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-leave-api': {
+    as: 'blog-cover-leave-api',
     file: 'assets/blog/leave-api-hero.svg',
     alt: 'Topology: API Gateway feeding request and balance services, joined by an event bus, writing to PostgreSQL',
   },
+  // the article frame: same slot as the card, so one upload serves both — only
+  // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-pooling': {
+    as: 'blog-cover-pooling',
     file: 'assets/blog/pooling-hero.svg',
     alt: 'Many Lambda containers multiplexed through RDS Proxy onto three stable PostgreSQL connections',
   },
+  // the article frame: same slot as the card, so one upload serves both — only
+  // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-firstyear': {
+    as: 'blog-cover-firstyear',
     file: 'assets/blog/first-year-hero.svg',
     alt: 'Rising timeline from National Service through two AWS certifications to Software Engineer',
   },
@@ -323,10 +335,15 @@ function fillImageSlots(body) {
       );
     }
     filled.push(id);
-    // data-slot keeps the slot's identity in the DOM so the CMS's media pane can
-    // swap this image at runtime; the bundled art is the default when none is set.
+    // data-slot keeps the slot's identity in the DOM so the CMS can swap this image
+    // at runtime. Several frames can share one slot (the card cover and the article
+    // header are the same picture), so each frame also carries the art drawn for its
+    // own shape as its default — data-default-for records which slot that art belongs
+    // to, so a frame re-pointed at another post falls back instead of lying.
+    const slot = art.as || id;
     return (
-      `<img data-slot="${id}" src="${art.file}" alt="${art.alt}" decoding="async" ` +
+      `<img data-slot="${slot}" data-default="${art.file}" data-default-for="${slot}" ` +
+      `src="${art.file}" alt="${art.alt}" decoding="async" ` +
       'style="width:100%;height:100%;object-fit:cover;display:block">'
     );
   });
@@ -1784,6 +1801,68 @@ const HYDRATE_RUNTIME = `
     applyArticles(content, posts);
   }
 
+  // Supporting media: extra images shown only in the expanded article, never on the
+  // card. Uploads rather than bundled art, so they are laid out at their own aspect
+  // ratio and left out of the theme's hue rotation.
+  function renderGallery(article, post) {
+    var items = (Array.isArray(post.gallery) ? post.gallery : []).filter(function (g) {
+      return g && typeof g.url === 'string' && g.url;
+    });
+    var host = article.querySelector('[data-gallery]');
+
+    if (!items.length) {
+      if (host && host.parentNode) host.parentNode.removeChild(host);
+      return;
+    }
+
+    if (!host) {
+      host = document.createElement('div');
+      host.setAttribute('data-gallery', '');
+      host.style.cssText = 'display:grid;gap:18px;margin:32px 0 0';
+      var prose = article.querySelector('[data-cms-body]');
+      if (prose && prose.parentNode) prose.parentNode.insertBefore(host, prose.nextSibling);
+      else article.appendChild(host);
+    }
+
+    // a single image gets the full column; several share a responsive grid
+    host.style.gridTemplateColumns = items.length > 1 ? 'repeat(auto-fit,minmax(250px,1fr))' : '1fr';
+    host.textContent = '';
+
+    items.forEach(function (item) {
+      var figure = document.createElement('figure');
+      figure.style.cssText = 'margin:0;display:flex;flex-direction:column;gap:9px';
+
+      // Reserve the picture's own shape when its dimensions are known, so the article
+      // does not reflow as it loads and the image is never cropped. Not lazy: the
+      // article sits inside a view that starts display:none, where lazy loading does
+      // not reliably kick in, and a reader who opened the post wants these anyway.
+      var frame = document.createElement('div');
+      var ratio = Number(item.w) > 0 && Number(item.h) > 0 ? Number(item.w) / Number(item.h) : 0;
+      frame.style.cssText =
+        'overflow:hidden;border-radius:12px;border:1px solid var(--border);' +
+        'background:var(--surface)' +
+        (ratio ? ';aspect-ratio:' + item.w + '/' + item.h : '');
+      var img = document.createElement('img');
+      img.src = item.url;
+      img.alt = item.caption || '';
+      img.decoding = 'async';
+      img.style.cssText = ratio
+        ? 'width:100%;height:100%;object-fit:cover;display:block'
+        : 'width:100%;height:auto;display:block';
+      frame.appendChild(img);
+      figure.appendChild(frame);
+
+      if (item.caption) {
+        var caption = document.createElement('figcaption');
+        caption.textContent = item.caption;
+        caption.style.cssText =
+          "font-family:'Syne Mono',monospace;font-size:11.5px;line-height:1.6;color:var(--text-3)";
+        figure.appendChild(caption);
+      }
+      host.appendChild(figure);
+    });
+  }
+
   // One article per published post: the four the design ships keep their written
   // prose, and any post added in the CMS gets a cloned article filled from its body.
   function applyArticles(content, posts) {
@@ -1814,9 +1893,12 @@ const HYDRATE_RUNTIME = `
 
       var img = article.querySelector('img[data-slot]');
       if (img) {
-        img.setAttribute('data-slot', slotId('blog-hero', post.id));
+        // the same picture as the card: one image per post
+        img.setAttribute('data-slot', slotId('blog-cover', post.id));
         if (post.alt) img.alt = post.alt;
       }
+
+      renderGallery(article, post);
 
       var prose = article.querySelector('[data-cms-body]');
       var body = typeof post.body === 'string' ? post.body.trim() : '';
@@ -2128,7 +2210,10 @@ const HYDRATE_RUNTIME = `
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
       var slot = img.getAttribute('data-slot');
-      var url = media[slot] || SLOT_ART[slot] || PLACEHOLDER;
+      // an upload wins; then this frame's own bundled art, but only while the frame
+      // still belongs to that slot; then the slot's art; then the shared placeholder
+      var own = img.getAttribute('data-default-for') === slot ? img.getAttribute('data-default') : '';
+      var url = media[slot] || own || SLOT_ART[slot] || PLACEHOLDER;
       var current = img.getAttribute('src');
       if (current !== url) img.src = url;
     });
@@ -2766,46 +2851,23 @@ const CMS_DATA_RUNTIME = `
     window.cmsToast('Image removed — save to publish');
   }
 
-  function imageControl(kind, caption) {
-    var wrap = document.createElement('div');
-    wrap.setAttribute('data-post-image-control', kind);
-    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px';
-
-    var cap = document.createElement('span');
-    cap.textContent = caption;
-    cap.style.cssText = "font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2,#7fcc66)";
-
-    var frame = document.createElement('div');
-    frame.style.cssText =
-      'width:172px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:1px solid var(--border-hi,#173311)';
-    var img = document.createElement('img');
-    img.setAttribute('data-post-img', kind);
-    img.alt = '';
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
-    frame.appendChild(img);
-
-    var btns = document.createElement('div');
-    btns.style.cssText = 'display:flex;gap:8px';
-    var replace = document.createElement('button');
-    replace.type = 'button';
-    replace.textContent = 'Replace';
-    replace.style.cssText = miniBtnCss;
-    replace.addEventListener('click', function (e) { e.stopPropagation(); pickPostImage(kind); });
-    var remove = document.createElement('button');
-    remove.type = 'button';
-    remove.textContent = 'Remove';
-    remove.style.cssText = miniBtnCss;
-    remove.addEventListener('click', function (e) { e.stopPropagation(); removePostImage(kind); });
-    btns.appendChild(replace);
-    btns.appendChild(remove);
-
-    wrap.appendChild(cap);
-    wrap.appendChild(frame);
-    wrap.appendChild(btns);
-    return wrap;
+  // A hero image uploaded before the article shared the cover would otherwise just
+  // disappear. Move it to supporting media, where it still shows in the article, and
+  // drop the dead slot. Not marked dirty — it rides along with the next save.
+  function migrateHeroUpload() {
+    var post = currentPost();
+    if (!post || !post.id || !content.media) return;
+    var legacy = 'blog-hero-' + String(post.id).replace(/^post-/, '');
+    var url = content.media[legacy];
+    if (!url) return;
+    if (!Array.isArray(post.gallery)) post.gallery = [];
+    var already = post.gallery.some(function (g) { return g && g.url === url; });
+    if (!already) post.gallery.push({ url: url, caption: '' });
+    delete content.media[legacy];
   }
 
   function renderPostImages() {
+    migrateHeroUpload();
     var box = root.querySelector('[data-cover-preview]');
     if (!box) return;
     var row = box.parentElement;
@@ -2831,17 +2893,201 @@ const CMS_DATA_RUNTIME = `
       });
     }
 
-    // the article's header image, which the design has no control for
-    if (!row.querySelector('[data-post-image-control="blog-hero"]')) {
-      row.appendChild(imageControl('blog-hero', 'Article image'));
+    // one image per post: the card and the article share this cover
+    var note = row.querySelector('[data-cover-note]');
+    if (!note) {
+      note = document.createElement('span');
+      note.setAttribute('data-cover-note', '');
+      note.textContent = 'Used on the card and at the top of the article.';
+      note.style.cssText =
+        "flex-basis:100%;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-3,#4d8c3c)";
+      row.appendChild(note);
     }
 
-    ['blog-cover', 'blog-hero'].forEach(function (kind) {
-      var img = postImageEl(kind);
-      if (!img) return;
-      var slot = postSlot(kind);
+    var img = postImageEl('blog-cover');
+    if (img) {
+      var slot = postSlot('blog-cover');
       var url = slot ? (content.media && content.media[slot]) || defaultArt(slot) : '';
       if (url && img.getAttribute('src') !== url) img.src = url;
+    }
+
+    renderGalleryEditor();
+  }
+
+  /* ---------------- supporting media (blog pane) ----------------
+   * Extra images for the expanded article only — the card keeps showing the cover.
+   * These are plain URLs on the post rather than named slots: there is no bundled
+   * default to fall back to, and the list is any length.
+   * -------------------------------------------------------------- */
+  var galleryInput = null;
+
+  function postGallery() {
+    var post = currentPost();
+    if (!post) return null;
+    if (!Array.isArray(post.gallery)) post.gallery = [];
+    return post.gallery;
+  }
+
+  function addGalleryImage() {
+    var gallery = postGallery();
+    if (!gallery) { window.cmsToast('Create or select a post first'); return; }
+    if (!galleryInput) {
+      galleryInput = document.createElement('input');
+      galleryInput.type = 'file';
+      galleryInput.accept = 'image/png,image/jpeg,image/webp,image/avif,image/gif,image/svg+xml';
+      galleryInput.multiple = true;
+      galleryInput.style.display = 'none';
+      galleryInput.addEventListener('change', function () {
+        var files = Array.prototype.slice.call(galleryInput.files || []);
+        galleryInput.value = '';
+        var target = postGallery();
+        if (!target || !files.length) return;
+        files.reduce(function (chain, file) {
+          return chain.then(function () {
+            return uploadRaw(file)
+              .then(measure)
+              .then(function (item) {
+                target.push(item);
+                window.cmsDirty(true);
+                renderGalleryEditor();
+              });
+          });
+        }, Promise.resolve())
+          .then(function () { window.cmsToast('Added — save to publish'); })
+          .catch(function (err) { window.cmsToast(err.message); });
+      });
+      root.appendChild(galleryInput);
+    }
+    galleryInput.click();
+  }
+
+  // Reads the uploaded image's natural size so the article can reserve its shape.
+  // A failure here is not worth blocking on — the portfolio falls back to letting the
+  // image size itself.
+  function measure(url) {
+    return new Promise(function (resolve) {
+      var probe = new Image();
+      var done = function (w, h) { resolve({ url: url, caption: '', w: w, h: h }); };
+      probe.onload = function () { done(probe.naturalWidth || 0, probe.naturalHeight || 0); };
+      probe.onerror = function () { done(0, 0); };
+      probe.src = url;
+    });
+  }
+
+  function renderGalleryEditor() {
+    var pane = root.querySelector('[data-panel="blog"]');
+    if (!pane) return;
+
+    var box = pane.querySelector('[data-gallery-editor]');
+    if (!box) {
+      box = document.createElement('div');
+      box.setAttribute('data-gallery-editor', '');
+      box.style.cssText =
+        'display:flex;flex-direction:column;gap:11px;margin-top:18px;padding:15px;border:1px solid ' +
+        'var(--border-hi,#173311);border-radius:12px;background:var(--surface,#06140a)';
+
+      var head = document.createElement('div');
+      head.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:10px';
+      var title = document.createElement('span');
+      title.textContent = 'Supporting media';
+      title.style.cssText =
+        "font-family:'Clash Display',sans-serif;font-weight:600;font-size:13px;color:var(--text,#eefff0)";
+      var add = document.createElement('button');
+      add.type = 'button';
+      add.setAttribute('data-gallery-add', '');
+      add.textContent = '+ Add image';
+      add.style.cssText = miniBtnCss;
+      add.addEventListener('click', function (e) { e.stopPropagation(); addGalleryImage(); });
+      head.appendChild(title);
+      head.appendChild(add);
+
+      var note = document.createElement('span');
+      note.textContent =
+        'Shown inside the expanded article, under the text — never on the card. Add as many as you like.';
+      note.style.cssText =
+        "font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;color:var(--text-3,#4d8c3c)";
+
+      var list = document.createElement('div');
+      list.setAttribute('data-gallery-list', '');
+      list.style.cssText = 'display:flex;flex-direction:column;gap:10px';
+
+      box.appendChild(head);
+      box.appendChild(note);
+      box.appendChild(list);
+      pane.appendChild(box);
+    }
+
+    var host = box.querySelector('[data-gallery-list]');
+    host.textContent = '';
+    var gallery = postGallery() || [];
+
+    if (!gallery.length) {
+      var empty = document.createElement('p');
+      empty.textContent = 'No supporting images on this post.';
+      empty.style.cssText =
+        "margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3,#4d8c3c)";
+      host.appendChild(empty);
+      return;
+    }
+
+    gallery.forEach(function (item, index) {
+      var row = document.createElement('div');
+      row.style.cssText =
+        'display:grid;grid-template-columns:96px 1fr auto;gap:11px;align-items:center;padding:10px;' +
+        'border:1px solid var(--border-hi,#173311);border-radius:10px';
+
+      var thumb = document.createElement('img');
+      thumb.src = item.url;
+      thumb.alt = '';
+      thumb.style.cssText =
+        'width:96px;aspect-ratio:16/9;object-fit:cover;border-radius:7px;display:block;background:var(--bg,#020a02)';
+
+      var caption = document.createElement('input');
+      caption.type = 'text';
+      caption.value = item.caption || '';
+      caption.placeholder = 'Caption (optional) — also used as the alt text';
+      caption.style.cssText = inputCss;
+      caption.addEventListener('input', function () {
+        item.caption = caption.value;
+        window.cmsDirty(true);
+      });
+
+      var tools = document.createElement('div');
+      tools.style.cssText = 'display:flex;gap:6px';
+      var button = function (label, title, onClick) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.title = title;
+        b.style.cssText = miniBtnCss;
+        b.addEventListener('click', function (e) { e.stopPropagation(); onClick(); });
+        return b;
+      };
+      if (index > 0) {
+        tools.appendChild(button('\u2191', 'Move up', function () {
+          gallery.splice(index - 1, 0, gallery.splice(index, 1)[0]);
+          window.cmsDirty(true);
+          renderGalleryEditor();
+        }));
+      }
+      if (index < gallery.length - 1) {
+        tools.appendChild(button('\u2193', 'Move down', function () {
+          gallery.splice(index + 1, 0, gallery.splice(index, 1)[0]);
+          window.cmsDirty(true);
+          renderGalleryEditor();
+        }));
+      }
+      tools.appendChild(button('Remove', 'Remove this image', function () {
+        gallery.splice(index, 1);
+        window.cmsDirty(true);
+        renderGalleryEditor();
+        window.cmsToast('Removed — save to publish');
+      }));
+
+      row.appendChild(thumb);
+      row.appendChild(caption);
+      row.appendChild(tools);
+      host.appendChild(row);
     });
   }
 
@@ -2929,8 +3175,8 @@ const CMS_DATA_RUNTIME = `
     var slots = [];
     var posts = (content && content.blog && content.blog.posts) || [];
     posts.forEach(function (post) {
-      var key = String(post.id || '').replace(/^post-/, '');
-      slots.push('blog-cover-' + key, 'blog-hero-' + key);
+      // one image per post now: the card and the article share the cover slot
+      slots.push('blog-cover-' + String(post.id || '').replace(/^post-/, ''));
     });
     Object.keys((content && content.media) || {}).forEach(function (slot) {
       if (slots.indexOf(slot) === -1) slots.push(slot);
@@ -3009,6 +3255,23 @@ const CMS_DATA_RUNTIME = `
 
   function defaultArt(slot) {
     return SLOT_ART[slot] || 'assets/blog/placeholder.svg';
+  }
+
+  // Uploads the file and resolves with its URL. Slots and the supporting-media
+  // gallery both go through here; only what is done with the URL afterwards differs.
+  function uploadRaw(file) {
+    if (!token) return Promise.reject(new Error('Sign in first'));
+    window.cmsToast('Uploading ' + file.name + '\\u2026');
+    return fetch('/api/upload?filename=' + encodeURIComponent(file.name), {
+      method: 'POST',
+      headers: { 'Content-Type': file.type, Authorization: 'Bearer ' + token },
+      body: file
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok || !d.ok) throw new Error(d.error || 'Upload failed');
+        return d.url;
+      });
+    });
   }
 
   function uploadTo(slot, file, preview) {

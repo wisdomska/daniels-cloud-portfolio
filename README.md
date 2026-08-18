@@ -76,7 +76,9 @@ The design has no inputs for some of this, so the build appends them: the hero's
 **Employer badge** (label + employer — the AmaliTech wordmark is swapped for text if the
 employer is anyone else) and the footer **Socials** (X, Instagram; empty hides the icon).
 Projects carry a **Live URL** alongside the repo link, and the Blog pane edits the selected
-post's **cover and article image** directly — Preview opens that post on the live site with
+post's **cover** — one image per post, shown on the card *and* at the top of the
+article — plus **supporting media**, extra images that appear only in the expanded
+article, with captions and ordering. Preview opens that post on the live site with
 `?post=<id>&preview=1`, which renders drafts too.
 
 Certifications, Tech stack, Projects and the Experience timeline are **lists** — add, edit,
