@@ -774,6 +774,36 @@ function tagCmsPostRows(body) {
 
 // The design hides .nav-links below 760px without providing a menu, which
 // strands the resume and blog views on phones. Compact + wrap them instead.
+// Rules the design shipped that put content out of reach: an experience table that
+// scrolled sideways with its last column off-screen, tooltips that only existed on
+// hover, and a footer bleeding 100vw past the viewport on both sides.
+const MOBILE_CSS = [
+  [
+    "    .ct-card{overflow-x:auto!important}\n    .ct-card>div{min-width:600px}",
+    "    /* The design scrolled this table sideways inside its own card, which put the\n       STATUS column and the expand chevron off-screen behind a native scrollbar.\n       Stack each row instead: every cell keeps its line and nothing is cut off. */\n    .ct-card{overflow-x:visible!important}\n    .ct-card>div{min-width:0!important}\n    .ct-card>div:first-child{display:none!important}\n    [data-ct-row]>div{grid-template-columns:1fr!important;gap:5px!important;padding:15px 18px!important;position:relative}\n    [data-ct-row] [data-chev]{position:absolute!important;top:13px;right:14px;text-align:right!important}\n    [data-ct-detail] p{padding:0 18px 18px!important}",
+    "stack the experience table"
+  ],
+  [
+    "    .blog-row{grid-template-columns:1fr!important;gap:12px!important}",
+    "    /* Tooltips were hover-only on non-focusable divs, so on a touch screen their\n       text was unreachable, and they overflowed the viewport. Below this width each\n       tile simply shows its description. */\n    .svc-tip{position:static!important;opacity:1!important;transform:none!important;white-space:normal!important;\n      margin:5px 0 0!important;padding:0!important;background:none!important;border:none!important;\n      box-shadow:none!important;font-size:10.5px!important;line-height:1.45!important;text-align:center;\n      color:var(--text-2)!important}\n    .svc-tile{padding:14px 10px!important}\n    .blog-row{grid-template-columns:1fr!important;gap:12px!important}",
+    "inline tooltips on mobile"
+  ],
+  [
+    "  .nav-chip:hover{color:var(--primary);background:var(--accent-fill)}",
+    "  .nav-chip:hover{color:var(--primary);background:var(--accent-fill)}\n  /* A full-bleed that stops at the viewport edge. The design used margin:0 -100vw,\n     which put ~1000px of the footer outside the page on each side. */\n  /* Full-bleed measured in real pixels: 100vw counts the scrollbar, so the hero and footer were ~15px wider than the page and offset ~8px left, which clipped the tagline and both hero buttons. --vw comes from clientWidth. */.hero-sec{width:var(--vw,100vw)!important;margin-left:calc(50% - var(--vw,100vw)/2)!important}footer{margin-left:calc(50% - var(--vw,100vw)/2)!important;margin-right:calc(50% - var(--vw,100vw)/2)!important}\n  /* Tooltips appear on keyboard focus, not only on hover. */\n  .svc-tile:focus-visible .svc-tip,.svc-tile:focus-within .svc-tip{opacity:1;transform:translate(-50%,-8px)}\n  /* Anchor targets clear the sticky nav instead of landing behind it. */\n  [id]{scroll-margin-top:74px}\n  .skip-link{position:absolute;left:14px;top:-56px;z-index:100;font-family:'Syne Mono',monospace;\n    font-size:13px;text-decoration:none;color:#04120a;background:var(--primary);padding:11px 18px;\n    border-radius:0 0 9px 9px;transition:top .15s ease}\n  .skip-link:focus{top:0}\n  /* The smallest interactive targets were 18px tall. */\n  .nav-chip{min-height:32px;display:inline-flex;align-items:center}\n  .cf-intro a{min-height:26px;display:flex;align-items:center}\n  /* If the custom-cursor script stalls, the system pointer must still be there. */\n  @media (prefers-reduced-motion:reduce){\n    .cur-custom,.cur-custom *{cursor:auto!important}\n    .cursor-ring,.cursor-dot{display:none!important}\n  }",
+    "footer bleed, focus tooltips, scroll-margin, skip link, tap targets, cursor"
+  ]
+];
+
+function improveMobileCss(helmet) {
+  for (const [find, replace, label] of MOBILE_CSS) {
+    const n = helmet.split(find).length - 1;
+    if (n !== 1) throw new Error('mobile css ' + label + ': expected 1 match, found ' + n);
+    helmet = helmet.replace(find, () => replace);
+  }
+  return helmet;
+}
+
 function fixMobileNav(helmet) {
   const rule = '    .nav-links{display:none!important}';
   if (!helmet.includes(rule)) throw new Error('mobile nav rule not found — check the source CSS');
@@ -1470,6 +1500,61 @@ ${SHARED_RUNTIME}
     host.addEventListener('mouseleave', function () { mouse.x = -9999; mouse.y = -9999; });
   }
 
+  /* The section tells the reader to "click a row to expand event details", but the
+   * rows were plain divs: no tabindex, no role, no aria-expanded, so by keyboard the
+   * detail was unreachable. Tooltip tiles get the same treatment, so their text is
+   * reachable by focus as well as hover. */
+  function makeInteractive() {
+    document.querySelectorAll('[data-ct-row]').forEach(function (row) {
+      if (row.getAttribute('tabindex') !== null) return;
+      row.setAttribute('tabindex', '0');
+      row.setAttribute('role', 'button');
+      var detail = row.querySelector('[data-ct-detail]');
+      var open = !!(detail && detail.style.maxHeight && detail.style.maxHeight !== '0px');
+      row.setAttribute('aria-expanded', open ? 'true' : 'false');
+      row.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        row.click();
+      });
+    });
+
+    document.querySelectorAll('.svc-tile').forEach(function (tile) {
+      if (tile.getAttribute('tabindex') !== null) return;
+      tile.setAttribute('tabindex', '0');
+      var tip = tile.querySelector('.svc-tip');
+      if (!tip) return;
+      if (!tip.id) tip.id = 'svc-tip-' + Math.abs(Math.round(tile.offsetTop * 1000 + tile.offsetLeft));
+      tile.setAttribute('aria-describedby', tip.id);
+    });
+  }
+
+  window.__makeInteractive = makeInteractive;
+
+  // The width the page actually has, for the full-bleed rules above. 100vw includes
+  // the scrollbar; clientWidth does not.
+  function measureViewport() {
+    var width = document.documentElement.clientWidth;
+    if (width) document.documentElement.style.setProperty('--vw', width + 'px');
+  }
+
+  // P1.13: the first tab stop should let a keyboard user past the nav.
+  function addSkipLink() {
+    if (document.querySelector('.skip-link')) return;
+    var main = document.querySelector('main');
+    if (!main) return;
+    if (!main.id) main.id = 'main-content';
+    var link = document.createElement('a');
+    link.className = 'skip-link';
+    link.href = '#' + main.id;
+    link.textContent = 'Skip to content';
+    link.addEventListener('click', function () {
+      main.setAttribute('tabindex', '-1');
+      main.focus();
+    });
+    document.body.insertBefore(link, document.body.firstChild);
+  }
+
   /* ---------- views: home / resume / blog ---------- */
   function showView(v) {
     if (!root) return;
@@ -1486,8 +1571,12 @@ ${SHARED_RUNTIME}
     root.querySelectorAll('[data-blog="article"]').forEach(function (a) {
       a.style.display = (a.dataset.id === id) ? 'block' : 'none';
     });
+    // P2.5: remember where the list was, so coming back does not lose your place
+    listScroll = window.pageYOffset || 0;
     window.scrollTo({ top: 0, behavior: 'auto' });
   }
+  var listScroll = 0;
+
   function showBlogList() {
     if (!root) return;
     var list = root.querySelector('[data-blog="list"]');
@@ -1522,7 +1611,7 @@ ${SHARED_RUNTIME}
       var o = e.target.closest('[data-open]');
       if (o) { openPost(o.dataset.open); return; }
       var b = e.target.closest('[data-blog-back]');
-      if (b) { showBlogList(); window.scrollTo({ top: 0, behavior: 'auto' }); }
+      if (b) { showBlogList(); window.scrollTo({ top: listScroll, behavior: 'auto' }); }
     },
 
     onBlogKey: function (e) {
@@ -1560,6 +1649,7 @@ ${SHARED_RUNTIME}
         detail.style.maxHeight = detail.scrollHeight + 'px';
         if (chev) chev.style.transform = 'rotate(180deg)';
       }
+      row.setAttribute('aria-expanded', open ? 'false' : 'true');
     },
 
     sendMessage: function (e) {
@@ -1568,10 +1658,28 @@ ${SHARED_RUNTIME}
       if (!f) return;
       var name = f.querySelector('#cf-name'), email = f.querySelector('#cf-email'), msg = f.querySelector('#cf-msg');
       var emailRe = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-      var fail = function (m, el) {
-        if (status) { status.textContent = m; status.style.color = '#ff8aa0'; }
-        if (el) el.focus();
+      // P1.12: the message was announced but never tied to the field, and an invalid
+      // field kept the same green ring as a valid one.
+      if (status && !status.id) status.id = 'cf-status';
+      var clearInvalid = function () {
+        [name, email, msg].forEach(function (el) {
+          if (!el) return;
+          el.removeAttribute('aria-invalid');
+          el.removeAttribute('aria-describedby');
+          el.style.borderColor = '';
+        });
       };
+      var fail = function (m, el) {
+        clearInvalid();
+        if (status) { status.textContent = m; status.style.color = '#ff8aa0'; }
+        if (el) {
+          el.setAttribute('aria-invalid', 'true');
+          if (status) el.setAttribute('aria-describedby', status.id);
+          el.style.borderColor = '#ff8aa0';
+          el.focus();
+        }
+      };
+      clearInvalid();
       if (!name.value.trim()) return fail('Please add your name so I know who I\\u2019m talking to.', name);
       if (!email.value.trim() || !emailRe.test(email.value.trim())) return fail('Please enter a valid email so I can reply.', email);
       if (!msg.value.trim()) return fail('Add a short message and you\\u2019re good to go.', msg);
@@ -1589,6 +1697,27 @@ ${SHARED_RUNTIME}
           success.style.display = 'block';
           var who = success.querySelector('[data-cf-name]');
           if (who) who.textContent = name.value.trim().split(' ')[0] || 'there';
+
+          // P2.4: the success panel replaced the form outright, so there was no way to
+          // send a second message without reloading.
+          if (!success.querySelector('[data-cf-again]')) {
+            var again = document.createElement('button');
+            again.type = 'button';
+            again.setAttribute('data-cf-again', '');
+            again.textContent = 'Send another message';
+            again.style.cssText =
+              "margin-top:18px;font-family:'Syne Mono',monospace;font-size:13px;color:#eefff0;" +
+              'background:none;border:1px solid #6AFF00;padding:11px 22px;border-radius:999px;cursor:pointer';
+            again.addEventListener('click', function () {
+              f.reset();
+              f.style.display = '';
+              success.style.display = 'none';
+              if (status) status.textContent = '';
+              var first = f.querySelector('#cf-name');
+              if (first) first.focus();
+            });
+            success.appendChild(again);
+          }
         }
       };
 
@@ -1624,6 +1753,11 @@ ${SHARED_RUNTIME}
   initScan();
   initCursor();
   initHero();
+  makeInteractive();
+  addSkipLink();
+  measureViewport();
+  window.addEventListener('resize', measureViewport);
+  window.addEventListener('orientationchange', measureViewport);
 
   /* ---------- routes ----------
    * The three views were DOM swaps at "/" with no URL, so nothing was shareable and
@@ -2672,6 +2806,7 @@ const HYDRATE_RUNTIME = `
     applySocials(content);
     applyOrphans(content);
     applyResume(content);
+    if (window.__makeInteractive) window.__makeInteractive();
     applyYear();
     document.documentElement.setAttribute('data-content-loaded', '1');
     // the page is themed now, so it is safe to show
@@ -4774,7 +4909,7 @@ const CMS_DATA_RUNTIME = `
 function buildPortfolio() {
   const src = fs.readFileSync(path.join(dir, 'Daniel Lotsu Portfolio.dc.html'), 'utf8');
   const parts = extractParts(src);
-  const helmet = fixMobileNav(stripUnusedScripts(parts.helmet));
+  const helmet = improveMobileCss(fixMobileNav(stripUnusedScripts(parts.helmet)));
 
   const slots = fillImageSlots(parts.body);
   const annotated = annotateContent(addFooterSocials(tagHeroStats(tagRepoLinks(drawStackIcons(slots.body)))));
