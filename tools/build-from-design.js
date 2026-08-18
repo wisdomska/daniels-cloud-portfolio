@@ -1906,17 +1906,36 @@ const HYDRATE_RUNTIME = `
   // letter) is shown as-is, so documents saved before the set existed still render.
   var SVC_ICONS = __SVC_ICONS__;
 
+  // Emoji from documents saved before the drawn set existed. Keys carry no
+  // variation selector; lookups strip it.
+  var LEGACY_ICONS = {
+    '\u{1F5A5}': 'ec2', '\u03BB': 'lambda', '\u{1FAA3}': 's3', '\u{1F5C4}': 'rds',
+    '\u{1F6AA}': 'apigw', '\u{1F4CA}': 'cloudwatch', '\u{1F7E9}': 'node',
+    '\u{1F7E8}': 'javascript', '\u{1F50C}': 'rest', '\u{1F418}': 'postgres',
+    '\u{1F42C}': 'mysql', '\u{1F433}': 'docker', '\u{1F33F}': 'git',
+    '\u{1F419}': 'github', '\u2B22': 'cube',
+  };
+
+  function iconSlug(value) {
+    var key = String(value).trim().replace(/\uFE0F/g, '');
+    if (SVC_ICONS[key.toLowerCase()]) return key.toLowerCase();
+    return LEGACY_ICONS[key] || '';
+  }
+
   function setIcon(el, value) {
     if (!el || typeof value !== 'string' || !value) return;
-    var svg = SVC_ICONS[value.trim().toLowerCase()];
-    if (svg) {
-      if (el.getAttribute('data-icon') === value) return;
-      el.setAttribute('data-icon', value);
-      el.innerHTML = svg;
+    var slug = iconSlug(value);
+    if (slug) {
+      if (el.getAttribute('data-icon') === slug) return;
+      el.setAttribute('data-icon', slug);
+      el.innerHTML = SVC_ICONS[slug];
       return;
     }
+    // not a drawn icon: show it as text, replacing any icon already there — using
+    // setText here would leave the <svg> in place and append the glyph beside it
     el.removeAttribute('data-icon');
-    setText(el, value);
+    var text = String(value).trim();
+    if (el.textContent !== text || el.firstElementChild) el.textContent = text;
   }
 
   function applyStack(content) {
@@ -3262,9 +3281,34 @@ const CMS_DATA_RUNTIME = `
     host.appendChild(legend);
   }
 
+  // Emoji from documents saved before the drawn set existed. Keys carry no
+  // variation selector; lookups strip it.
+  var LEGACY_ICONS = {
+    '\u{1F5A5}': 'ec2', '\u03BB': 'lambda', '\u{1FAA3}': 's3', '\u{1F5C4}': 'rds',
+    '\u{1F6AA}': 'apigw', '\u{1F4CA}': 'cloudwatch', '\u{1F7E9}': 'node',
+    '\u{1F7E8}': 'javascript', '\u{1F50C}': 'rest', '\u{1F418}': 'postgres',
+    '\u{1F42C}': 'mysql', '\u{1F433}': 'docker', '\u{1F33F}': 'git',
+    '\u{1F419}': 'github', '\u2B22': 'cube',
+  };
+
+  function iconSlug(value) {
+    var key = String(value).trim().replace(/\uFE0F/g, '');
+    if (SVC_ICONS[key.toLowerCase()]) return key.toLowerCase();
+    return LEGACY_ICONS[key] || '';
+  }
+
   function renderStack(host) {
     var groups = get('stack');
     if (!Array.isArray(groups)) { groups = []; set('stack', groups); }
+    // migrate the emoji a stored document may still carry, so the field shows the
+    // name of the icon actually being drawn. Not marked dirty: it rides along with
+    // the next save.
+    groups.forEach(function (group) {
+      (group.items || []).forEach(function (item) {
+        var slug = iconSlug(item.icon || '');
+        if (slug && item.icon !== slug) item.icon = slug;
+      });
+    });
     host.textContent = '';
     ensureIconList(host);
 

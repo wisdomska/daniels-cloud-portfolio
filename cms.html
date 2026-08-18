@@ -2174,9 +2174,34 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
     host.appendChild(legend);
   }
 
+  // Emoji from documents saved before the drawn set existed. Keys carry no
+  // variation selector; lookups strip it.
+  var LEGACY_ICONS = {
+    '🖥': 'ec2', 'λ': 'lambda', '🪣': 's3', '🗄': 'rds',
+    '🚪': 'apigw', '📊': 'cloudwatch', '🟩': 'node',
+    '🟨': 'javascript', '🔌': 'rest', '🐘': 'postgres',
+    '🐬': 'mysql', '🐳': 'docker', '🌿': 'git',
+    '🐙': 'github', '⬢': 'cube',
+  };
+
+  function iconSlug(value) {
+    var key = String(value).trim().replace(/️/g, '');
+    if (SVC_ICONS[key.toLowerCase()]) return key.toLowerCase();
+    return LEGACY_ICONS[key] || '';
+  }
+
   function renderStack(host) {
     var groups = get('stack');
     if (!Array.isArray(groups)) { groups = []; set('stack', groups); }
+    // migrate the emoji a stored document may still carry, so the field shows the
+    // name of the icon actually being drawn. Not marked dirty: it rides along with
+    // the next save.
+    groups.forEach(function (group) {
+      (group.items || []).forEach(function (item) {
+        var slug = iconSlug(item.icon || '');
+        if (slug && item.icon !== slug) item.icon = slug;
+      });
+    });
     host.textContent = '';
     ensureIconList(host);
 
