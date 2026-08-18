@@ -69,8 +69,15 @@ still renders correctly rather than emptying out.
 ### What the CMS drives
 
 Hero, About, Experience, Contact, Resume, Settings (page title, meta description, accent,
-reduce-motion), the four blog posts (title, category, date, read time, image alt, excerpt, body),
-per-post publish state, and the eight blog image slots via the Media pane.
+reduce-motion), the blog posts (title, category, date, read time, image alt, excerpt, body),
+per-post publish state, and the blog image slots.
+
+The design has no inputs for some of this, so the build appends them: the hero's
+**Employer badge** (label + employer — the AmaliTech wordmark is swapped for text if the
+employer is anyone else) and the footer **Socials** (X, Instagram; empty hides the icon).
+Projects carry a **Live URL** alongside the repo link, and the Blog pane edits the selected
+post's **cover and article image** directly — Preview opens that post on the live site with
+`?post=<id>&preview=1`, which renders drafts too.
 
 Certifications, Tech stack, Projects and the Experience timeline are **lists** — add, edit,
 reorder and remove entries in the dashboard. The portfolio clones the design's own first item as a
@@ -128,3 +135,20 @@ sign in.
 ## Deploy
 
 Pushes to `main` deploy automatically via the Vercel Git integration.
+
+## Service icons
+
+The tech-stack tiles use a monoline SVG set defined in `SVC_ICONS` (see
+`tools/build-from-design.js`), stroked with `currentColor` so they take the accent.
+A stack item's `icon` is a slug from that map — the CMS lists them with a preview
+legend, and emoji from older saved documents are mapped onto their slug. Anything
+unrecognised renders as text.
+
+## First-paint theming
+
+The accent lives in the content document, which arrives after the first paint. The
+last accent seen on a device is remembered in `localStorage` under `dc.accent` and
+applied before the first frame; a guard in `<head>` hides the page until it is
+themed. The guard only engages for devices that have seen a non-default accent, and
+reveals on hydrate, on `load` and on a 1.2s timer, so a failed content fetch cannot
+leave a blank page.
