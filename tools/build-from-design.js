@@ -251,7 +251,7 @@ function addFooterSocials(body) {
     .map(function (key) {
       const label = key === 'x' ? 'X' : 'Instagram';
       return (
-        '<a data-social="' + key + '" href="#" target="_blank" rel="noopener" aria-label="' +
+        '<a data-social="' + key + '" target="_blank" rel="noopener" aria-label="' +
         label + '" style="' + style + ';display:none" style-hover="' + hover + '">' +
         SOCIAL_ICONS[key] + '</a>'
       );
@@ -273,6 +273,27 @@ function addFooterSocials(body) {
 
 // The design's cover placeholder is a dashed box with Replace/Remove beside it and
 // nothing behind them. Tag it so the runtime can turn it into a real preview.
+
+// The hero's stat tiles sit in an unclassed div. Tag it so the telemetry chips can be
+// placed after it, rather than guessing at a selector.
+// The four project repo links ship as href="#" — a link to nowhere, which a crawler
+// follows and a keyboard user can land on. They are tagged instead, and the hydrator
+// gives them a real href only when its project has a repo URL.
+function tagRepoLinks(body) {
+  const anchor = '<a href="#"';
+  const n = body.split(anchor).length - 1;
+  if (n !== 4) throw new Error('expected 4 placeholder repo links, found ' + n);
+  return body.split(anchor).join('<a data-repo');
+}
+
+function tagHeroStats(body) {
+  const anchor =
+    '<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:10px">';
+  const n = body.split(anchor).length - 1;
+  if (n !== 1) throw new Error('expected 1 hero stat row, found ' + n);
+  return body.replace(anchor, anchor.replace('<div ', '<div data-hero-stats '));
+}
+
 function tagCoverControls(body) {
   const anchor = '<div style="width:172px;aspect-ratio:16/9;';
   const n = body.split(anchor).length - 1;
@@ -1461,6 +1482,7 @@ ${SHARED_RUNTIME}
     if (!root) return;
     var list = root.querySelector('[data-blog="list"]');
     if (list) list.style.display = 'none';
+    if (window.__syncRoute) window.__syncRoute('blog', id, true);
     root.querySelectorAll('[data-blog="article"]').forEach(function (a) {
       a.style.display = (a.dataset.id === id) ? 'block' : 'none';
     });
@@ -1470,6 +1492,7 @@ ${SHARED_RUNTIME}
     if (!root) return;
     var list = root.querySelector('[data-blog="list"]');
     if (list) list.style.display = '';
+    if (window.__syncRoute) window.__syncRoute('blog', null, true);
     root.querySelectorAll('[data-blog="article"]').forEach(function (a) { a.style.display = 'none'; });
   }
 
@@ -1482,6 +1505,7 @@ ${SHARED_RUNTIME}
       var goto = el.dataset.goto;
       var href = el.getAttribute && el.getAttribute('href');
       showView(goto);
+      if (window.__syncRoute) window.__syncRoute(goto, null, true);
       if (goto === 'home' && href && href.charAt(0) === '#' && href.length > 1) {
         var t = root.querySelector(href);
         if (t) {
@@ -1509,7 +1533,10 @@ ${SHARED_RUNTIME}
       if (b) { e.preventDefault(); showBlogList(); window.scrollTo({ top: 0, behavior: 'auto' }); }
     },
 
-    downloadResume: function () {
+    downloadResume: function (e) {
+      // No PDF is hosted, so this is the browser's print-to-PDF path and the label
+      // says so (see applyResume). Kept as one handler for both cases: if a real
+      // file is configured, applyResume replaces this control with a download link.
       showView('resume');
       setTimeout(function () { window.print(); }, 60);
     },
@@ -1598,8 +1625,139 @@ ${SHARED_RUNTIME}
   initCursor();
   initHero();
 
+  /* ---------- routes ----------
+   * The three views were DOM swaps at "/" with no URL, so nothing was shareable and
+   * Back left the site. Each view now has a path (vercel.json rewrites them to this
+   * page), the title follows the view, and popstate walks the history.
+   * ---------------------------------------------------------------- */
+  var TITLES = {
+    home: 'Daniel Ajayi Lotsu — Backend & Cloud Engineer',
+    resume: 'Resume — Daniel Ajayi Lotsu',
+    blog: 'Field notes — Daniel Ajayi Lotsu',
+  };
+
+  function slugOf(id) {
+    return String(id || '').replace(/^post-/, '');
+  }
+
+  function postBySlug(slug) {
+    var articles = document.querySelectorAll('[data-blog="article"]');
+    for (var i = 0; i < articles.length; i++) {
+      if (slugOf(articles[i].getAttribute('data-id')) === slug) return articles[i].getAttribute('data-id');
+    }
+    return null;
+  }
+
+  function setCanonical(path) {
+    var href = location.origin + path;
+    var link = document.querySelector('link[rel="canonical"]');
+    if (link) link.setAttribute('href', href);
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', href);
+  }
+
+  function describe(view, postId) {
+    if (postId) {
+      var article = document.querySelector('[data-blog="article"][data-id="' + postId + '"]');
+      // the heading may currently be a demoted <p> (see fixHeadings)
+      var heading = article && article.querySelector('h1,[data-was-h1]');
+      var title = heading ? heading.textContent.trim() : 'Field notes';
+      return { title: title + ' — Daniel Ajayi Lotsu', path: '/blog/' + slugOf(postId) };
+    }
+    return { title: TITLES[view] || TITLES.home, path: view === 'home' ? '/' : '/' + view };
+  }
+
+  // One <h1> per rendered view: the others are in hidden views, but a crawler reads
+  // the DOM, not the styles.
+  function fixHeadings(view) {
+    document.querySelectorAll('.view').forEach(function (el) {
+      var active = el.dataset.view === view;
+      // an article that is not on screen is not this page's heading either
+      if (active && el.dataset.view === 'blog') {
+        el.querySelectorAll('[data-blog="article"]').forEach(function (article) {
+          demote(article, getComputedStyle(article).display !== 'none');
+        });
+        return;
+      }
+      demote(el, active);
+    });
+  }
+
+  // Swap between <h1> and a <p> that remembers it was one, so the rendered view has
+  // exactly one and the rest stay reversible.
+  function demote(scope, keepAsH1) {
+    var active = keepAsH1;
+    var el = scope;
+    {
+      el.querySelectorAll('h1,[data-was-h1]').forEach(function (heading) {
+        if (active && heading.hasAttribute('data-was-h1')) {
+          var h1 = document.createElement('h1');
+          h1.setAttribute('style', heading.getAttribute('style') || '');
+          h1.className = heading.className;
+          h1.innerHTML = heading.innerHTML;
+          Array.prototype.slice.call(heading.attributes).forEach(function (attr) {
+            if (attr.name !== 'data-was-h1') h1.setAttribute(attr.name, attr.value);
+          });
+          h1.removeAttribute('data-was-h1');
+          heading.parentNode.replaceChild(h1, heading);
+        } else if (!active && heading.tagName === 'H1') {
+          var alt = document.createElement('p');
+          Array.prototype.slice.call(heading.attributes).forEach(function (attr) {
+            alt.setAttribute(attr.name, attr.value);
+          });
+          alt.setAttribute('data-was-h1', '');
+          alt.innerHTML = heading.innerHTML;
+          heading.parentNode.replaceChild(alt, heading);
+        }
+      });
+    }
+  }
+
+  function syncRoute(view, postId, push) {
+    var info = describe(view, postId);
+    document.title = info.title;
+    setCanonical(info.path);
+    var og = document.querySelector('meta[property="og:title"]');
+    if (og) og.setAttribute('content', info.title);
+    fixHeadings(view);
+    if (!push) return;
+    if (location.pathname + location.search === info.path) return;
+    try { history.pushState({ view: view, post: postId || null }, '', info.path); } catch (e) {}
+  }
+
+  function routeFromLocation() {
+    var path = (location.pathname || '/').replace(/\\/+$/, '') || '/';
+    var postMatch = path.match(/^\\/blog\\/(.+)$/);
+    if (postMatch) {
+      var id = postBySlug(decodeURIComponent(postMatch[1]));
+      if (id) return { view: 'blog', post: id };
+      return { view: 'blog', post: null };
+    }
+    if (path === '/resume') return { view: 'resume', post: null };
+    if (path === '/blog') return { view: 'blog', post: null };
+    // ?post= is what the CMS preview links to
+    var query = (location.search || '').match(/[?&]post=([^&]+)/);
+    if (query) return { view: 'blog', post: decodeURIComponent(query[1]) };
+    var hash = (location.hash || '').replace('#', '');
+    if (hash === 'resume' || hash === 'blog') return { view: hash, post: null };
+    return { view: 'home', post: null };
+  }
+
+  window.__applyRoute = function (push) {
+    var route = routeFromLocation();
+    showView(route.view);
+    if (route.post && document.querySelector('[data-blog="article"][data-id="' + route.post + '"]')) {
+      openPost(route.post);
+    }
+    syncRoute(route.view, route.post, push === true);
+    return route;
+  };
+
+  window.addEventListener('popstate', function () { window.__applyRoute(false); });
+
   window.__showView = showView;
   window.__openPost = openPost;
+  window.__syncRoute = syncRoute;
 
   // /?post=<id> opens that post directly — what the CMS Preview button links to.
   // Called again after the content loads, because a post added in the CMS has no
@@ -1614,10 +1772,7 @@ ${SHARED_RUNTIME}
     return true;
   };
 
-  if (!window.__openFromQuery()) {
-    var hash = (location.hash || '').replace('#', '');
-    if (hash === 'resume' || hash === 'blog') showView(hash);
-  }
+  window.__applyRoute(false);
 })();
 </script>
 `;
@@ -1756,11 +1911,14 @@ const HYDRATE_RUNTIME = `
     card.setAttribute('data-post', post.id);
     setText(card.querySelector('.blog-title'), post.title);
 
+    // The design shipped a literal category and dateline per card, and the hydrator
+    // only overwrote them when the CMS had a value — so a post with no date showed
+    // another post's. Empty now means empty.
     var cat = card.querySelector('[data-cms-category]');
-    if (cat) setText(cat, post.category);
+    if (cat) setMeta(cat, post.category);
 
     var dateline = card.querySelector('[data-cms-dateline]');
-    if (dateline) setText(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
+    if (dateline) setMeta(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
 
     // the featured card also carries an excerpt
     var excerpt = card.querySelector('p');
@@ -1773,14 +1931,60 @@ const HYDRATE_RUNTIME = `
     }
   }
 
+  // "12 Nov 2025", "2025-11-12" and "Nov 2025" all parse; anything unreadable sorts
+  // last rather than at an arbitrary place.
+  var MONTHS = {
+    jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+  };
+
+  function postTime(value) {
+    if (typeof value !== 'string' || !value.trim()) return null;
+    var text = value.trim();
+    var iso = Date.parse(text);
+    if (!isNaN(iso)) return iso;
+    var parts = text.replace(',', ' ').split(/\\s+/);
+    var day = 1, month = null, year = null;
+    parts.forEach(function (part) {
+      var word = part.toLowerCase().slice(0, 3);
+      if (MONTHS[word] !== undefined) month = MONTHS[word];
+      else if (/^\\d{4}$/.test(part)) year = +part;
+      else if (/^\\d{1,2}$/.test(part)) day = +part;
+    });
+    if (year === null || month === null) return null;
+    return new Date(year, month, day).getTime();
+  }
+
+  // Newest first. An undated post has no place in a chronology, so it goes last
+  // rather than wherever an empty string happens to sort.
+  function byNewest(a, b) {
+    var ta = postTime(a && a.date);
+    var tb = postTime(b && b.date);
+    if (ta === null && tb === null) return 0;
+    if (ta === null) return 1;
+    if (tb === null) return -1;
+    return tb - ta;
+  }
+
+  // Unlike setText, an empty value clears the element and hides it — the design's
+  // placeholder text is never what the reader should see.
+  function setMeta(el, value) {
+    if (!el) return;
+    var text = typeof value === 'string' ? value.trim() : '';
+    el.textContent = text;
+    el.style.display = text ? '' : 'none';
+  }
+
   function applyPosts(content) {
     var all = content.blog && content.blog.posts;
     if (!Array.isArray(all) || !all.length) return;
     // the CMS preview link asks for drafts as well
     var preview = /[?&]preview=1(?:&|$)/.test(location.search || '');
-    var posts = all.filter(function (p) {
-      return p && p.id && (preview || p.published !== false);
-    });
+    var posts = all
+      .filter(function (p) {
+        return p && p.id && (preview || p.published !== false);
+      })
+      .sort(byNewest);
     if (!posts.length) return;
 
     var list = document.querySelector('[data-blog="list"]');
@@ -1897,9 +2101,10 @@ const HYDRATE_RUNTIME = `
 
       setText(article.querySelector('h1'), post.title);
       var cat = article.querySelector('[data-cms-category]');
-      if (cat) setText(cat, post.category);
+      if (cat) setMeta(cat, post.category);
       var dateline = article.querySelector('[data-cms-dateline]');
-      if (dateline) setText(dateline, [post.readTime, post.date].filter(Boolean).join(' · '));
+      // same order as the card, so one post cannot report two different datelines
+      if (dateline) setMeta(dateline, [post.date, post.readTime].filter(Boolean).join(' · '));
 
       var img = article.querySelector('img[data-slot]');
       if (img) {
@@ -1920,11 +2125,11 @@ const HYDRATE_RUNTIME = `
         prose.textContent = '';
         var text = body || post.excerpt || '';
         if (!text) {
-          var placeholder = document.createElement('p');
-          placeholder.textContent = 'This post has no body yet.';
-          placeholder.style.opacity = '.75';
-          prose.appendChild(placeholder);
+          // Owner-facing copy must never reach a reader. A published post with no text
+          // renders no prose at all; the dashboard is where that gets noticed.
+          prose.style.display = 'none';
         } else {
+          prose.style.display = '';
           text.split(/\\n\\s*\\n/).forEach(function (para) {
             var trimmed = para.trim();
             if (!trimmed) return;
@@ -2141,21 +2346,25 @@ const HYDRATE_RUNTIME = `
           link.rel = 'noopener';
           link.style.display = '';
         } else {
-          link.style.display = 'none';
+          // no repo to point at: remove the anchor rather than leave href="#" in the
+          // document for a crawler or a keyboard user to find
+          if (link.parentNode) link.parentNode.removeChild(link);
+          link = null;
         }
 
         // the featured card labels its link in words, the compact cards are
         // icon-only — match whichever this card is
-        var labelled = (link.textContent || '').trim().length > 0;
+        var labelled = link ? (link.textContent || '').trim().length > 0 : true;
         var live = card.querySelector('a[data-live]');
         if (project.liveUrl) {
           if (!live) {
-            live = link.cloneNode(false); // attributes only: keeps the inline styling
+            live = (link || document.createElement('a')).cloneNode(false);
             live.removeAttribute('data-repo'); // or the selector above would find this one
             live.setAttribute('data-live', '');
             live.setAttribute('aria-label', 'Live site');
             live.innerHTML = LIVE_ICON + (labelled ? ' Visit live site' : '');
-            link.parentElement.insertBefore(live, link);
+            if (link && link.parentElement) link.parentElement.insertBefore(live, link);
+            else card.appendChild(live);
           }
           var url = String(project.liveUrl).trim();
           live.href = /^https?:/i.test(url) ? url : 'https://' + url.replace(/^\\/+/, '');
@@ -2221,7 +2430,15 @@ const HYDRATE_RUNTIME = `
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
       var slot = img.getAttribute('data-slot');
       var uploaded = media[slot];
-      var url = uploaded || SLOT_ART[slot] || PLACEHOLDER;
+      var url = uploaded || SLOT_ART[slot] || '';
+      // The placeholder art is captioned for the site owner, so it belongs in the
+      // dashboard only. With nothing to show, the frame is hidden instead.
+      var frame = img.parentElement;
+      if (!url) {
+        if (frame) frame.style.display = 'none';
+        return;
+      }
+      if (frame && frame.style.display === 'none') frame.style.display = '';
       if (img.getAttribute('src') !== url) img.src = url;
       // an upload is a photograph and should fill its frame; the bundled diagrams are
       // letterboxed so a 24:9 card doesn't slice the labels off one
@@ -2246,7 +2463,12 @@ const HYDRATE_RUNTIME = `
       if (!link) return;
       var value = get(content, SOCIAL_PATHS[key]);
       value = typeof value === 'string' ? value.trim() : '';
-      if (!value) { link.style.display = 'none'; return; }
+      // nothing to link to: remove the anchor rather than leave an empty one in the
+      // document for a crawler or a keyboard user to land on
+      if (!value) {
+        if (link.parentNode) link.parentNode.removeChild(link);
+        return;
+      }
       link.href = /^https?:/i.test(value) ? value : 'https://' + value.replace(/^\\/+/, '');
       link.style.display = 'flex';
     });
@@ -2279,6 +2501,140 @@ const HYDRATE_RUNTIME = `
     }
     custom.style.display = '';
     setText(custom, name);
+  }
+
+  // The CMS holds resume.filename and resume.showDownload, and neither did anything:
+  // the button always called window.print() and no PDF has ever been hosted, so
+  // "Download PDF" was a promise the site could not keep. With a file configured this
+  // becomes a real download link; without one it says what it actually does.
+  function applyResume(content) {
+    var resume = content.resume || {};
+    var button = document.querySelector('[data-download-resume]');
+    if (!button) return;
+
+    if (resume.showDownload === false) {
+      button.style.display = 'none';
+      return;
+    }
+    button.style.display = '';
+
+    var file = typeof resume.filename === 'string' ? resume.filename.trim() : '';
+    // Only an absolute URL is a file that certainly exists — a CMS upload returns one.
+    // A bare "daniel-lotsu-resume.pdf" is just a name, and linking to it produced a
+    // 404 dressed up as a download, which is the bug this is fixing.
+    var href = /^https?:/i.test(file) ? file : '';
+
+    var label = button.querySelector('[data-resume-label]');
+    if (!label) {
+      label = document.createElement('span');
+      label.setAttribute('data-resume-label', '');
+      // the button's own text node, so the icon beside it survives
+      var textNode = null;
+      for (var i = 0; i < button.childNodes.length; i++) {
+        if (button.childNodes[i].nodeType === 3 && button.childNodes[i].nodeValue.trim()) {
+          textNode = button.childNodes[i];
+          break;
+        }
+      }
+      if (textNode) {
+        button.replaceChild(label, textNode);
+      } else {
+        button.insertBefore(label, button.firstChild);
+      }
+    }
+
+    if (href) {
+      label.textContent = 'Download PDF';
+      button.setAttribute('data-resume-href', href);
+      button.title = 'Download ' + file;
+    } else {
+      // TODO(daniel): host a resume PDF (add it to /public or upload via CMS → Media,
+      // then set Resume → "PDF filename"), and this becomes a real download again.
+      label.textContent = 'Print / Save as PDF';
+      button.removeAttribute('data-resume-href');
+      button.title = 'Opens your browser\\u2019s print dialogue — choose "Save as PDF"';
+    }
+  }
+
+  // The footer shipped "© 2025" as a literal.
+  function applyYear() {
+    var year = String(new Date().getFullYear());
+    var footer = document.querySelector('footer');
+    if (!footer) return;
+    Array.prototype.slice.call(footer.querySelectorAll('span')).forEach(function (el) {
+      if (el.children.length) return;
+      var text = el.textContent || '';
+      if (text.indexOf('\\u00a9') === -1) return;
+      var next = text.replace(/\\d{4}/, year);
+      if (next !== text) el.textContent = next;
+    });
+  }
+
+  /* Fields the CMS stored and the site ignored. Each is rendered here, or hidden
+   * when empty — never replaced with a hardcoded stand-in.
+   *   contact.successMessage  the form's success line was hardcoded to other words
+   *   hero.chips              rendered nowhere at all
+   *   about.region            the About card hardcoded a different region string
+   *   about.timezone/years    rendered nowhere
+   *   contact.confetti        the burst fired regardless
+   */
+  function applyOrphans(content) {
+    var contact = content.contact || {};
+    var hero = content.hero || {};
+    var about = content.about || {};
+
+    // the success panel's body copy
+    var success = document.querySelector('[data-cf-success]');
+    var successLine = success && success.querySelector('p');
+    if (successLine && typeof contact.successMessage === 'string' && contact.successMessage.trim()) {
+      successLine.textContent = contact.successMessage.trim();
+    }
+
+    // About card rows: region, and two rows the design never had
+    var rows = document.querySelectorAll('.about-grid [data-about-row]');
+    if (!rows.length) {
+      var grid = document.querySelector('.about-grid div[style*="border-radius:10px"]');
+      if (grid) {
+        Array.prototype.slice.call(grid.children).forEach(function (row) {
+          var label = row.querySelector('span');
+          if (!label) return;
+          row.setAttribute('data-about-row', (label.textContent || '').trim().toLowerCase());
+        });
+        rows = document.querySelectorAll('.about-grid [data-about-row]');
+      }
+    }
+    Array.prototype.slice.call(rows).forEach(function (row) {
+      var key = row.getAttribute('data-about-row');
+      var value = row.querySelectorAll('span')[1];
+      if (!value) return;
+      if (key === 'region' && about.region) setText(value, about.region);
+      if (key === 'status' && hero.availability) setText(value, hero.availability);
+    });
+
+    // telemetry chips: a row under the hero stats, only when the CMS has any
+    var chips = Array.isArray(hero.chips) ? hero.chips.filter(Boolean) : [];
+    var chipHost = document.querySelector('[data-hero-chips]');
+    var stats = document.querySelector('[data-hero-stats]');
+    if (chips.length && stats) {
+      if (!chipHost) {
+        chipHost = document.createElement('div');
+        chipHost.setAttribute('data-hero-chips', '');
+        chipHost.style.cssText =
+          'display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:4px';
+        stats.parentNode.insertBefore(chipHost, stats.nextSibling);
+      }
+      chipHost.textContent = '';
+      chips.forEach(function (text) {
+        var chip = document.createElement('span');
+        chip.textContent = text;
+        chip.style.cssText =
+          "font-family:'Syne Mono',monospace;font-size:11.5px;color:var(--text-2);" +
+          'border:1px solid var(--border);background:var(--accent-fill);padding:5px 11px;border-radius:999px';
+        chipHost.appendChild(chip);
+      });
+    } else if (chipHost) {
+      chipHost.remove();
+    }
   }
 
   function applySettings(content) {
@@ -2314,11 +2670,14 @@ const HYDRATE_RUNTIME = `
     applySettings(content); // themes the page, last so it covers everything above
     applyEmployer(content);
     applySocials(content);
+    applyOrphans(content);
+    applyResume(content);
+    applyYear();
     document.documentElement.setAttribute('data-content-loaded', '1');
     // the page is themed now, so it is safe to show
     if (window.__themeReveal) window.__themeReveal();
-    // a post opened by ?post= may only exist once the posts have been rendered
-    if (window.__openFromQuery) window.__openFromQuery();
+    // a deep-linked post may only exist once the posts have been rendered
+    if (window.__applyRoute) window.__applyRoute(false);
   }
 
   function load() {
@@ -4418,7 +4777,7 @@ function buildPortfolio() {
   const helmet = fixMobileNav(stripUnusedScripts(parts.helmet));
 
   const slots = fillImageSlots(parts.body);
-  const annotated = annotateContent(addFooterSocials(drawStackIcons(slots.body)));
+  const annotated = annotateContent(addFooterSocials(tagHeroStats(tagRepoLinks(drawStackIcons(slots.body)))));
   const t = transformBindings(annotated.body);
 
   const expectedRefs = [
@@ -4435,7 +4794,14 @@ function buildPortfolio() {
 <meta property="og:type" content="website">
 <meta property="og:title" content="Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer">
 <meta property="og:description" content="AWS-certified backend &amp; cloud engineer building reliable, well-architected services from Kumasi, Ghana.">
-<meta name="twitter:card" content="summary_large_image">`;
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer">
+<meta name="twitter:description" content="AWS-certified backend &amp; cloud engineer building reliable, well-architected services from Kumasi, Ghana.">
+<meta property="og:url" content="https://daniels-cloud-portfolio.vercel.app/">
+<link rel="canonical" href="https://daniels-cloud-portfolio.vercel.app/">
+<link rel="manifest" href="/site.webmanifest">
+<!-- TODO(daniel): add a 1200x630 PNG at /assets/og-card.png and reference it here as
+     og:image + twitter:image. Link previews have no image until then. -->`;
 
   // the hydrator needs the slot -> bundled art map to fall back correctly
   const slotArt = {};

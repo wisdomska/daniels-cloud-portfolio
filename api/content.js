@@ -11,9 +11,21 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const { content, source, updatedAt } = await readContent();
+
+      // Drafts are not public. The front end hid them, but the payload still carried
+      // every unpublished post — title, body and all — to anyone who asked for it.
+      // A signed-in CMS session gets the whole document; nobody else does.
+      const signedIn = verifyToken(bearer(req));
+      let out = content;
+      if (!signedIn && out && out.blog && Array.isArray(out.blog.posts)) {
+        out = { ...out, blog: { ...out.blog, posts: out.blog.posts.filter((p) => p && p.published !== false) } };
+      }
+      // the CMS dashboard reports when the site was last published
+      if (updatedAt && out) out = { ...out, updatedAt };
+
       // never cache: an edit in the CMS must show on the next portfolio load
       res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
-      return res.status(200).json({ ok: true, content, source, updatedAt });
+      return res.status(200).json({ ok: true, content: out, source, updatedAt });
     } catch (err) {
       console.error('[content] read failed:', err);
       return res.status(500).json({ ok: false, error: 'Could not read content' });

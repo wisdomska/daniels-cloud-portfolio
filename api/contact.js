@@ -41,6 +41,15 @@ module.exports = async function handler(req, res) {
   if (!name) return res.status(400).json({ ok: false, error: 'Name is required' });
   if (!EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'A valid email is required' });
   if (!message) return res.status(400).json({ ok: false, error: 'Message is required' });
+  // P2.3: a two-character message is not a message. Cheap floor, no captcha.
+  if (message.length < 12) {
+    return res.status(400).json({ ok: false, error: 'Please write a little more so I can reply usefully' });
+  }
+  // honeypot: a field no human sees, so anything in it is a bot
+  if (typeof body.website === 'string' && body.website.trim()) {
+    console.log('[contact] honeypot tripped, dropping silently');
+    return res.status(200).json({ ok: true, delivered: false, stored: false });
+  }
   if (name.length > 120 || email.length > 200 || message.length > 5000) {
     return res.status(400).json({ ok: false, error: 'That message is too long' });
   }

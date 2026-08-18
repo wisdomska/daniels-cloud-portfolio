@@ -1,0 +1,9 @@
+{
+  "name": "Daniel Ajayi Lotsu — Backend & Cloud Engineer",
+  "short_name": "Daniel Lotsu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020a02",
+  "theme_color": "#020a02",
+  "icons": [{ "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }]
+}
