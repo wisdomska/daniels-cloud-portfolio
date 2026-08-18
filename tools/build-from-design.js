@@ -64,6 +64,210 @@ const SLOT_ART = {
 
 /* ---------------------------- helpers ---------------------------- */
 
+
+/* ------------------------------------------------------------------ *
+ * Service icons for the tech-stack tiles.
+ *
+ * The design used emoji, which render as a different picture on every
+ * platform and read as clip-art beside the rest of the page. This is one
+ * monoline set drawn on a 24px grid and stroked with currentColor, so the
+ * tiles inherit the accent and rotate with the palette like everything
+ * else.
+ *
+ * A stack item's `icon` is a slug from this map. Anything else — an emoji,
+ * a letter — still renders as text, so the CMS can hold either and older
+ * saved documents keep working.
+ * ------------------------------------------------------------------ */
+const ICON_HEAD =
+  '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" ' +
+  'stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">';
+const iconDot = (x, y, r) =>
+  '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="currentColor" stroke="none"/>';
+const stroked = (inner) => ICON_HEAD + inner + '</svg>';
+
+const SVC_ICONS = {
+  // compute
+  ec2: stroked(
+    '<rect x="3" y="4.4" width="18" height="6.4" rx="1.6"/><rect x="3" y="13.2" width="18" height="6.4" rx="1.6"/>' +
+      iconDot(6.6, 7.6, 0.95) + iconDot(6.6, 16.4, 0.95) + '<path d="M10 7.6h7M10 16.4h7"/>'
+  ),
+  lambda: stroked('<path d="M6.4 19.6 13 4.4"/><path d="M10.5 12.2 17.6 19.6"/>'),
+  container: stroked('<rect x="3.4" y="7" width="17.2" height="10" rx="1.8"/><path d="M8 7v10M13 7v10"/>'),
+
+  // storage + data
+  s3: stroked(
+    '<ellipse cx="12" cy="6.2" rx="7.4" ry="2.3"/>' +
+      '<path d="M4.6 6.6 6.3 19a1.8 1.8 0 0 0 1.8 1.5h7.8a1.8 1.8 0 0 0 1.8-1.5l1.7-12.4"/>'
+  ),
+  rds: stroked(
+    '<rect x="2.6" y="3.4" width="18.8" height="17.2" rx="3.2"/>' +
+      '<ellipse cx="12" cy="8.6" rx="4.6" ry="1.8"/><path d="M7.4 8.6v6.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8V8.6"/>'
+  ),
+  postgres: stroked(
+    '<ellipse cx="12" cy="5.6" rx="6.8" ry="2.4"/><path d="M5.2 5.6v12.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.6"/>' +
+      '<path d="M5.2 10.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/>' +
+      '<path d="M5.2 14.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/>'
+  ),
+  mysql: stroked(
+    '<ellipse cx="12" cy="5.8" rx="6.8" ry="2.4"/><path d="M5.2 5.8v9.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.8"/>' +
+      '<path d="M5.2 10.4c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/>' +
+      '<path d="M4.4 20.6c1.36-1.1 2.54-1.1 3.9 0s2.54 1.1 3.9 0 2.54-1.1 3.9 0"/>'
+  ),
+
+  // networking + observability
+  apigw: stroked(
+    '<circle cx="5" cy="12" r="2.1"/><circle cx="18.8" cy="6.4" r="1.7"/><circle cx="18.8" cy="12" r="1.7"/>' +
+      '<circle cx="18.8" cy="17.6" r="1.7"/><path d="M7.1 12h3.1"/><path d="M10.2 12 17.1 6.9"/>' +
+      '<path d="M10.2 12h6.9"/><path d="M10.2 12 17.1 17.1"/>'
+  ),
+  cloudwatch: stroked(
+    '<path d="M3.6 4.2v13.6a1.8 1.8 0 0 0 1.8 1.8h15"/>' +
+      '<path d="M6.6 15.6l3.5-4.4 2.9 2.3 3.1-4.8 2.9 3.5"/>' +
+      iconDot(6.6, 15.6, 0.85) + iconDot(19, 12.2, 0.85)
+  ),
+  rest: stroked(
+    '<circle cx="5.2" cy="7" r="1.5"/><circle cx="5.2" cy="12" r="1.5"/><circle cx="5.2" cy="17" r="1.5"/>' +
+      '<path d="M8.2 7h10.6M8.2 12h7.4M8.2 17h9.2"/>'
+  ),
+
+  // languages + runtimes
+  node: stroked('<path d="M12 2.9 20 7.45v9.1L12 21.1 4 16.55v-9.1z"/><path d="M9.2 15.1V9.5l5.6 5V9"/>'),
+  javascript: stroked(
+    '<path d="M9.6 4.6C6.9 4.6 7.8 10.3 4.9 12c2.9 1.7 2 7.4 4.7 7.4"/>' +
+      '<path d="M14.4 4.6c2.7 0 1.8 5.7 4.7 7.4-2.9 1.7-2 7.4-4.7 7.4"/>'
+  ),
+
+  // tooling
+  docker: stroked(
+    '<rect x="3.2" y="12.4" width="3.5" height="3.5" rx=".6"/><rect x="7.5" y="12.4" width="3.5" height="3.5" rx=".6"/>' +
+      '<rect x="11.8" y="12.4" width="3.5" height="3.5" rx=".6"/><rect x="7.5" y="8.3" width="3.5" height="3.5" rx=".6"/>' +
+      '<rect x="11.8" y="8.3" width="3.5" height="3.5" rx=".6"/>' +
+      '<path d="M2.6 17.8c1.7 2.3 4.6 3.2 7.5 3.2 4.9 0 8.5-2.3 9.5-6.3 1.2.6 2.4.4 3-.5-1-1.2-2.5-1.2-3.3-.7"/>'
+  ),
+  git: stroked(
+    '<circle cx="7" cy="5.6" r="2.2"/><circle cx="7" cy="18.4" r="2.2"/><circle cx="17" cy="12" r="2.2"/>' +
+      '<path d="M7 7.8v8.4"/><path d="M7 12h7.8"/>'
+  ),
+  github:
+    '<svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" fill="currentColor">' +
+    '<path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>',
+
+  // generic, for anything added in the CMS
+  cloud: stroked('<path d="M7 18.4h9.6a4.1 4.1 0 0 0 .5-8.2 5.6 5.6 0 0 0-10.7 1.3A3.5 3.5 0 0 0 7 18.4z"/>'),
+  shield: stroked(
+    '<path d="M12 21.2s7.4-3.7 7.4-9.2V5.1L12 2.4 4.6 5.1v6.9c0 5.5 7.4 9.2 7.4 9.2z"/><path d="M9 12.1l2.2 2.2 4-4.4"/>'
+  ),
+  key: stroked('<circle cx="8.2" cy="15.8" r="3.4"/><path d="M10.6 13.4 19 5h2.4v2.6h-2.6v2.6h-2.6"/>'),
+  cube: stroked('<path d="M12 2.9 20 7.45v9.1L12 21.1 4 16.55v-9.1z"/><path d="M4 7.45 12 12l8-4.55M12 12v9.1"/>'),
+};
+
+// Tiles are matched on the label beneath the icon, which is stable — unlike the
+// emoji, which are multi-codepoint and easy to mistype.
+const STACK_ICON_BY_LABEL = {
+  EC2: 'ec2',
+  Lambda: 'lambda',
+  S3: 's3',
+  RDS: 'rds',
+  'API GW': 'apigw',
+  CloudWatch: 'cloudwatch',
+  'Node.js': 'node',
+  JavaScript: 'javascript',
+  'REST API': 'rest',
+  PostgreSQL: 'postgres',
+  MySQL: 'mysql',
+  Docker: 'docker',
+  Git: 'git',
+  GitHub: 'github',
+};
+
+const ICON_SPAN_STYLE =
+  'display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)';
+
+function iconSpan(svg) {
+  return '<span style="' + ICON_SPAN_STYLE + '">' + svg + '</span>';
+}
+
+// Swap every tile's emoji span for its drawn icon. Throws on an unmapped label, so a
+// re-synced design cannot quietly ship a tile with no icon.
+function drawStackIcons(body) {
+  let drawn = 0;
+  const out = body.replace(/<div class="svc-tile"[^>]*>[\s\S]*?<\/div>/g, (tile) => {
+    const spans = [...tile.matchAll(/<span\b[^>]*>([\s\S]*?)<\/span>/g)];
+    if (spans.length < 2) return tile;
+    const label = spans[1][1].trim();
+    const slug = STACK_ICON_BY_LABEL[label];
+    if (!slug) throw new Error('no icon mapped for the "' + label + '" stack tile');
+    drawn++;
+    return tile.replace(spans[0][0], () => iconSpan(SVC_ICONS[slug]));
+  });
+  if (drawn !== 14) throw new Error('expected 14 stack tiles, drew ' + drawn);
+  return out;
+}
+
+
+// The footer ships GitHub and LinkedIn. Add X and Instagram beside them, hidden
+// until the content document has a URL for each, and tag all four so the hydrator
+// can point them at whatever the CMS holds.
+const SOCIAL_ICONS = {
+  x:
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+    '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+  instagram:
+    '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.9" stroke-linecap="round" aria-hidden="true">' +
+    '<rect x="2.9" y="2.9" width="18.2" height="18.2" rx="5.2"/><circle cx="12" cy="12" r="4.1"/>' +
+    '<circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"/></svg>',
+};
+
+function addFooterSocials(body) {
+  const footerAt = body.indexOf('<!-- ============ FOOTER');
+  if (footerAt === -1) throw new Error('footer not found');
+
+  const ghAt = body.indexOf('aria-label="GitHub"', footerAt);
+  const liAt = body.indexOf('aria-label="LinkedIn"', footerAt);
+  if (ghAt === -1 || liAt === -1) throw new Error('footer social links not found');
+
+  const closeAt = body.indexOf('</a>', liAt);
+  if (closeAt === -1) throw new Error('footer LinkedIn link is unclosed');
+
+  const anchor = body.slice(liAt, closeAt);
+  const style = (anchor.match(/style="([^"]+)"/) || [])[1];
+  const hover = (anchor.match(/style-hover="([^"]+)"/) || [])[1];
+  if (!style || !hover) throw new Error('could not read the footer link styling');
+
+  const extra = ['x', 'instagram']
+    .map(function (key) {
+      const label = key === 'x' ? 'X' : 'Instagram';
+      return (
+        '<a data-social="' + key + '" href="#" target="_blank" rel="noopener" aria-label="' +
+        label + '" style="' + style + ';display:none" style-hover="' + hover + '">' +
+        SOCIAL_ICONS[key] + '</a>'
+      );
+    })
+    .join('');
+
+  let out = body.slice(0, closeAt + 4) + extra + body.slice(closeAt + 4);
+  // tag the two the design already had, so all four are driven the same way
+  out =
+    out.slice(0, ghAt) +
+    out.slice(ghAt).replace('aria-label="GitHub"', 'aria-label="GitHub" data-social="github"');
+  const liTag = out.indexOf('aria-label="LinkedIn"', footerAt);
+  out =
+    out.slice(0, liTag) +
+    out.slice(liTag).replace('aria-label="LinkedIn"', 'aria-label="LinkedIn" data-social="linkedin"');
+  return out;
+}
+
+
+// The design's cover placeholder is a dashed box with Replace/Remove beside it and
+// nothing behind them. Tag it so the runtime can turn it into a real preview.
+function tagCoverControls(body) {
+  const anchor = '<div style="width:172px;aspect-ratio:16/9;';
+  const n = body.split(anchor).length - 1;
+  if (n !== 1) throw new Error('CMS: expected 1 cover placeholder, found ' + n);
+  return body.replace(anchor, '<div data-cover-preview style="width:172px;aspect-ratio:16/9;');
+}
+
 function extractParts(src) {
   const helmetStart = src.indexOf('<helmet>');
   const helmetEnd = src.indexOf('</helmet>');
@@ -151,6 +355,7 @@ const BINDINGS = [
   ['hero.region', 'Region: kumasi-gh-west-1'],
   ['hero.availability', 'Open to work'],
   ['hero.location', 'Kumasi, Ghana 🇬🇭</div>'],
+  ['hero.employerLabel', 'Engineer @</span>'],
 
   ['about.heading', 'The engineer behind the cloud'],
   ['about.body', 'Daniel is a backend &amp; cloud engineer at AmaliTech who turns'],
@@ -584,12 +789,50 @@ function markCmsActiveNav(helmet) {
   return helmet.replace(rule, rule + overrides);
 }
 
+
+/* ------------------- first-paint theming -------------------
+ * The accent lives in the content document, which only arrives after the first
+ * paint — so a saved colour used to flash the design's original green on every
+ * reload. This remembers the last accent seen on this device and hides the page
+ * for the few milliseconds it takes to apply it, revealing as soon as the content
+ * document has been applied. It reveals on a timer and on load as well, so a
+ * failed fetch or a script error can never leave a blank page behind.
+ *
+ * Only devices that have seen a non-default accent are ever hidden; a first-time
+ * visitor paints immediately.
+ * ---------------------------------------------------------- */
+const THEME_GUARD = `
+<script>
+(function () {
+  'use strict';
+  var saved = null;
+  try { saved = localStorage.getItem('dc.accent'); } catch (e) { saved = null; }
+  if (!saved || !/^#[0-9a-fA-F]{3,6}$/.test(saved) || saved.toLowerCase() === '#6aff00') return;
+
+  window.__cachedAccent = saved;
+
+  var guard = document.createElement('style');
+  guard.id = 'theme-guard';
+  guard.textContent = 'html{visibility:hidden}';
+  document.head.appendChild(guard);
+
+  window.__themeReveal = function () {
+    var el = document.getElementById('theme-guard');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  };
+  setTimeout(window.__themeReveal, 1200);
+  window.addEventListener('load', window.__themeReveal);
+})();
+</script>
+`;
+
 function page({ helmet, body, runtime, head }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${THEME_GUARD}
 ${head}
 ${helmet}
 </head>
@@ -869,6 +1112,14 @@ const THEME_RUNTIME = `
     window.__accentHex = hex;
     if (window.__heroRebuild) window.__heroRebuild();
   };
+
+  // Paint the accent this device saw last before the first frame, so the page is
+  // never briefly the wrong colour. The authoritative value arrives with the
+  // content document and is applied again there — normally the same value, so
+  // nothing moves. The guard in <head> is what was hiding the page until now.
+  if (window.__cachedAccent) {
+    try { window.__applyAccent(window.__cachedAccent); } catch (e) {}
+  }
 })();
 </script>
 `;
@@ -1320,8 +1571,26 @@ ${SHARED_RUNTIME}
   initCursor();
   initHero();
 
-  var hash = (location.hash || '').replace('#', '');
-  if (hash === 'resume' || hash === 'blog') showView(hash);
+  window.__showView = showView;
+  window.__openPost = openPost;
+
+  // /?post=<id> opens that post directly — what the CMS Preview button links to.
+  // Called again after the content loads, because a post added in the CMS has no
+  // article in the static markup to open yet.
+  window.__openFromQuery = function () {
+    var m = (location.search || '').match(/[?&]post=([^&]+)/);
+    if (!m) return false;
+    var id = decodeURIComponent(m[1]);
+    if (!document.querySelector('[data-blog="article"][data-id="' + id + '"]')) return false;
+    showView('blog');
+    openPost(id);
+    return true;
+  };
+
+  if (!window.__openFromQuery()) {
+    var hash = (location.hash || '').replace('#', '');
+    if (hash === 'resume' || hash === 'blog') showView(hash);
+  }
 })();
 </script>
 `;
@@ -1480,7 +1749,11 @@ const HYDRATE_RUNTIME = `
   function applyPosts(content) {
     var all = content.blog && content.blog.posts;
     if (!Array.isArray(all) || !all.length) return;
-    var posts = all.filter(function (p) { return p && p.id && p.published !== false; });
+    // the CMS preview link asks for drafts as well
+    var preview = /[?&]preview=1(?:&|$)/.test(location.search || '');
+    var posts = all.filter(function (p) {
+      return p && p.id && (preview || p.published !== false);
+    });
     if (!posts.length) return;
 
     var list = document.querySelector('[data-blog="list"]');
@@ -1629,6 +1902,23 @@ const HYDRATE_RUNTIME = `
     });
   }
 
+  // A stack item's icon is a slug from the drawn set; anything else (an emoji, a
+  // letter) is shown as-is, so documents saved before the set existed still render.
+  var SVC_ICONS = __SVC_ICONS__;
+
+  function setIcon(el, value) {
+    if (!el || typeof value !== 'string' || !value) return;
+    var svg = SVC_ICONS[value.trim().toLowerCase()];
+    if (svg) {
+      if (el.getAttribute('data-icon') === value) return;
+      el.setAttribute('data-icon', value);
+      el.innerHTML = svg;
+      return;
+    }
+    el.removeAttribute('data-icon');
+    setText(el, value);
+  }
+
   function applyStack(content) {
     var groups = content.stack;
     if (!Array.isArray(groups) || !groups.length) return;
@@ -1656,7 +1946,7 @@ const HYDRATE_RUNTIME = `
       tiles.forEach(function (tile, i) {
         var item = group.items[i];
         var spans = tile.querySelectorAll('span');
-        if (spans[0]) setText(spans[0], item.icon);
+        if (spans[0]) setIcon(spans[0], item.icon);
         if (spans[1]) setText(spans[1], item.label);
         var tip = tile.querySelector('.svc-tip');
         if (tip) setText(tip, item.tip);
@@ -1670,6 +1960,12 @@ const HYDRATE_RUNTIME = `
       grid.style.display = 'none';
     });
   }
+
+  var LIVE_ICON =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M14 4h6v6"/><path d="M20 4 11 13"/>' +
+    '<path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
 
   function applyProjects(content) {
     var projects = content.projects;
@@ -1724,9 +2020,10 @@ const HYDRATE_RUNTIME = `
         }
       }
 
-      // repo link — hidden when there's nothing to point at
-      var link = card.querySelector('a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
+      // repo + live-site links, each hidden when there is nothing to point at
+      var link = card.querySelector('a[data-repo], a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
       if (link) {
+        link.setAttribute('data-repo', '');
         if (project.repo) {
           link.href = project.repo;
           link.target = '_blank';
@@ -1734,6 +2031,28 @@ const HYDRATE_RUNTIME = `
           link.style.display = '';
         } else {
           link.style.display = 'none';
+        }
+
+        // the featured card labels its link in words, the compact cards are
+        // icon-only — match whichever this card is
+        var labelled = (link.textContent || '').trim().length > 0;
+        var live = card.querySelector('a[data-live]');
+        if (project.liveUrl) {
+          if (!live) {
+            live = link.cloneNode(false); // attributes only: keeps the inline styling
+            live.removeAttribute('data-repo'); // or the selector above would find this one
+            live.setAttribute('data-live', '');
+            live.setAttribute('aria-label', 'Live site');
+            live.innerHTML = LIVE_ICON + (labelled ? ' Visit live site' : '');
+            link.parentElement.insertBefore(live, link);
+          }
+          var url = String(project.liveUrl).trim();
+          live.href = /^https?:/i.test(url) ? url : 'https://' + url.replace(/^\\/+/, '');
+          live.target = '_blank';
+          live.rel = 'noopener';
+          live.style.display = '';
+        } else if (live) {
+          live.style.display = 'none';
         }
       }
     });
@@ -1796,6 +2115,57 @@ const HYDRATE_RUNTIME = `
     });
   }
 
+  // The badge reads "Engineer @" followed by the AmaliTech wordmark. That logo only
+  // tells the truth for AmaliTech, so any other employer is rendered as text.
+  // Footer social links. An empty URL hides its icon rather than pointing nowhere.
+  var SOCIAL_PATHS = {
+    github: 'contact.github',
+    linkedin: 'contact.linkedin',
+    x: 'contact.x',
+    instagram: 'contact.instagram',
+  };
+
+  function applySocials(content) {
+    Object.keys(SOCIAL_PATHS).forEach(function (key) {
+      var link = document.querySelector('footer a[data-social="' + key + '"]');
+      if (!link) return;
+      var value = get(content, SOCIAL_PATHS[key]);
+      value = typeof value === 'string' ? value.trim() : '';
+      if (!value) { link.style.display = 'none'; return; }
+      link.href = /^https?:/i.test(value) ? value : 'https://' + value.replace(/^\\/+/, '');
+      link.style.display = 'flex';
+    });
+  }
+
+  function applyEmployer(content) {
+    var hero = content.hero || {};
+    var label = document.querySelector('[data-content="hero.employerLabel"]');
+    var badge = label && label.parentElement;
+    if (!badge) return;
+
+    var name = typeof hero.employer === 'string' ? hero.employer.trim() : '';
+    var wordmark = !name || name.toLowerCase() === 'amalitech';
+    var marks = badge.querySelectorAll('img.wm-white, img.wm-default');
+    Array.prototype.forEach.call(marks, function (img) {
+      img.style.display = wordmark ? '' : 'none'; // '' restores the stylesheet's choice
+    });
+
+    var custom = badge.querySelector('[data-employer-text]');
+    if (wordmark) {
+      if (custom) custom.style.display = 'none';
+      return;
+    }
+    if (!custom) {
+      custom = document.createElement('span');
+      custom.setAttribute('data-employer-text', '');
+      custom.style.cssText =
+        "font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--primary)";
+      badge.appendChild(custom);
+    }
+    custom.style.display = '';
+    setText(custom, name);
+  }
+
   function applySettings(content) {
     var s = content.settings || {};
     if (s.pageTitle) document.title = s.pageTitle;
@@ -1804,7 +2174,14 @@ const HYDRATE_RUNTIME = `
       if (meta) meta.setAttribute('content', s.metaDescription);
     }
     // rotates the whole palette onto the accent's hue, not just --primary
-    if (s.accent && window.__applyAccent) window.__applyAccent(s.accent);
+    if (s.accent) {
+      if (window.__applyAccent) window.__applyAccent(s.accent);
+      // remembered for the next load's first paint (see THEME_GUARD)
+      try {
+        if (s.accent.toLowerCase() === '#6aff00') localStorage.removeItem('dc.accent');
+        else localStorage.setItem('dc.accent', s.accent);
+      } catch (e) {}
+    }
     if (s.reduceMotion && root) root.dataset.motion = 'off';
   }
 
@@ -1820,14 +2197,23 @@ const HYDRATE_RUNTIME = `
     applyVisibility(content);
     applyCanvas(content);
     applySettings(content); // themes the page, last so it covers everything above
+    applyEmployer(content);
+    applySocials(content);
     document.documentElement.setAttribute('data-content-loaded', '1');
+    // the page is themed now, so it is safe to show
+    if (window.__themeReveal) window.__themeReveal();
+    // a post opened by ?post= may only exist once the posts have been rendered
+    if (window.__openFromQuery) window.__openFromQuery();
   }
 
   function load() {
     return fetch('/api/content', { headers: { Accept: 'application/json' }, cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) { if (data && data.ok) hydrate(data.content); })
-      .catch(function () { /* offline or API down: the static markup already reads correctly */ });
+      .catch(function () {
+        /* offline or API down: the static markup already reads correctly */
+        if (window.__themeReveal) window.__themeReveal();
+      });
   }
 
   load();
@@ -2105,6 +2491,7 @@ const CMS_DATA_RUNTIME = `
 
   function populate() {
     if (!content) return;
+    buildExtraFields(); // before the [data-field] walk below, so they populate too
     var post = currentPost();
     if (post) selectedPost = post.id;
 
@@ -2128,6 +2515,7 @@ const CMS_DATA_RUNTIME = `
     populateCounts();
     populatePostList();
     renderMedia();
+    renderPostImages();
     if (window.cmsSync) window.cmsSync();
   }
 
@@ -2311,6 +2699,207 @@ const CMS_DATA_RUNTIME = `
     if (chosen) set('settings.accent', chosen.getAttribute('data-swatch-value'));
   }
 
+  /* ---------------- cover + article image (blog pane) ----------------
+   * The design draws a dashed placeholder with Replace/Remove beside it, but
+   * nothing behind it: a new post could not be given a picture without leaving for
+   * the Media pane, and the Media pane only lists posts that have already been
+   * saved. This wires the placeholder to the selected post's cover slot and adds
+   * the same control for the article's header image.
+   * ------------------------------------------------------------------- */
+  var pendingKind = 'blog-cover';
+  var postFileInput = null;
+
+  function postSlot(kind) {
+    var post = currentPost();
+    if (!post || !post.id) return null;
+    return kind + '-' + String(post.id).replace(/^post-/, '');
+  }
+
+  function postImageEl(kind) {
+    return root.querySelector('[data-post-img="' + kind + '"]');
+  }
+
+  function pickPostImage(kind) {
+    if (!currentPost()) { window.cmsToast('Create or select a post first'); return; }
+    pendingKind = kind;
+    if (!postFileInput) {
+      postFileInput = document.createElement('input');
+      postFileInput.type = 'file';
+      postFileInput.accept = 'image/png,image/jpeg,image/webp,image/avif,image/gif,image/svg+xml';
+      postFileInput.style.display = 'none';
+      postFileInput.addEventListener('change', function () {
+        var file = postFileInput.files && postFileInput.files[0];
+        var slot = postSlot(pendingKind);
+        if (file && slot) uploadTo(slot, file, postImageEl(pendingKind));
+        postFileInput.value = '';
+      });
+      root.appendChild(postFileInput);
+    }
+    postFileInput.click();
+  }
+
+  function removePostImage(kind) {
+    var slot = postSlot(kind);
+    if (!slot || !content.media || !content.media[slot]) { window.cmsToast('No uploaded image to remove'); return; }
+    delete content.media[slot];
+    renderPostImages();
+    window.cmsDirty(true);
+    window.cmsToast('Image removed — save to publish');
+  }
+
+  function imageControl(kind, caption) {
+    var wrap = document.createElement('div');
+    wrap.setAttribute('data-post-image-control', kind);
+    wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px';
+
+    var cap = document.createElement('span');
+    cap.textContent = caption;
+    cap.style.cssText = "font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2,#7fcc66)";
+
+    var frame = document.createElement('div');
+    frame.style.cssText =
+      'width:172px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:1px solid var(--border-hi,#173311)';
+    var img = document.createElement('img');
+    img.setAttribute('data-post-img', kind);
+    img.alt = '';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+    frame.appendChild(img);
+
+    var btns = document.createElement('div');
+    btns.style.cssText = 'display:flex;gap:8px';
+    var replace = document.createElement('button');
+    replace.type = 'button';
+    replace.textContent = 'Replace';
+    replace.style.cssText = miniBtnCss;
+    replace.addEventListener('click', function (e) { e.stopPropagation(); pickPostImage(kind); });
+    var remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Remove';
+    remove.style.cssText = miniBtnCss;
+    remove.addEventListener('click', function (e) { e.stopPropagation(); removePostImage(kind); });
+    btns.appendChild(replace);
+    btns.appendChild(remove);
+
+    wrap.appendChild(cap);
+    wrap.appendChild(frame);
+    wrap.appendChild(btns);
+    return wrap;
+  }
+
+  function renderPostImages() {
+    var box = root.querySelector('[data-cover-preview]');
+    if (!box) return;
+    var row = box.parentElement;
+
+    // the design's dashed box becomes the cover preview
+    if (!box.querySelector('[data-post-img]')) {
+      box.textContent = '';
+      box.style.overflow = 'hidden';
+      box.style.display = 'block';
+      var cover = document.createElement('img');
+      cover.setAttribute('data-post-img', 'blog-cover');
+      cover.alt = '';
+      cover.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+      box.appendChild(cover);
+    }
+
+    // its Remove button — Replace is the design's [data-add], handled with the rest
+    if (!row.hasAttribute('data-cover-wired')) {
+      row.setAttribute('data-cover-wired', '');
+      Array.prototype.slice.call(row.querySelectorAll('button')).forEach(function (btn) {
+        if ((btn.textContent || '').trim().toLowerCase() !== 'remove') return;
+        btn.addEventListener('click', function (e) { e.stopPropagation(); removePostImage('blog-cover'); });
+      });
+    }
+
+    // the article's header image, which the design has no control for
+    if (!row.querySelector('[data-post-image-control="blog-hero"]')) {
+      row.appendChild(imageControl('blog-hero', 'Article image'));
+    }
+
+    ['blog-cover', 'blog-hero'].forEach(function (kind) {
+      var img = postImageEl(kind);
+      if (!img) return;
+      var slot = postSlot(kind);
+      var url = slot ? (content.media && content.media[slot]) || defaultArt(slot) : '';
+      if (url && img.getAttribute('src') !== url) img.src = url;
+    });
+  }
+
+  /* ---------------- fields the mockup has no input for ----------------
+   * The design's panes are fixed, so anything in the content document without an
+   * input gets one appended here — same [data-field] contract as the ported
+   * inputs, so populate() and collect() need no special case.
+   * -------------------------------------------------------------------- */
+  var EXTRA_FIELDS = [
+    {
+      pane: 'hero',
+      title: 'Employer badge',
+      note: 'The floating badge in the hero. The AmaliTech wordmark shows while the employer is AmaliTech; any other name renders as text.',
+      fields: [
+        { path: 'hero.employerLabel', label: 'Badge label', placeholder: 'Engineer @' },
+        { path: 'hero.employer', label: 'Employer', placeholder: 'AmaliTech' },
+      ],
+    },
+    {
+      pane: 'contact',
+      title: 'Socials',
+      note: 'Shown in the footer. Leave one empty to hide its icon.',
+      fields: [
+        { path: 'contact.x', label: 'X', placeholder: 'https://x.com/yourhandle' },
+        { path: 'contact.instagram', label: 'Instagram', placeholder: 'https://instagram.com/yourhandle' },
+      ],
+    },
+  ];
+
+  function buildExtraFields() {
+    EXTRA_FIELDS.forEach(function (group) {
+      var pane = root.querySelector('[data-panel="' + group.pane + '"]');
+      if (!pane || pane.querySelector('[data-extra="' + group.title + '"]')) return;
+
+      var box = document.createElement('div');
+      box.setAttribute('data-extra', group.title);
+      box.style.cssText =
+        'display:flex;flex-direction:column;gap:11px;margin-top:18px;padding:15px;border:1px solid ' +
+        'var(--border-hi,#173311);border-radius:12px;background:var(--surface,#06140a)';
+
+      var head = document.createElement('span');
+      head.textContent = group.title;
+      head.style.cssText =
+        "font-family:'Clash Display',sans-serif;font-weight:600;font-size:13px;color:var(--text,#eefff0)";
+      box.appendChild(head);
+
+      if (group.note) {
+        var note = document.createElement('span');
+        note.textContent = group.note;
+        note.style.cssText =
+          "font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.6;color:var(--text-3,#4d8c3c)";
+        box.appendChild(note);
+      }
+
+      var grid = document.createElement('div');
+      grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px';
+      group.fields.forEach(function (field) {
+        var wrap = document.createElement('label');
+        wrap.style.cssText =
+          "display:flex;flex-direction:column;gap:5px;font-family:'Syne Mono',monospace;" +
+          'font-size:11px;color:var(--text-2,#7fcc66)';
+        var span = document.createElement('span');
+        span.textContent = field.label;
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.setAttribute('data-field', field.path);
+        input.placeholder = field.placeholder || '';
+        input.style.cssText = inputCss;
+        wrap.appendChild(span);
+        wrap.appendChild(input);
+        grid.appendChild(wrap);
+      });
+      box.appendChild(grid);
+      pane.appendChild(box);
+    });
+  }
+
   /* ---------------- media pane ---------------- */
 
   // The media pane in the design is a static gallery. Give each known image slot a
@@ -2453,9 +3042,13 @@ const CMS_DATA_RUNTIME = `
         { key: 'status', label: 'Status', width: '1fr' },
         { key: 'description', label: 'Description', width: '2.4fr', textarea: true },
         { key: 'tags', label: 'Tags (comma separated)', width: '1.4fr', list: true },
+        { key: 'liveUrl', label: 'Live URL', width: '1.2fr' },
         { key: 'repo', label: 'Repo URL', width: '1.2fr' },
       ],
-      blank: { title: '', status: 'Status: In Development', live: false, description: '', tags: [], repo: '' },
+      blank: {
+        title: '', status: 'Status: In Development', live: false, description: '',
+        tags: [], liveUrl: '', repo: '',
+      },
     },
     experience: {
       pane: 'experience',
@@ -2626,10 +3219,54 @@ const CMS_DATA_RUNTIME = `
     renderStack(host);
   }
 
+  var SVC_ICONS = __SVC_ICONS__;
+
+  // Offer the drawn icons by name, and show what each one looks like, so picking
+  // one doesn't mean guessing from a slug.
+  function ensureIconList(host) {
+    if (root.querySelector('#svc-icon-slugs')) return;
+    var list = document.createElement('datalist');
+    list.id = 'svc-icon-slugs';
+    Object.keys(SVC_ICONS).forEach(function (slug) {
+      var opt = document.createElement('option');
+      opt.value = slug;
+      list.appendChild(opt);
+    });
+    host.appendChild(list);
+
+    var legend = document.createElement('div');
+    legend.style.cssText =
+      'display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:11px 13px;border:1px dashed ' +
+      'var(--border-hi,#173311);border-radius:10px';
+    var intro = document.createElement('span');
+    intro.textContent = 'Icons:';
+    intro.style.cssText =
+      "font-family:'Syne Mono',monospace;font-size:10.5px;color:var(--text-3,#4d8c3c)";
+    legend.appendChild(intro);
+    Object.keys(SVC_ICONS).forEach(function (slug) {
+      var chip = document.createElement('span');
+      chip.title = slug;
+      chip.style.cssText =
+        "display:inline-flex;align-items:center;gap:5px;font-family:'Syne Mono',monospace;" +
+        'font-size:10px;color:var(--text-2,#7fcc66)';
+      var glyph = document.createElement('span');
+      glyph.style.cssText =
+        'display:inline-flex;width:20px;height:20px;align-items:center;justify-content:center;color:var(--primary)';
+      glyph.innerHTML = SVC_ICONS[slug];
+      var svg = glyph.firstElementChild;
+      if (svg) { svg.setAttribute('width', '18'); svg.setAttribute('height', '18'); }
+      chip.appendChild(glyph);
+      chip.appendChild(document.createTextNode(slug));
+      legend.appendChild(chip);
+    });
+    host.appendChild(legend);
+  }
+
   function renderStack(host) {
     var groups = get('stack');
     if (!Array.isArray(groups)) { groups = []; set('stack', groups); }
     host.textContent = '';
+    ensureIconList(host);
 
     groups.forEach(function (group, gi) {
       var box = document.createElement('div');
@@ -2650,7 +3287,7 @@ const CMS_DATA_RUNTIME = `
       addTile.style.cssText = miniBtnCss;
       addTile.addEventListener('click', function () {
         if (!Array.isArray(group.items)) group.items = [];
-        group.items.push({ icon: '⬢', label: '', tip: '' });
+        group.items.push({ icon: 'cube', label: '', tip: '' });
         window.cmsDirty(true);
         renderStack(host);
       });
@@ -2678,8 +3315,11 @@ const CMS_DATA_RUNTIME = `
         ['icon', 'label', 'tip'].forEach(function (key) {
           var input = document.createElement('input');
           input.value = item[key] == null ? '' : item[key];
-          input.placeholder = key === 'icon' ? '🖥️' : key === 'label' ? 'EC2' : 'Tooltip shown on hover';
+          input.placeholder = key === 'icon' ? 'lambda' : key === 'label' ? 'EC2' : 'Tooltip shown on hover';
           input.style.cssText = inputCss + (key === 'icon' ? ';text-align:center' : '');
+          // the drawn icons are chosen by name; typing anything else still renders
+          // as text, so an emoji remains a valid answer
+          if (key === 'icon') input.setAttribute('list', 'svc-icon-slugs');
           input.addEventListener('input', function () { item[key] = input.value; window.cmsDirty(true); });
           row.appendChild(input);
         });
@@ -3072,7 +3712,24 @@ const CMS_DATA_RUNTIME = `
     }
     if (e.target.closest('[data-preview]')) {
       e.stopPropagation();
-      window.open('/', '_blank', 'noopener');
+      collect();
+      // go() is the only writer of the breadcrumb, and it is what the header shows
+      var crumb = root.querySelector('[data-crumb]');
+      var pane = crumb ? (crumb.textContent || '').trim().toLowerCase() : '';
+      if (!pane) {
+        var active = qa('.rail-item').filter(function (b) { return b.dataset.active === '1'; })[0];
+        pane = active ? active.getAttribute('data-nav') : '';
+      }
+      var post = currentPost();
+      // preview=1 renders drafts too, so an unpublished post can still be read
+      var url =
+        pane === 'blog' && post
+          ? '/?post=' + encodeURIComponent(post.id) + '&preview=1'
+          : '/';
+      window.open(url, '_blank', 'noopener');
+      if (window.cmsIsDirty && window.cmsIsDirty()) {
+        window.cmsToast('Preview shows the published version — save to include your edits');
+      }
       return;
     }
 
@@ -3132,7 +3789,12 @@ const CMS_DATA_RUNTIME = `
       var pane = add.closest('[data-panel]');
       var paneName = pane && pane.getAttribute('data-panel');
 
-      if (paneName === 'media' || paneName === 'blog') {
+      if (paneName === 'blog') {
+        pickPostImage('blog-cover');
+        return;
+      }
+
+      if (paneName === 'media') {
         if (window.cmsGo) window.cmsGo('media');
         window.cmsToast('Pick a slot and choose an image');
         return;
@@ -3140,7 +3802,7 @@ const CMS_DATA_RUNTIME = `
 
       if (paneName === 'stack') {
         var groups = get('stack') || [];
-        groups.push({ group: 'New group', items: [{ icon: '⬢', label: '', tip: '' }] });
+        groups.push({ group: 'New group', items: [{ icon: 'cube', label: '', tip: '' }] });
         set('stack', groups);
         renderStack(root.querySelector('[data-collection="stack"]'));
         window.cmsDirty(true);
@@ -3228,7 +3890,7 @@ function buildPortfolio() {
   const helmet = fixMobileNav(stripUnusedScripts(parts.helmet));
 
   const slots = fillImageSlots(parts.body);
-  const annotated = annotateContent(slots.body);
+  const annotated = annotateContent(addFooterSocials(drawStackIcons(slots.body)));
   const t = transformBindings(annotated.body);
 
   const expectedRefs = [
@@ -3250,8 +3912,13 @@ function buildPortfolio() {
   // the hydrator needs the slot -> bundled art map to fall back correctly
   const slotArt = {};
   for (const [id, art] of Object.entries(SLOT_ART)) slotArt[id] = art.file;
-  const hydrate = HYDRATE_RUNTIME.replace('__SLOT_ART__', JSON.stringify(slotArt));
-  if (hydrate.includes('__SLOT_ART__')) throw new Error('slot art placeholder not replaced');
+  const hydrate = HYDRATE_RUNTIME.replace('__SLOT_ART__', JSON.stringify(slotArt)).replace(
+    '__SVC_ICONS__',
+    JSON.stringify(SVC_ICONS)
+  );
+  if (hydrate.includes('__SLOT_ART__') || hydrate.includes('__SVC_ICONS__')) {
+    throw new Error('a hydrator placeholder was not replaced');
+  }
 
   fs.writeFileSync(
     path.join(dir, 'index.html'),
@@ -3270,7 +3937,7 @@ function buildCms() {
   const src = fs.readFileSync(path.join(dir, 'Portfolio CMS.dc.html'), 'utf8');
   const parts = extractParts(src);
   const helmet = markCmsActiveNav(stripUnusedScripts(parts.helmet));
-  const controls = annotateCmsControls(parts.body);
+  const controls = annotateCmsControls(tagCoverControls(parts.body));
   const fields = annotateCmsFields(controls.body);
   const t = transformBindings(fields.body);
   if (!t.refs.has('setRoot')) throw new Error('CMS: missing setRoot ref');
@@ -3284,8 +3951,13 @@ function buildCms() {
   // hand the CMS the same slot -> default art map the portfolio is built with
   const slotArt = {};
   for (const [id, art] of Object.entries(SLOT_ART)) slotArt[id] = art.file;
-  const dataRuntime = CMS_DATA_RUNTIME.replace('__SLOT_ART__', JSON.stringify(slotArt));
-  if (dataRuntime.includes('__SLOT_ART__')) throw new Error('CMS: slot art placeholder not replaced');
+  const dataRuntime = CMS_DATA_RUNTIME.replace('__SLOT_ART__', JSON.stringify(slotArt)).replace(
+    '__SVC_ICONS__',
+    JSON.stringify(SVC_ICONS)
+  );
+  if (dataRuntime.includes('__SLOT_ART__') || dataRuntime.includes('__SVC_ICONS__')) {
+    throw new Error('CMS: a placeholder was not replaced');
+  }
 
   fs.writeFileSync(
     path.join(dir, 'cms.html'),

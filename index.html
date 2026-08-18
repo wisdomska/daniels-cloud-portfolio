@@ -3,6 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script>
+(function () {
+  'use strict';
+  var saved = null;
+  try { saved = localStorage.getItem('dc.accent'); } catch (e) { saved = null; }
+  if (!saved || !/^#[0-9a-fA-F]{3,6}$/.test(saved) || saved.toLowerCase() === '#6aff00') return;
+
+  window.__cachedAccent = saved;
+
+  var guard = document.createElement('style');
+  guard.id = 'theme-guard';
+  guard.textContent = 'html{visibility:hidden}';
+  document.head.appendChild(guard);
+
+  window.__themeReveal = function () {
+    var el = document.getElementById('theme-guard');
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  };
+  setTimeout(window.__themeReveal, 1200);
+  window.addEventListener('load', window.__themeReveal);
+})();
+</script>
+
 <title>Daniel Ajayi Lotsu — Backend &amp; Cloud Engineer</title>
 <meta name="description" content="Backend &amp; cloud engineer at AmaliTech in Kumasi, Ghana. AWS-certified, architecting scalable cloud-native systems, REST APIs and serverless workloads.">
 <meta name="author" content="Daniel Ajayi Lotsu">
@@ -279,7 +303,7 @@ apply complete · 6 added · 0 changed
         <div data-content="hero.location" style="animation:floaty 8.5s ease-in-out infinite .6s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)">📍 Kumasi, Ghana 🇬🇭</div>
       </div>
       <div class="hero-float" style="position:absolute;top:24%;left:7%;z-index:2;transition:transform .3s ease-out">
-        <div style="animation:floaty 9s ease-in-out infinite 1.1s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em">Engineer @</span><img class="wm-white" src="assets/amalitech-wordmark-white.svg" alt="AmaliTech" style="height:15px;width:auto"><img class="wm-default" src="assets/amalitech-wordmark-default.svg" alt="AmaliTech" style="height:15px;width:auto"></div>
+        <div style="animation:floaty 9s ease-in-out infinite 1.1s;display:inline-flex;align-items:center;gap:9px;font-family:'Syne Mono',monospace;font-size:13px;color:var(--text);background:color-mix(in srgb,var(--surface) 58%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:999px;padding:11px 18px;box-shadow:0 10px 34px -12px var(--glow)"><span data-content="hero.employerLabel" style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em">Engineer @</span><img class="wm-white" src="assets/amalitech-wordmark-white.svg" alt="AmaliTech" style="height:15px;width:auto"><img class="wm-default" src="assets/amalitech-wordmark-default.svg" alt="AmaliTech" style="height:15px;width:auto"></div>
       </div>
 
       <!-- center composition (parallax) -->
@@ -387,12 +411,12 @@ apply complete · 6 added · 0 changed
           <div>
             <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Cloud · AWS</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:12px">
-              <div class="svc-tile" data-tip="Core compute for AmaliTech services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🖥️</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">EC2</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core compute for AmaliTech services</span></div>
-              <div class="svc-tile" data-tip="Serverless APIs &amp; background jobs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">λ</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Lambda</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Serverless APIs &amp; background jobs</span></div>
-              <div class="svc-tile" data-tip="Static assets &amp; media storage" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🪣</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">S3</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Static assets &amp; media storage</span></div>
-              <div class="svc-tile" data-tip="Managed relational databases" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🗄️</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">RDS</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Managed relational databases</span></div>
-              <div class="svc-tile" data-tip="Request routing &amp; throttling" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🚪</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">API GW</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Request routing &amp; throttling</span></div>
-              <div class="svc-tile" data-tip="Observability, logs &amp; alarms" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">📊</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">CloudWatch</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Observability, logs &amp; alarms</span></div>
+              <div class="svc-tile" data-tip="Core compute for AmaliTech services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.4" width="18" height="6.4" rx="1.6"/><rect x="3" y="13.2" width="18" height="6.4" rx="1.6"/><circle cx="6.6" cy="7.6" r="0.95" fill="currentColor" stroke="none"/><circle cx="6.6" cy="16.4" r="0.95" fill="currentColor" stroke="none"/><path d="M10 7.6h7M10 16.4h7"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">EC2</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core compute for AmaliTech services</span></div>
+              <div class="svc-tile" data-tip="Serverless APIs &amp; background jobs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4 19.6 13 4.4"/><path d="M10.5 12.2 17.6 19.6"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Lambda</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Serverless APIs &amp; background jobs</span></div>
+              <div class="svc-tile" data-tip="Static assets &amp; media storage" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.2" rx="7.4" ry="2.3"/><path d="M4.6 6.6 6.3 19a1.8 1.8 0 0 0 1.8 1.5h7.8a1.8 1.8 0 0 0 1.8-1.5l1.7-12.4"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">S3</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Static assets &amp; media storage</span></div>
+              <div class="svc-tile" data-tip="Managed relational databases" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="3.4" width="18.8" height="17.2" rx="3.2"/><ellipse cx="12" cy="8.6" rx="4.6" ry="1.8"/><path d="M7.4 8.6v6.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8V8.6"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">RDS</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Managed relational databases</span></div>
+              <div class="svc-tile" data-tip="Request routing &amp; throttling" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.1"/><circle cx="18.8" cy="6.4" r="1.7"/><circle cx="18.8" cy="12" r="1.7"/><circle cx="18.8" cy="17.6" r="1.7"/><path d="M7.1 12h3.1"/><path d="M10.2 12 17.1 6.9"/><path d="M10.2 12h6.9"/><path d="M10.2 12 17.1 17.1"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">API GW</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Request routing &amp; throttling</span></div>
+              <div class="svc-tile" data-tip="Observability, logs &amp; alarms" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 4.2v13.6a1.8 1.8 0 0 0 1.8 1.8h15"/><path d="M6.6 15.6l3.5-4.4 2.9 2.3 3.1-4.8 2.9 3.5"/><circle cx="6.6" cy="15.6" r="0.85" fill="currentColor" stroke="none"/><circle cx="19" cy="12.2" r="0.85" fill="currentColor" stroke="none"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text);text-align:center">CloudWatch</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Observability, logs &amp; alarms</span></div>
             </div>
           </div>
 
@@ -400,19 +424,19 @@ apply complete · 6 added · 0 changed
             <div>
               <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Backend &amp; Languages</div>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px">
-                <div class="svc-tile" data-tip="Primary runtime for APIs &amp; services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🟩</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Node.js</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary runtime for APIs &amp; services</span></div>
-                <div class="svc-tile" data-tip="Core language across the stack" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🟨</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">JavaScript</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core language across the stack</span></div>
-                <div class="svc-tile" data-tip="Designing clean, versioned REST APIs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🔌</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">REST API</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Designing clean, versioned REST APIs</span></div>
+                <div class="svc-tile" data-tip="Primary runtime for APIs &amp; services" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.9 20 7.45v9.1L12 21.1 4 16.55v-9.1z"/><path d="M9.2 15.1V9.5l5.6 5V9"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Node.js</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary runtime for APIs &amp; services</span></div>
+                <div class="svc-tile" data-tip="Core language across the stack" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 4.6C6.9 4.6 7.8 10.3 4.9 12c2.9 1.7 2 7.4 4.7 7.4"/><path d="M14.4 4.6c2.7 0 1.8 5.7 4.7 7.4-2.9 1.7-2 7.4-4.7 7.4"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">JavaScript</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Core language across the stack</span></div>
+                <div class="svc-tile" data-tip="Designing clean, versioned REST APIs" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.2" cy="7" r="1.5"/><circle cx="5.2" cy="12" r="1.5"/><circle cx="5.2" cy="17" r="1.5"/><path d="M8.2 7h10.6M8.2 12h7.4M8.2 17h9.2"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">REST API</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Designing clean, versioned REST APIs</span></div>
               </div>
             </div>
             <div>
               <div style="font-family:'Syne Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--glow)"></span>Database &amp; DevOps</div>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:12px">
-                <div class="svc-tile" data-tip="Primary relational store" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐘</span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text);text-align:center">PostgreSQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary relational store</span></div>
-                <div class="svc-tile" data-tip="Relational workloads &amp; reporting" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐬</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">MySQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Relational workloads &amp; reporting</span></div>
-                <div class="svc-tile" data-tip="Containerising services for deploy" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐳</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Docker</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Containerising services for deploy</span></div>
-                <div class="svc-tile" data-tip="Version control, daily" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🌿</span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Git</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Version control, daily</span></div>
-                <div class="svc-tile" data-tip="Collaboration, PRs &amp; CI" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="font-size:22px">🐙</span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">GitHub</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Collaboration, PRs &amp; CI</span></div>
+                <div class="svc-tile" data-tip="Primary relational store" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.6" rx="6.8" ry="2.4"/><path d="M5.2 5.6v12.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.6"/><path d="M5.2 10.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/><path d="M5.2 14.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:10px;color:var(--text);text-align:center">PostgreSQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Primary relational store</span></div>
+                <div class="svc-tile" data-tip="Relational workloads &amp; reporting" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.8" rx="6.8" ry="2.4"/><path d="M5.2 5.8v9.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.8"/><path d="M5.2 10.4c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4"/><path d="M4.4 20.6c1.36-1.1 2.54-1.1 3.9 0s2.54 1.1 3.9 0 2.54-1.1 3.9 0"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">MySQL</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Relational workloads &amp; reporting</span></div>
+                <div class="svc-tile" data-tip="Containerising services for deploy" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="12.4" width="3.5" height="3.5" rx=".6"/><rect x="7.5" y="12.4" width="3.5" height="3.5" rx=".6"/><rect x="11.8" y="12.4" width="3.5" height="3.5" rx=".6"/><rect x="7.5" y="8.3" width="3.5" height="3.5" rx=".6"/><rect x="11.8" y="8.3" width="3.5" height="3.5" rx=".6"/><path d="M2.6 17.8c1.7 2.3 4.6 3.2 7.5 3.2 4.9 0 8.5-2.3 9.5-6.3 1.2.6 2.4.4 3-.5-1-1.2-2.5-1.2-3.3-.7"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">Docker</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Containerising services for deploy</span></div>
+                <div class="svc-tile" data-tip="Version control, daily" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="5.6" r="2.2"/><circle cx="7" cy="18.4" r="2.2"/><circle cx="17" cy="12" r="2.2"/><path d="M7 7.8v8.4"/><path d="M7 12h7.8"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:12px;color:var(--text)">Git</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Version control, daily</span></div>
+                <div class="svc-tile" data-tip="Collaboration, PRs &amp; CI" style="position:relative;background:var(--surface-elev);border:1px solid var(--border);border-radius:12px;padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:default;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease" style-hover="transform:translateY(-4px);border-color:var(--primary);box-shadow:0 12px 30px -12px var(--glow)"><span style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;color:var(--primary)"><svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></span><span style="font-family:'Syne Mono',monospace;font-size:11px;color:var(--text)">GitHub</span><span class="svc-tip" style="position:absolute;left:50%;bottom:100%;transform:translate(-50%,0);opacity:0;pointer-events:none;transition:all .18s ease;background:var(--bg);border:1px solid var(--primary);border-radius:7px;padding:6px 10px;font-family:'JetBrains Mono';font-size:11px;color:var(--text);white-space:nowrap;box-shadow:0 8px 22px -8px var(--glow);margin-bottom:6px;z-index:3">Collaboration, PRs &amp; CI</span></div>
               </div>
             </div>
           </div>
@@ -852,8 +876,8 @@ export const handler = async (event) =&gt; {
         <span style="font-family:'Clash Display';font-weight:600;font-size:14px;color:#eefff0">© 2025 Daniel Ajayi Lotsu</span>
         <span style="display:inline-flex;align-items:center;gap:8px;font-family:'Syne Mono',monospace;font-size:12px;color:#7fcc66;border:1px solid #173311;padding:6px 13px;border-radius:999px">🌍 af-west-kumasi-1 · ONLINE <span style="width:8px;height:8px;border-radius:50%;background:#34d17e;animation:pulseDot 2s infinite"></span></span>
         <div style="display:flex;gap:10px">
-          <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
-          <a href="https://linkedin.com/in/daniel-lotsu-jnr" target="_blank" rel="noopener" aria-label="LinkedIn" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></a>
+          <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" data-social="github" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z"/></svg></a>
+          <a href="https://linkedin.com/in/daniel-lotsu-jnr" target="_blank" rel="noopener" aria-label="LinkedIn" data-social="linkedin" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></a><a data-social="x" href="#" target="_blank" rel="noopener" aria-label="X" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease;display:none" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a><a data-social="instagram" href="#" target="_blank" rel="noopener" aria-label="Instagram" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;border:1px solid #173311;color:#eefff0;transition:all .15s ease;display:none" style-hover="border-color:#6AFF00;box-shadow:0 0 18px rgba(106,255,0,.5)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><rect x="2.9" y="2.9" width="18.2" height="18.2" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"/></svg></a>
         </div>
       </div>
     </footer>
@@ -1113,6 +1137,14 @@ export const handler = async (event) =&gt; {
     window.__accentHex = hex;
     if (window.__heroRebuild) window.__heroRebuild();
   };
+
+  // Paint the accent this device saw last before the first frame, so the page is
+  // never briefly the wrong colour. The authoritative value arrives with the
+  // content document and is applied again there — normally the same value, so
+  // nothing moves. The guard in <head> is what was hiding the page until now.
+  if (window.__cachedAccent) {
+    try { window.__applyAccent(window.__cachedAccent); } catch (e) {}
+  }
 })();
 </script>
 
@@ -1556,8 +1588,26 @@ export const handler = async (event) =&gt; {
   initCursor();
   initHero();
 
-  var hash = (location.hash || '').replace('#', '');
-  if (hash === 'resume' || hash === 'blog') showView(hash);
+  window.__showView = showView;
+  window.__openPost = openPost;
+
+  // /?post=<id> opens that post directly — what the CMS Preview button links to.
+  // Called again after the content loads, because a post added in the CMS has no
+  // article in the static markup to open yet.
+  window.__openFromQuery = function () {
+    var m = (location.search || '').match(/[?&]post=([^&]+)/);
+    if (!m) return false;
+    var id = decodeURIComponent(m[1]);
+    if (!document.querySelector('[data-blog="article"][data-id="' + id + '"]')) return false;
+    showView('blog');
+    openPost(id);
+    return true;
+  };
+
+  if (!window.__openFromQuery()) {
+    var hash = (location.hash || '').replace('#', '');
+    if (hash === 'resume' || hash === 'blog') showView(hash);
+  }
 })();
 </script>
 
@@ -1707,7 +1757,11 @@ export const handler = async (event) =&gt; {
   function applyPosts(content) {
     var all = content.blog && content.blog.posts;
     if (!Array.isArray(all) || !all.length) return;
-    var posts = all.filter(function (p) { return p && p.id && p.published !== false; });
+    // the CMS preview link asks for drafts as well
+    var preview = /[?&]preview=1(?:&|$)/.test(location.search || '');
+    var posts = all.filter(function (p) {
+      return p && p.id && (preview || p.published !== false);
+    });
     if (!posts.length) return;
 
     var list = document.querySelector('[data-blog="list"]');
@@ -1856,6 +1910,23 @@ export const handler = async (event) =&gt; {
     });
   }
 
+  // A stack item's icon is a slug from the drawn set; anything else (an emoji, a
+  // letter) is shown as-is, so documents saved before the set existed still render.
+  var SVC_ICONS = {"ec2":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4.4\" width=\"18\" height=\"6.4\" rx=\"1.6\"/><rect x=\"3\" y=\"13.2\" width=\"18\" height=\"6.4\" rx=\"1.6\"/><circle cx=\"6.6\" cy=\"7.6\" r=\"0.95\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"6.6\" cy=\"16.4\" r=\"0.95\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M10 7.6h7M10 16.4h7\"/></svg>","lambda":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6.4 19.6 13 4.4\"/><path d=\"M10.5 12.2 17.6 19.6\"/></svg>","container":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.4\" y=\"7\" width=\"17.2\" height=\"10\" rx=\"1.8\"/><path d=\"M8 7v10M13 7v10\"/></svg>","s3":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"12\" cy=\"6.2\" rx=\"7.4\" ry=\"2.3\"/><path d=\"M4.6 6.6 6.3 19a1.8 1.8 0 0 0 1.8 1.5h7.8a1.8 1.8 0 0 0 1.8-1.5l1.7-12.4\"/></svg>","rds":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2.6\" y=\"3.4\" width=\"18.8\" height=\"17.2\" rx=\"3.2\"/><ellipse cx=\"12\" cy=\"8.6\" rx=\"4.6\" ry=\"1.8\"/><path d=\"M7.4 8.6v6.2c0 1 2.06 1.8 4.6 1.8s4.6-.8 4.6-1.8V8.6\"/></svg>","postgres":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"12\" cy=\"5.6\" rx=\"6.8\" ry=\"2.4\"/><path d=\"M5.2 5.6v12.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.6\"/><path d=\"M5.2 10.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4\"/><path d=\"M5.2 14.8c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4\"/></svg>","mysql":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"12\" cy=\"5.8\" rx=\"6.8\" ry=\"2.4\"/><path d=\"M5.2 5.8v9.2c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4V5.8\"/><path d=\"M5.2 10.4c0 1.33 3.04 2.4 6.8 2.4s6.8-1.07 6.8-2.4\"/><path d=\"M4.4 20.6c1.36-1.1 2.54-1.1 3.9 0s2.54 1.1 3.9 0 2.54-1.1 3.9 0\"/></svg>","apigw":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5\" cy=\"12\" r=\"2.1\"/><circle cx=\"18.8\" cy=\"6.4\" r=\"1.7\"/><circle cx=\"18.8\" cy=\"12\" r=\"1.7\"/><circle cx=\"18.8\" cy=\"17.6\" r=\"1.7\"/><path d=\"M7.1 12h3.1\"/><path d=\"M10.2 12 17.1 6.9\"/><path d=\"M10.2 12h6.9\"/><path d=\"M10.2 12 17.1 17.1\"/></svg>","cloudwatch":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3.6 4.2v13.6a1.8 1.8 0 0 0 1.8 1.8h15\"/><path d=\"M6.6 15.6l3.5-4.4 2.9 2.3 3.1-4.8 2.9 3.5\"/><circle cx=\"6.6\" cy=\"15.6\" r=\"0.85\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"19\" cy=\"12.2\" r=\"0.85\" fill=\"currentColor\" stroke=\"none\"/></svg>","rest":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"5.2\" cy=\"7\" r=\"1.5\"/><circle cx=\"5.2\" cy=\"12\" r=\"1.5\"/><circle cx=\"5.2\" cy=\"17\" r=\"1.5\"/><path d=\"M8.2 7h10.6M8.2 12h7.4M8.2 17h9.2\"/></svg>","node":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2.9 20 7.45v9.1L12 21.1 4 16.55v-9.1z\"/><path d=\"M9.2 15.1V9.5l5.6 5V9\"/></svg>","javascript":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9.6 4.6C6.9 4.6 7.8 10.3 4.9 12c2.9 1.7 2 7.4 4.7 7.4\"/><path d=\"M14.4 4.6c2.7 0 1.8 5.7 4.7 7.4-2.9 1.7-2 7.4-4.7 7.4\"/></svg>","docker":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.2\" y=\"12.4\" width=\"3.5\" height=\"3.5\" rx=\".6\"/><rect x=\"7.5\" y=\"12.4\" width=\"3.5\" height=\"3.5\" rx=\".6\"/><rect x=\"11.8\" y=\"12.4\" width=\"3.5\" height=\"3.5\" rx=\".6\"/><rect x=\"7.5\" y=\"8.3\" width=\"3.5\" height=\"3.5\" rx=\".6\"/><rect x=\"11.8\" y=\"8.3\" width=\"3.5\" height=\"3.5\" rx=\".6\"/><path d=\"M2.6 17.8c1.7 2.3 4.6 3.2 7.5 3.2 4.9 0 8.5-2.3 9.5-6.3 1.2.6 2.4.4 3-.5-1-1.2-2.5-1.2-3.3-.7\"/></svg>","git":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"7\" cy=\"5.6\" r=\"2.2\"/><circle cx=\"7\" cy=\"18.4\" r=\"2.2\"/><circle cx=\"17\" cy=\"12\" r=\"2.2\"/><path d=\"M7 7.8v8.4\"/><path d=\"M7 12h7.8\"/></svg>","github":"<svg viewBox=\"0 0 24 24\" width=\"23\" height=\"23\" aria-hidden=\"true\" fill=\"currentColor\"><path d=\"M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0C17.4 5 18.4 5.3 18.4 5.3c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5A11.5 11.5 0 0023.5 12C23.5 5.7 18.3.5 12 .5z\"/></svg>","cloud":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 18.4h9.6a4.1 4.1 0 0 0 .5-8.2 5.6 5.6 0 0 0-10.7 1.3A3.5 3.5 0 0 0 7 18.4z\"/></svg>","shield":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 21.2s7.4-3.7 7.4-9.2V5.1L12 2.4 4.6 5.1v6.9c0 5.5 7.4 9.2 7.4 9.2z\"/><path d=\"M9 12.1l2.2 2.2 4-4.4\"/></svg>","key":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"8.2\" cy=\"15.8\" r=\"3.4\"/><path d=\"M10.6 13.4 19 5h2.4v2.6h-2.6v2.6h-2.6\"/></svg>","cube":"<svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2.9 20 7.45v9.1L12 21.1 4 16.55v-9.1z\"/><path d=\"M4 7.45 12 12l8-4.55M12 12v9.1\"/></svg>"};
+
+  function setIcon(el, value) {
+    if (!el || typeof value !== 'string' || !value) return;
+    var svg = SVC_ICONS[value.trim().toLowerCase()];
+    if (svg) {
+      if (el.getAttribute('data-icon') === value) return;
+      el.setAttribute('data-icon', value);
+      el.innerHTML = svg;
+      return;
+    }
+    el.removeAttribute('data-icon');
+    setText(el, value);
+  }
+
   function applyStack(content) {
     var groups = content.stack;
     if (!Array.isArray(groups) || !groups.length) return;
@@ -1883,7 +1954,7 @@ export const handler = async (event) =&gt; {
       tiles.forEach(function (tile, i) {
         var item = group.items[i];
         var spans = tile.querySelectorAll('span');
-        if (spans[0]) setText(spans[0], item.icon);
+        if (spans[0]) setIcon(spans[0], item.icon);
         if (spans[1]) setText(spans[1], item.label);
         var tip = tile.querySelector('.svc-tip');
         if (tip) setText(tip, item.tip);
@@ -1897,6 +1968,12 @@ export const handler = async (event) =&gt; {
       grid.style.display = 'none';
     });
   }
+
+  var LIVE_ICON =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M14 4h6v6"/><path d="M20 4 11 13"/>' +
+    '<path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
 
   function applyProjects(content) {
     var projects = content.projects;
@@ -1951,9 +2028,10 @@ export const handler = async (event) =&gt; {
         }
       }
 
-      // repo link — hidden when there's nothing to point at
-      var link = card.querySelector('a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
+      // repo + live-site links, each hidden when there is nothing to point at
+      var link = card.querySelector('a[data-repo], a[aria-label="GitHub"], a[href="#"], a[href^="http"]');
       if (link) {
+        link.setAttribute('data-repo', '');
         if (project.repo) {
           link.href = project.repo;
           link.target = '_blank';
@@ -1961,6 +2039,28 @@ export const handler = async (event) =&gt; {
           link.style.display = '';
         } else {
           link.style.display = 'none';
+        }
+
+        // the featured card labels its link in words, the compact cards are
+        // icon-only — match whichever this card is
+        var labelled = (link.textContent || '').trim().length > 0;
+        var live = card.querySelector('a[data-live]');
+        if (project.liveUrl) {
+          if (!live) {
+            live = link.cloneNode(false); // attributes only: keeps the inline styling
+            live.removeAttribute('data-repo'); // or the selector above would find this one
+            live.setAttribute('data-live', '');
+            live.setAttribute('aria-label', 'Live site');
+            live.innerHTML = LIVE_ICON + (labelled ? ' Visit live site' : '');
+            link.parentElement.insertBefore(live, link);
+          }
+          var url = String(project.liveUrl).trim();
+          live.href = /^https?:/i.test(url) ? url : 'https://' + url.replace(/^\/+/, '');
+          live.target = '_blank';
+          live.rel = 'noopener';
+          live.style.display = '';
+        } else if (live) {
+          live.style.display = 'none';
         }
       }
     });
@@ -2023,6 +2123,57 @@ export const handler = async (event) =&gt; {
     });
   }
 
+  // The badge reads "Engineer @" followed by the AmaliTech wordmark. That logo only
+  // tells the truth for AmaliTech, so any other employer is rendered as text.
+  // Footer social links. An empty URL hides its icon rather than pointing nowhere.
+  var SOCIAL_PATHS = {
+    github: 'contact.github',
+    linkedin: 'contact.linkedin',
+    x: 'contact.x',
+    instagram: 'contact.instagram',
+  };
+
+  function applySocials(content) {
+    Object.keys(SOCIAL_PATHS).forEach(function (key) {
+      var link = document.querySelector('footer a[data-social="' + key + '"]');
+      if (!link) return;
+      var value = get(content, SOCIAL_PATHS[key]);
+      value = typeof value === 'string' ? value.trim() : '';
+      if (!value) { link.style.display = 'none'; return; }
+      link.href = /^https?:/i.test(value) ? value : 'https://' + value.replace(/^\/+/, '');
+      link.style.display = 'flex';
+    });
+  }
+
+  function applyEmployer(content) {
+    var hero = content.hero || {};
+    var label = document.querySelector('[data-content="hero.employerLabel"]');
+    var badge = label && label.parentElement;
+    if (!badge) return;
+
+    var name = typeof hero.employer === 'string' ? hero.employer.trim() : '';
+    var wordmark = !name || name.toLowerCase() === 'amalitech';
+    var marks = badge.querySelectorAll('img.wm-white, img.wm-default');
+    Array.prototype.forEach.call(marks, function (img) {
+      img.style.display = wordmark ? '' : 'none'; // '' restores the stylesheet's choice
+    });
+
+    var custom = badge.querySelector('[data-employer-text]');
+    if (wordmark) {
+      if (custom) custom.style.display = 'none';
+      return;
+    }
+    if (!custom) {
+      custom = document.createElement('span');
+      custom.setAttribute('data-employer-text', '');
+      custom.style.cssText =
+        "font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--primary)";
+      badge.appendChild(custom);
+    }
+    custom.style.display = '';
+    setText(custom, name);
+  }
+
   function applySettings(content) {
     var s = content.settings || {};
     if (s.pageTitle) document.title = s.pageTitle;
@@ -2031,7 +2182,14 @@ export const handler = async (event) =&gt; {
       if (meta) meta.setAttribute('content', s.metaDescription);
     }
     // rotates the whole palette onto the accent's hue, not just --primary
-    if (s.accent && window.__applyAccent) window.__applyAccent(s.accent);
+    if (s.accent) {
+      if (window.__applyAccent) window.__applyAccent(s.accent);
+      // remembered for the next load's first paint (see THEME_GUARD)
+      try {
+        if (s.accent.toLowerCase() === '#6aff00') localStorage.removeItem('dc.accent');
+        else localStorage.setItem('dc.accent', s.accent);
+      } catch (e) {}
+    }
     if (s.reduceMotion && root) root.dataset.motion = 'off';
   }
 
@@ -2047,14 +2205,23 @@ export const handler = async (event) =&gt; {
     applyVisibility(content);
     applyCanvas(content);
     applySettings(content); // themes the page, last so it covers everything above
+    applyEmployer(content);
+    applySocials(content);
     document.documentElement.setAttribute('data-content-loaded', '1');
+    // the page is themed now, so it is safe to show
+    if (window.__themeReveal) window.__themeReveal();
+    // a post opened by ?post= may only exist once the posts have been rendered
+    if (window.__openFromQuery) window.__openFromQuery();
   }
 
   function load() {
     return fetch('/api/content', { headers: { Accept: 'application/json' }, cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) { if (data && data.ok) hydrate(data.content); })
-      .catch(function () { /* offline or API down: the static markup already reads correctly */ });
+      .catch(function () {
+        /* offline or API down: the static markup already reads correctly */
+        if (window.__themeReveal) window.__themeReveal();
+      });
   }
 
   load();
