@@ -27,6 +27,11 @@
 })();
 </script>
 
+
+<style>
+  img[data-fit="cover"]{object-fit:cover !important}
+  img[data-fit="contain"]{object-fit:contain !important}
+</style>
 <title>Portfolio CMS — Daniel Ajayi Lotsu</title>
 <meta name="description" content="Content dashboard for this portfolio. Sign-in required; edits publish to the live site.">
 <meta name="robots" content="noindex, nofollow">
@@ -1715,8 +1720,10 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
     var img = postImageEl('blog-cover');
     if (img) {
       var slot = postSlot('blog-cover');
-      var url = slot ? (content.media && content.media[slot]) || defaultArt(slot) : '';
+      var uploaded = slot && content.media ? content.media[slot] : '';
+      var url = uploaded || (slot ? defaultArt(slot) : '');
       if (url && img.getAttribute('src') !== url) img.src = url;
+      img.setAttribute('data-fit', uploaded ? 'cover' : 'contain');
     }
 
     renderGalleryEditor();
@@ -2059,7 +2066,7 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
   // When a slot has no override, show the art the portfolio ships for it. This map
   // is injected from the build's SLOT_ART, so it can't drift from what index.html
   // actually references.
-  var SLOT_ART = {"blog-cover-cold-starts":"assets/blog/cold-starts-cover.svg","blog-cover-leave-api":"assets/blog/leave-api-thumb.svg","blog-cover-pooling":"assets/blog/pooling-thumb.svg","blog-cover-firstyear":"assets/blog/first-year-thumb.svg","blog-hero-cold-starts":"assets/blog/cold-starts-hero.svg","blog-hero-leave-api":"assets/blog/leave-api-hero.svg","blog-hero-pooling":"assets/blog/pooling-hero.svg","blog-hero-firstyear":"assets/blog/first-year-hero.svg"};
+  var SLOT_ART = {"blog-cover-cold-starts":"assets/blog/cold-starts-art.svg","blog-cover-leave-api":"assets/blog/leave-api-art.svg","blog-cover-pooling":"assets/blog/pooling-art.svg","blog-cover-firstyear":"assets/blog/first-year-art.svg","blog-hero-cold-starts":"assets/blog/cold-starts-art.svg","blog-hero-leave-api":"assets/blog/leave-api-art.svg","blog-hero-pooling":"assets/blog/pooling-art.svg","blog-hero-firstyear":"assets/blog/first-year-art.svg"};
 
   function defaultArt(slot) {
     return SLOT_ART[slot] || 'assets/blog/placeholder.svg';

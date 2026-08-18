@@ -29,47 +29,47 @@ const dir = process.argv[2] || '.';
  * ------------------------------------------------------------------ */
 const SLOT_ART = {
   'blog-cover-cold-starts': {
-    file: 'assets/blog/cold-starts-cover.svg',
+    file: 'assets/blog/cold-starts-art.svg',
     alt: 'A tall 214ms cold start followed by warm invocations settling under 90ms',
   },
   'blog-cover-leave-api': {
-    file: 'assets/blog/leave-api-thumb.svg',
+    file: 'assets/blog/leave-api-art.svg',
     alt: 'Three stacked services — gateway, requests, balances — connected top to bottom',
   },
   'blog-cover-pooling': {
-    file: 'assets/blog/pooling-thumb.svg',
+    file: 'assets/blog/pooling-art.svg',
     alt: 'Four Lambda containers funnelling through a proxy into one database',
   },
   'blog-cover-firstyear': {
-    file: 'assets/blog/first-year-thumb.svg',
+    file: 'assets/blog/first-year-art.svg',
     alt: 'A rising curve from 2024 to 2025 ending in a star',
   },
   // the article frame: same slot as the card, so one upload serves both — only
   // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-cold-starts': {
     as: 'blog-cover-cold-starts',
-    file: 'assets/blog/cold-starts-hero.svg',
+    file: 'assets/blog/cold-starts-art.svg',
     alt: 'Chart of Lambda invocation latency: a 214ms cold start, then warm invocations under 90ms',
   },
   // the article frame: same slot as the card, so one upload serves both — only
   // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-leave-api': {
     as: 'blog-cover-leave-api',
-    file: 'assets/blog/leave-api-hero.svg',
+    file: 'assets/blog/leave-api-art.svg',
     alt: 'Topology: API Gateway feeding request and balance services, joined by an event bus, writing to PostgreSQL',
   },
   // the article frame: same slot as the card, so one upload serves both — only
   // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-pooling': {
     as: 'blog-cover-pooling',
-    file: 'assets/blog/pooling-hero.svg',
+    file: 'assets/blog/pooling-art.svg',
     alt: 'Many Lambda containers multiplexed through RDS Proxy onto three stable PostgreSQL connections',
   },
   // the article frame: same slot as the card, so one upload serves both — only
   // the bundled default art differs, being drawn for this frame's shape
   'blog-hero-firstyear': {
     as: 'blog-cover-firstyear',
-    file: 'assets/blog/first-year-hero.svg',
+    file: 'assets/blog/first-year-art.svg',
     alt: 'Rising timeline from National Service through two AWS certifications to Software Engineer',
   },
 };
@@ -336,15 +336,14 @@ function fillImageSlots(body) {
     }
     filled.push(id);
     // data-slot keeps the slot's identity in the DOM so the CMS can swap this image
-    // at runtime. Several frames can share one slot (the card cover and the article
-    // header are the same picture), so each frame also carries the art drawn for its
-    // own shape as its default — data-default-for records which slot that art belongs
-    // to, so a frame re-pointed at another post falls back instead of lying.
+    // at runtime. The card cover and the article header share one slot and one file,
+    // so a post is one picture everywhere. While that picture is the bundled diagram
+    // it is letterboxed rather than cropped — the frames are 24:9, 4:3 and 16:9, and
+    // a diagram loses its labels to a crop. An upload fills the frame instead.
     const slot = art.as || id;
     return (
-      `<img data-slot="${slot}" data-default="${art.file}" data-default-for="${slot}" ` +
-      `src="${art.file}" alt="${art.alt}" decoding="async" ` +
-      'style="width:100%;height:100%;object-fit:cover;display:block">'
+      `<img data-slot="${slot}" data-fit="contain" src="${art.file}" alt="${art.alt}" ` +
+      `decoding="async" style="width:100%;height:100%;display:block">`
     );
   });
 
@@ -843,6 +842,16 @@ const THEME_GUARD = `
 </script>
 `;
 
+
+// How a post's picture sits in its frame. Driven by an attribute rather than an
+// inline style: the theme engine rewrites inline styles from a cached original on
+// every accent change, which silently reverted this.
+const IMAGE_FIT_CSS = `
+<style>
+  img[data-fit="cover"]{object-fit:cover !important}
+  img[data-fit="contain"]{object-fit:contain !important}
+</style>`;
+
 function page({ helmet, body, runtime, head }) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -850,6 +859,7 @@ function page({ helmet, body, runtime, head }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 ${THEME_GUARD}
+${IMAGE_FIT_CSS}
 ${head}
 ${helmet}
 </head>
@@ -2210,12 +2220,13 @@ const HYDRATE_RUNTIME = `
     var media = content.media || {};
     document.querySelectorAll('img[data-slot]').forEach(function (img) {
       var slot = img.getAttribute('data-slot');
-      // an upload wins; then this frame's own bundled art, but only while the frame
-      // still belongs to that slot; then the slot's art; then the shared placeholder
-      var own = img.getAttribute('data-default-for') === slot ? img.getAttribute('data-default') : '';
-      var url = media[slot] || own || SLOT_ART[slot] || PLACEHOLDER;
-      var current = img.getAttribute('src');
-      if (current !== url) img.src = url;
+      var uploaded = media[slot];
+      var url = uploaded || SLOT_ART[slot] || PLACEHOLDER;
+      if (img.getAttribute('src') !== url) img.src = url;
+      // an upload is a photograph and should fill its frame; the bundled diagrams are
+      // letterboxed so a 24:9 card doesn't slice the labels off one
+      var fit = uploaded ? 'cover' : 'contain';
+      if (img.getAttribute('data-fit') !== fit) img.setAttribute('data-fit', fit);
     });
   }
 
@@ -2907,8 +2918,10 @@ const CMS_DATA_RUNTIME = `
     var img = postImageEl('blog-cover');
     if (img) {
       var slot = postSlot('blog-cover');
-      var url = slot ? (content.media && content.media[slot]) || defaultArt(slot) : '';
+      var uploaded = slot && content.media ? content.media[slot] : '';
+      var url = uploaded || (slot ? defaultArt(slot) : '');
       if (url && img.getAttribute('src') !== url) img.src = url;
+      img.setAttribute('data-fit', uploaded ? 'cover' : 'contain');
     }
 
     renderGalleryEditor();
