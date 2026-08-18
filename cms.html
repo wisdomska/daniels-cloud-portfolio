@@ -1490,6 +1490,120 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
   }
 
   // ---- sidebar counts ----------------------------------------------------
+  /* ---------------- dashboard ----------------
+   * Everything here was a literal in the design: published counts, message counts,
+   * "last published 4 days ago", a resume version, a CloudFront deploy status, a
+   * build date, a task list and a publish log. None of it was true. The tiles are
+   * rebuilt from the content document and the inbox; the invented task list and
+   * publish log are removed, having nothing real behind them.
+   * ------------------------------------------- */
+  function relativeDay(iso) {
+    if (!iso) return null;
+    var then = new Date(iso);
+    if (isNaN(then.getTime())) return null;
+    var days = Math.floor((Date.now() - then.getTime()) / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    return days + ' days ago';
+  }
+
+  function dashboardStats() {
+    var posts = (content && content.blog && content.blog.posts) || [];
+    var published = posts.filter(function (p) { return p && p.published !== false; });
+    var unread = inboxMessages.filter(function (m) { return m && m.read === false; }).length;
+    var updated = relativeDay(content && content.updatedAt);
+    return [
+      { label: 'PUBLISHED POSTS', value: published.length + ' / ' + posts.length,
+        note: (posts.length - published.length) + ' draft' + (posts.length - published.length === 1 ? '' : 's') },
+      { label: 'CONTACT MESSAGES', value: String(inboxMessages.length),
+        note: unread + ' unread' },
+      { label: 'CERTIFICATIONS', value: String(((content && content.certs) || []).length),
+        note: 'shown on the site' },
+      { label: 'PROJECTS', value: String(((content && content.projects) || []).length),
+        note: (((content && content.projects) || []).filter(function (p) { return p && (p.repo || p.liveUrl); }).length) + ' with links' },
+      { label: 'LAST PUBLISHED', value: updated || 'not yet', note: 'deployed on Vercel' },
+    ];
+  }
+
+  function renderDashboard() {
+    var pane = root.querySelector('[data-panel="dashboard"]');
+    if (!pane || !content) return;
+
+    var host = pane.querySelector('[data-dash-tiles]');
+    if (!host) {
+      host = document.createElement('div');
+      host.setAttribute('data-dash-tiles', '');
+      host.style.cssText =
+        'display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:13px;margin-top:16px';
+      pane.appendChild(host);
+      // the fabricated tiles, the "Jump back in" list and the publish log
+      Array.prototype.slice.call(pane.children).forEach(function (child) {
+        if (child === host) return;
+        if (child.tagName === 'H1') return;
+        if (child.parentNode) child.parentNode.removeChild(child);
+      });
+
+      var sub = document.createElement('p');
+      sub.setAttribute('data-dash-sub', '');
+      sub.style.cssText =
+        "margin:4px 0 0;font-family:'Syne Mono',monospace;font-size:12px;color:var(--text-3,#4d8c3c)";
+      pane.insertBefore(sub, host);
+    }
+
+    var line = pane.querySelector('[data-dash-sub]');
+    if (line) {
+      var when = relativeDay(content.updatedAt);
+      line.textContent = '// live on Vercel · ' + (when ? 'last published ' + when : 'not published from the CMS yet');
+    }
+
+    host.textContent = '';
+    dashboardStats().forEach(function (tile) {
+      var box = document.createElement('div');
+      box.style.cssText =
+        'display:flex;flex-direction:column;gap:5px;padding:14px;border:1px solid var(--border-hi,#173311);' +
+        'border-radius:11px;background:var(--surface,#06140a)';
+      var label = document.createElement('span');
+      label.textContent = tile.label;
+      label.style.cssText =
+        "font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:.09em;color:var(--text-3,#4d8c3c)";
+      var value = document.createElement('span');
+      value.textContent = tile.value;
+      value.style.cssText =
+        "font-family:'Clash Display',sans-serif;font-weight:600;font-size:21px;color:var(--text,#eefff0)";
+      var note = document.createElement('span');
+      note.textContent = tile.note;
+      note.style.cssText =
+        "font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-2,#7fcc66)";
+      box.appendChild(label);
+      box.appendChild(value);
+      box.appendChild(note);
+      host.appendChild(box);
+    });
+  }
+
+  // The Contact tab's inbox badge was the literal "3".
+  function renderInboxBadge() {
+    var tabs = qa('[data-tab]');
+    tabs.forEach(function (tab) {
+      var text = (tab.textContent || '').trim();
+      if (!/^Inbox\b/.test(text)) return;
+      var unread = inboxMessages.filter(function (m) { return m && m.read === false; }).length;
+      var badge = tab.querySelector('[data-inbox-badge]');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.setAttribute('data-inbox-badge', '');
+        badge.style.cssText =
+          "margin-left:7px;font-family:'Syne Mono',monospace;font-size:10px;padding:1px 6px;border-radius:999px;" +
+          'border:1px solid var(--border-hi,#173311);color:var(--text-2,#7fcc66)';
+        // drop the design's hardcoded number, keep the word
+        tab.textContent = 'Inbox';
+        tab.appendChild(badge);
+      }
+      badge.textContent = unread ? String(unread) : String(inboxMessages.length);
+      badge.title = inboxMessages.length + ' message(s), ' + unread + ' unread';
+    });
+  }
+
   function populateCounts() {
     var posts = (content.blog && content.blog.posts) || [];
     var stackGroups = get('stack') || [];
@@ -1504,6 +1618,20 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       var key = el.getAttribute('data-count');
       if (counts[key] !== undefined) el.textContent = String(counts[key]);
     });
+
+    // the design's blog subtitle counted in literals
+    var drafts = posts.length - counts.posts;
+    var pane = root.querySelector('[data-panel="blog"]');
+    var subtitle = pane && Array.prototype.slice.call(pane.querySelectorAll('p,span')).filter(function (el) {
+      return /posts?\s*·\s*\d+\s*published/i.test(el.textContent || '');
+    })[0];
+    if (subtitle) {
+      subtitle.textContent =
+        posts.length + ' post' + (posts.length === 1 ? '' : 's') + ' · ' + counts.posts +
+        ' published · ' + drafts + ' draft' + (drafts === 1 ? '' : 's');
+    }
+
+    renderDashboard();
   }
 
   // ---- post list ---------------------------------------------------------
@@ -1543,15 +1671,38 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       if (!post) { row.style.display = 'none'; return; }
       row.style.display = '';
 
-      // keep each row's title and LIVE/DRAFT pill honest
-      var title = row.querySelector('div:last-child, span:last-child');
-      var pill = row.querySelector('span');
+      // One title per row, taken from this row's own record. The design's rows carry
+      // a second line that nothing kept in step, so it kept showing the *next* post's
+      // title — as the bigger, brighter of the two, right next to Publish and Delete.
+      // It is removed rather than corrected: there is nothing for it to say.
+      var meta = row.firstElementChild;
+      var spans = meta ? meta.querySelectorAll('span') : [];
+      var pill = spans[0];
+      var titleEl = spans[1];
+
+      Array.prototype.slice.call(row.children).forEach(function (child) {
+        if (child === meta) return;
+        if (child.hasAttribute && child.hasAttribute('data-del-post')) return;
+        if (child.parentNode) child.parentNode.removeChild(child);
+      });
+
       if (pill && /^(LIVE|DRAFT)$/.test(pill.textContent.trim())) {
         var live = post.published !== false;
         pill.textContent = live ? 'LIVE' : 'DRAFT';
         pill.style.color = live ? 'var(--primary)' : 'var(--warn)';
       }
-      if (title && title !== pill && post.title) title.textContent = post.title;
+      if (titleEl) {
+        // it is the row's only heading now, so it reads like one
+        titleEl.textContent = post.title || 'Untitled post';
+        titleEl.style.fontSize = '12.5px';
+        titleEl.style.color = 'var(--text)';
+        titleEl.style.lineHeight = '1.35';
+        titleEl.style.whiteSpace = 'normal';
+      }
+      if (meta) {
+        meta.style.alignItems = 'flex-start';
+        meta.style.marginBottom = '0';
+      }
 
       // a delete affordance, which the mockup's rows never had
       if (!row.querySelector('[data-del-post]')) {
@@ -2051,6 +2202,8 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
     });
 
     pane.appendChild(wrap);
+    // the "Drop files here" zone and the five invented file tiles
+    stripMockEditor(pane, wrap);
   }
 
   function renderMedia() {
@@ -2180,6 +2333,30 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
     return arr;
   }
 
+  /* The design ships a mockup of each list editor: hardcoded cards showing data that
+   * does not exist, with controls that do nothing, rendered *above* the real editor
+   * where it looks authoritative. Projects listed three projects that were never in
+   * the content; Media listed five files that were never uploaded; the Tech Stack
+   * chips had the wrong group names and inert × buttons; Experience duplicated
+   * itself. They are removed from the DOM, not hidden — an inert control and a
+   * fabricated number are both worse than blank space.
+   *
+   * Kept: the pane's header row (it holds the real "+ Add"), any heading, the real
+   * editor, and the blocks this file injects.
+   */
+  function stripMockEditor(pane, keep) {
+    if (!pane) return;
+    Array.prototype.slice.call(pane.children).forEach(function (child) {
+      if (child === keep) return;
+      if (!child.tagName) return;
+      if (/^H[1-4]$/.test(child.tagName)) return;
+      if (child.querySelector && child.querySelector('[data-add]')) return;
+      if (child.hasAttribute && (child.hasAttribute('data-extra') || child.hasAttribute('data-gallery-editor'))) return;
+      if (child.querySelector && child.querySelector('[data-collection],[data-media-editor],[data-extra],[data-gallery-editor]')) return;
+      if (child.parentNode) child.parentNode.removeChild(child);
+    });
+  }
+
   function buildCollectionEditor(spec) {
     var pane = root.querySelector('[data-panel="' + spec.pane + '"]');
     if (!pane) return;
@@ -2189,16 +2366,8 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       host = document.createElement('div');
       host.setAttribute('data-collection', spec.path);
       host.style.cssText = 'display:flex;flex-direction:column;gap:10px;margin-top:18px';
-      // the design's static rows are a mockup of this data — hide them so there's
-      // one obvious place to edit
-      Array.prototype.slice.call(pane.children).forEach(function (child) {
-        if (child.querySelector && child.querySelector('[data-add]')) return; // keep the Add button row
-        if (child === host) return;
-        if (child.tagName === 'H2' || child.tagName === 'H3') return;
-        if (child.querySelector && (child.querySelector('input') || child.querySelector('textarea'))) return;
-        child.style.display = 'none';
-      });
       pane.appendChild(host);
+      stripMockEditor(pane, host);
     }
     renderCollection(spec, host);
   }
@@ -2306,12 +2475,8 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       host = document.createElement('div');
       host.setAttribute('data-collection', 'stack');
       host.style.cssText = 'display:flex;flex-direction:column;gap:16px;margin-top:18px';
-      Array.prototype.slice.call(pane.children).forEach(function (child) {
-        if (child.querySelector && child.querySelector('[data-add]')) return;
-        if (child.tagName === 'H2' || child.tagName === 'H3') return;
-        child.style.display = 'none';
-      });
       pane.appendChild(host);
+      stripMockEditor(pane, host);
     }
     renderStack(host);
   }
@@ -2612,7 +2777,12 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       .catch(function () { /* inbox is a bonus pane; leave the mockup rows in place */ });
   }
 
+  var inboxMessages = [];
+
   function renderInbox(messages) {
+    inboxMessages = Array.isArray(messages) ? messages : [];
+    renderDashboard();
+    renderInboxBadge();
     var panel = root.querySelector('[data-tabpanel="inbox"]');
     if (!panel) return;
 
@@ -2802,14 +2972,46 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
       });
   }
 
-  function start() {
-    api('/api/content')
+  /* ---------------- controls with nothing behind them ----------------
+   * "Version history", "Invalidate cache" and "Regenerate PDF" had no handler, no
+   * request and no state change; Regenerate PDF navigated to Media instead. The
+   * resume pane also carried a mock "PDF PREVIEW" — grey placeholder bars labelled
+   * "1 page · A4 · v4" — which rendered nothing real. A control that silently does
+   * nothing is worse than no control, so they are removed. There is one real export
+   * (content as JSON), which stays.
+   * ------------------------------------------------------------------- */
+  function removeDeadControls() {
+    var DEAD_LABELS = ['version history', 'invalidate cache', 'regenerate pdf'];
+    qa('button').forEach(function (btn) {
+      var label = (btn.textContent || '').trim().toLowerCase();
+      if (DEAD_LABELS.indexOf(label) === -1) return;
+      if (btn.parentNode) btn.parentNode.removeChild(btn);
+    });
+
+    // The mock PDF preview — grey placeholder bars captioned "1 page · A4 · v4",
+    // rendering nothing real. It shares a two-column card with the actual resume
+    // fields, so remove the preview panel only: the parent of its own label.
+    var resume = root.querySelector('[data-panel="resume"]');
+    if (!resume) return;
+    Array.prototype.slice.call(resume.querySelectorAll('div,span,h2,h3,h4')).forEach(function (el) {
+      if (el.children.length) return;
+      if ((el.textContent || '').trim().toUpperCase() !== 'PDF PREVIEW') return;
+      var card = el.parentElement;
+      if (card && card !== resume && card.parentNode) card.parentNode.removeChild(card);
+    });
+  }
+
+  function start(afterLoad) {
+    return api('/api/content')
       .then(function (data) {
         content = data.content;
         populate();
         buildCollectionEditors();
+        removeDeadControls();
+        renderDashboard();
         loadInbox();
         buildPasswordCard();
+        if (typeof afterLoad === 'function') afterLoad();
       })
       .catch(function (err) { window.cmsToast('Could not load content: ' + err.message); });
   }
@@ -2828,8 +3030,14 @@ The lesson I keep coming back to: measure before you optimise.</textarea>
     if (e.target.closest('[data-discard]')) {
       e.stopPropagation();
       window.cmsDirty(false);
-      window.cmsToast('Reloaded from the published version');
-      start();
+      // Re-show the section afterwards: reverting used to leave the pane blank, which
+      // reads as though Discard had destroyed the content it just restored.
+      var crumb = root.querySelector('[data-crumb]');
+      var pane = crumb ? (crumb.textContent || '').trim().toLowerCase() : '';
+      start(function () {
+        if (pane && window.cmsGo) window.cmsGo(pane);
+        window.cmsToast('Reloaded from the published version');
+      });
       return;
     }
     if (e.target.closest('[data-preview]')) {
