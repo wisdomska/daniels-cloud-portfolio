@@ -24,15 +24,15 @@
   "rewrites": [
     {
       "source": "/resume",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/blog",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/blog/:slug",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }

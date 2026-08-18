@@ -4869,3 +4869,19 @@ function buildCms() {
 
 buildPortfolio();
 buildCms();
+
+/* The vercel.json rewrites for /resume and /blog are not being honoured by the
+ * platform on this project, so those paths are also emitted as real files. With
+ * cleanUrls they resolve to /resume and /blog and return 200, and because they are
+ * generated from the same output they cannot drift from index.html. The page picks
+ * its view from location.pathname, so each renders the right one.
+ *
+ * /blog/<slug> still depends on the rewrite: the set of posts is CMS-driven, so it
+ * cannot be enumerated at build time. Deep links to a post work through
+ * /?post=<id> until the rewrite is sorted out.
+ */
+const portfolio = fs.readFileSync(path.join(dir, 'index.html'), 'utf8');
+for (const route of ['resume', 'blog']) {
+  fs.writeFileSync(path.join(dir, route + '.html'), portfolio);
+}
+console.log('wrote resume.html + blog.html (same output as index.html)');
